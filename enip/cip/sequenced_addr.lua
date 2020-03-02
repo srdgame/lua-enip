@@ -1,11 +1,11 @@
 local class = require 'middleclass'
-local cpf = require 'cip.item.base'
-local types = require 'cip.item.types'
+local cpf = require 'enip.cip.base'
+local types = require 'enip.cip.types'
 
 local sequenced_address = class('LUA_ENIP_CIP_TYPES_CONNECTED_ADDRESS', cpf)
 
 function sequenced_address:initialize(identity, sequence)
-	cpf:initialize(TYPE_ID.CONNECTED_ADDR)
+	cpf:initialize(types.CONNECTED_ADDR)
 	self._identity = tonumber(identity) or 0
 	self._sequence = tonumber(sequence) or 0
 end

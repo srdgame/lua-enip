@@ -1,8 +1,8 @@
 local class = require 'middleclass'
-local cpf = require 'cip.item.base'
-local types = require 'cip.item.types'
+local cpf = require 'enip.cip.base'
+local types = require 'enip.cip.types'
 
-local connected_address = class('LUA_ENIP_CIP_TYPES_CONNECTED_ADDRESS', cpf)
+local connected_address = class('LUA_ENIP_CIP_CONNECTED_ADDRESS_MSG', cpf)
 
 function connected_address:initialize(conn_identity)
 	cpf:initialize(types.CONNECTED_ADDR)

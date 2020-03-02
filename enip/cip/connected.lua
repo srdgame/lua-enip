@@ -1,11 +1,13 @@
 local class = require 'middleclass'
+local cpf = require 'enip.cip.base'
+local types = require 'enip.cip.types'
 
-local item = class('LUA_ENIP_CIP_TYPES_CONNECTED_ADDRESS', cpf)
+local item = class('LUA_ENIP_CIP_CONNECTED_MSG', cpf)
 
 -- FIXME:
 
 function item:initialize(conn_identity)
-	cpf:initialize(TYPE_ID.CONNECTED_ADDR)
+	cpf:initialize(types.CONNECTED_ADDR)
 	self._conn_identity = tonumber(conn_identity) or 0
 end
 

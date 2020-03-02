@@ -1,11 +1,11 @@
 local class = require 'middleclass'
-local cpf = require 'cip.item.base'
-local types = require 'cip.item.types'
+local cpf = require 'enip.cip.base'
+local types = require 'enip.cip.types'
 
 local sockaddr_info = class('LUA_ENIP_CIP_TYPS_SOCKADDR_INFO', cpf)
 
 function sockaddr_info:intialize(from_target, info)
-	cpf:intialize(from_target and TYPES_ID.SOCK_ADDR_S or TYPES_ID.SOCK_ADDR_C)
+	cpf:intialize(from_target and types.SOCK_ADDR_S or types.SOCK_ADDR_C)
 	self._info = info or {}
 end
 

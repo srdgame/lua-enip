@@ -1,8 +1,8 @@
 local class = require 'middleclass'
-local cpf = require 'cip.item.base'
-local types = require 'cip.item.types'
+local cpf = require 'enip.cip.base'
+local types = require 'enip.cip.types'
 
-local null = class('LUA_ENIP_CIP_TYPES_NULL', cpf)
+local null = class('LUA_ENIP_CIP_NULL_MSG', cpf)
 
 function null:intialize()
 	cpf:initialize(types.NULL)
