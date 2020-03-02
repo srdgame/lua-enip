@@ -17,7 +17,6 @@ header.static.CMD_SEND_UNIT_DATA	= 0x70
 header.static.CMD_INDICATE_STATUS	= 0x72
 header.static.CMD_CANCEL			= 0x73
 
-header.static.CMD_REPLY_OK			= 0x80
 
 local command_strings = {
 	[0x00] = 'NOP',
@@ -43,6 +42,8 @@ header.static.CMD_READ_TAG			= 0x4c
 header.static.CMD_WRITE_TAG			= 0x4d
 header.static.CMD_READ_FRG			= 0x52
 header.static.CMD_WRITE_FRG			= 0x53
+
+header.static.CMD_REPLY_OK			= 0x80
 
 header.static.STATUS_OK				= 0x00
 header.static.ERR_NOT_SUPPORTED		= 0x01

@@ -50,4 +50,10 @@ end
 function client:request(msg, response)
 end
 
+function client:send_rr_data(cip, response)
+end
+
+function client:send_unit_data(cip, response)
+end
+
 return client

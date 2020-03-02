@@ -42,7 +42,7 @@ function li:initialize(session, items)
 	self._items = items or {}
 	local data = items_encode(self._items)
 
-	self._msg = msg:new(session, msg.header.CMD_LIST_IDENTITY, data)
+	self._msg = msg:new(session, msg.header.CMD_LIST_INTERFACES, data)
 end
 
 function li:from_hex(raw)

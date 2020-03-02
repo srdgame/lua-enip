@@ -9,7 +9,7 @@ function reply:initialize(session, interface_handle, timeout, pack)
 	self._timeout = timeout or 0
 	self._pack = pack.to_hex and pack:to_hex() or tostring(pack)
 	local data = string.pack('<I4I2', self._interface_handle, self._timeout)
-	self._msg = msg:new(session, msg.header.CMD_REG_SESSION, data...tostring(pack))
+	self._msg = msg:new(session, msg.header.CMD_SEND_RR_DATA, data...tostring(pack))
 end
 
 function reply:from_hex(raw)

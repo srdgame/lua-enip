@@ -88,7 +88,7 @@ function li:initialize(session, items)
 	self._items = items or {}
 	local data = items_encode(self._items)
 
-	self._msg = msg:new(session, msg.header.CMD_LIST_IDENTITY | msg.header.CMD_REPLY_OK, data)
+	self._msg = msg:new(session, msg.header.CMD_LIST_IDENTITY, data)
 end
 
 function li:from_hex(raw)

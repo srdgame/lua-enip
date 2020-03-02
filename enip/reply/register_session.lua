@@ -10,7 +10,7 @@ function reply:initialize(session, protocol_version, options, status)
 	self._options = options or 0
 
 	local data = string.pack('<I2I2', self._protocol_version, self._options)
-	self._msg = msg:new(session, msg.header.CMD_LIST_IDENTITY | msg.header.CMD_REPLY_OK, data, 0)
+	self._msg = msg:new(session, msg.header.CMD_LIST_IDENTITY, data, 0)
 end
 
 function reply:from_hex(raw)
