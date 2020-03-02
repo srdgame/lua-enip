@@ -1,7 +1,7 @@
 local class = require 'middleclass'
-local msg = require 'cip.message'
+local msg = require 'enip.message'
 
-local reply = class('LUA_ENIP_CIP_REPLY_LIST_SERVICES', msg)
+local reply = class('LUA_ENIP_MSG_REPLY_LIST_SERVICES', msg)
 
 local function item_encode(item)
 	return string.pack('<I2I2I2I2c16', item.type_code, 16 + 2 * 4,

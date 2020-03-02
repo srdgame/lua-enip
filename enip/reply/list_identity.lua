@@ -1,7 +1,7 @@
 local class = require 'middleclass'
-local msg = require 'cip.message'
+local msg = require 'enip.message'
 
-local li = class('LUA_ENIP_CIP_REPLY_LIST_IDENTITY', msg)
+local li = class('LUA_ENIP_MSG_REPLY_LIST_IDENTITY', msg)
 
 
 local function items_encode(items)

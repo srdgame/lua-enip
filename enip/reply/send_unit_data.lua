@@ -1,8 +1,8 @@
 local class = require 'middleclass'
-local msg = require 'cip.message'
+local msg = require 'enip.message'
 
 --- UDP Only? List Identity
-local reply = class('LUA_ENIP_CIP_MSG_REPLY_SEND_UNIT_DATA', msg)
+local reply = class('LUA_ENIP_MSG_REPLY_SEND_UNIT_DATA', msg)
 
 function reply:initialize(session, interface_handle, timeout, pack)
 	self._interface_handle = interface_handle or 0

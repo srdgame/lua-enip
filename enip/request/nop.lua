@@ -1,7 +1,7 @@
 local class = require 'middleclass'
-local msg = require 'cip.message'
+local msg = require 'enip.message'
 
-local nop = class('LUA_ENIP_CIP_MSG_NOP')
+local nop = class('LUA_ENIP_MSG_REQ_NOP')
 
 function nop:initialize(session, data)
 	self._msg = msg:new(session, msg.header.CMD_NOP, data or 'CIP_FROM_FREEEIOE')
