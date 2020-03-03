@@ -1,29 +1,30 @@
 local class = require 'middleclass'
-local cpf = require 'enip.cip.base'
-local types = require 'enip.cip.types'
+local types = require 'enip.command.types'
+local item_base = require 'enip.command.item'
 
-local sequenced_address = class('LUA_ENIP_CIP_TYPES_CONNECTED_ADDRESS', cpf)
+local item = class('LUA_ENIP_COMMAND_CONNECTED_ADDRESS_ITEM', item_base)
 
-function sequenced_address:initialize(identity, sequence)
-	cpf:initialize(types.CONNECTED_ADDR)
+function item:initialize(identity, sequence)
+	item_base:initialize(types.CONNECTED_ADDR)
 	self._identity = tonumber(identity) or 0
 	self._sequence = tonumber(sequence) or 0
 end
 
-function sequenced_address:encode()
+function item:encode()
 	return string.pack('<I4I4', self._identity, self._sequence)
 end
 
-function sequenced_address:decode(raw)
-	self._identity, self._sequence = string.unpack('<I4I4', raw)
+function item:decode(raw, index)
+	self._identity, self._sequence, index = string.unpack('<I4I4', raw, index)
+	return index
 end
 
-function sequenced_address:identity()
+function item:identity()
 	return self._identity
 end
 
-function sequenced_address:sequence()
+function item:sequence()
 	return self._sequence
 end
 
-return sequenced_address
+return item

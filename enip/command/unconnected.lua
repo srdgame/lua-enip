@@ -1,27 +1,26 @@
 local class = require 'middleclass'
-local cpf = require 'enip.cip.base'
-local types = require 'enip.cip.types'
+local cip_parser = require 'enip.cip.parser'
+local types = require 'enip.command.types'
+local item_base = require 'enip.command.item'
 
-local item = class('LUA_ENIP_CIP_UNCONNECTED_MSG', cpf)
+local item = class('LUA_ENIP_COMMAND_UNCONNECTED_ITEM', item_base)
 
--- FIXME:
-
-function item:initialize(data_item)
-	cpf:initialize(types.UNCONNECTED)
-	self._data_item = data_item or ''
+function item:initialize(cip)
+	item_base:initialize(types.UNCONNECTED)
+	self._cip = cip or ''
 end
 
 function item:encode()
-	local data_item = self._data_item
-	return data_item.to_hex and data_item:to_hex() or tostring(data_item)
+	return self._cip.to_hex and self._cip:to_hex() or tostring(self._cip)
 end
 
-function item:decode(raw)
-	assert(nil, "FIXME:How to decode it")
+function item:decode(raw, index)
+	self._cip, index = cip_parser(raw, index)
+	return index
 end
 
-function item:data_item()
-	return self._data_item
+function item:cip()
+	return self._cip
 end
 
 return item

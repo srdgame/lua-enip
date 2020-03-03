@@ -15,7 +15,7 @@ function nop:to_hex()
 	return self._msg:to_hex()
 end
 
-function nop:from_hex()
+function nop:from_hex(raw, index)
 	assert(false, 'from_hex is not supported')
 end
 
