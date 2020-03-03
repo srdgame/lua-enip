@@ -1,22 +1,31 @@
 local class = require 'middleclass'
 local msg = require 'enip.message'
+local cip_parser = require 'enip.cip.parser'
 
 --- UDP Only? List Identity
 local req = class('LUA_ENIP_MSG_REQ_SEND_RR_DATA', msg)
 
-function req:initialize(session, interface_handle, timeout, pack)
-	self._interface_handle = interface_handle or 0
-	self._timeout = timeout or 0
+--- For CIP over enip, the interface_handle must be 0
+function req:initialize(session, cip, timeout) 
+	self._cip = cip
+	self._interface_handle = 0 --- CIP 
+	self._timeout = timeout or 0 --- Timeout settings (in seconds?)
+
 	local data = string.pack('<I4I2', self._interface_handle, self._timeout)
-	self._pack = pack.to_hex and pack:to_hex() or tostring(pack)
-	self._msg = msg:new(session, msg.header.CMD_REG_SESSION, data..pack_data)
+	local cip_data = cip.to_hex and cip:to_hex() or tostring(cip)
+
+	self._msg = msg:new(session, msg.header.CMD_REG_SESSION, data..cip_data)
 end
 
 function req:from_hex(raw)
 	msg.from_hex(raw)
 	local data = self:data()
 	self._interface_handle, self._timeout = string.unpack('<I4I2', data)
-	self._pack = string.sub(raw, string.packsize('<I4I2') + 1)
+
+	assert(self._interface_handle == 0, "Only CIP interface supported!!!")
+	
+	local cip_data = string.sub(raw, string.packsize('<I4I2') + 1)
+	self._cip = cip_parser(cip_data)
 end
 
 function req:interface_handle()
@@ -27,8 +36,8 @@ function req:timeout()
 	return self._timeout
 end
 
-function req:pack()
-	return self._pack
+function req:cip()
+	return self._cip
 end
 
 return req

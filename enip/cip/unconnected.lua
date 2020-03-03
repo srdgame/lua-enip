@@ -6,21 +6,22 @@ local item = class('LUA_ENIP_CIP_UNCONNECTED_MSG', cpf)
 
 -- FIXME:
 
-function item:initialize(conn_identity)
-	cpf:initialize(types.CONNECTED_ADDR)
-	self._conn_identity = tonumber(conn_identity) or 0
+function item:initialize(data_item)
+	cpf:initialize(types.UNCONNECTED)
+	self._data_item = data_item or ''
 end
 
 function item:encode()
-	return string.pack('<I4', self._conn_identity)
+	local data_item = self._data_item
+	return data_item.to_hex and data_item:to_hex() or tostring(data_item)
 end
 
 function item:decode(raw)
-	self._conn_identity = string.unpack('<I4', raw)
+	assert(nil, "FIXME:How to decode it")
 end
 
-function item:identity()
-	return self._conn_identity
+function item:data_item()
+	return self._data_item
 end
 
 return item
