@@ -27,19 +27,17 @@ function cip_parser:to_hex()
 	return table.concat(data)
 end
 
-function cip_parser:parse_cip_item(raw, index)
-	-- FIXME: either using global or cip_parser local type id map
-	--
+function cip_parser:parse_command_item(raw, index)
+
 end
 
-function cip_parser:from_hex(raw)
+function cip_parser:from_hex(raw, index)
 	self._items = {}
 
-	local count = string.unpack('<I2', raw)
-	local index = string.packsize('<I2') + 1
+	local count, index = string.unpack('<I2', raw, index)
 	if count > 0 then
 		for i = 1, count do
-			local item = self:parse_cip_item(raw, index)
+			local item = self:parse_command_item(raw, index)
 			self._items[#self._items + 1] = item
 			index = index + item:len()
 		end

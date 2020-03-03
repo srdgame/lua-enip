@@ -1,6 +1,6 @@
 local class = require 'middleclass'
-local session = require 'enip.session'
-local enip_conn_path = require 'enip.conn_path'
+local session = require 'enip.utils.session'
+local enip_conn_path = require 'enip.utils.conn_path'
 
 local client = class('LUA_ENIP_CLIENT')
 

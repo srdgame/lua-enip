@@ -1,6 +1,6 @@
 local class = require 'middleclass'
-local types = require 'enip.command.types'
-local item_base = require 'enip.command.item'
+local types = require 'enip.command.item.types'
+local item_base = require 'enip.command.item.base'
 
 local item = class('LUA_ENIP_COMMAND_CONNECTED_ADDRESS_ITEM', item_base)
 
