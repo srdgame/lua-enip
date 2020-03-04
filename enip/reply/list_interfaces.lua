@@ -1,57 +1,29 @@
 local class = require 'middleclass'
-local msg = require 'enip.message'
+local types = require 'enip.command.types'
+local command = require 'enip.command.base'
 
-local li = class('LUA_ENIP_MSG_REPLY_LIST_INTERFACES', msg)
+local li = class('LUA_ENIP_MSG_REPLY_LIST_INTERFACES', command)
 
+function li:initialize(session, data)
+	command:initialize(session, types.CMD.LIST_INTERFACES)
 
-local function items_encode(items)
-	local count = items.count and items:count() or #items
-	if count=== 0 then
-		return ''
-	end
-
-	local data = {}
-	for i = 1, count do
-		local item = items.get and item.get(i) or items[i]
-		---TODO:
-	end
-
-	return table.concat(data)
+	self._data = data
 end
 
-local function items_decode(data)
-	if string.len(data) <= 2 then
-		return {}
-	end
+function li:encode()
+	lcoal data = self._data
 
-	local items = {}
-	local count = string.unpack('<I2', data)
-	local index = 2 + 1
-	for i = 1, count do
-		local type_code, length = string.unpack('<I2I2', data,  index)
-		index = index + string.packsize('<I2I2')
-
-		local start_index = index
-
-		--- TODO:
-	end
-	return items
+	return data.to_hex() and data:to_hex() or tostring(data)
 end
 
-function li:initialize(session, items)
-	self._items = items or {}
-	local data = items_encode(self._items)
-
-	self._msg = msg:new(session, msg.header.CMD_LIST_INTERFACES, data)
+function li:deocode(raw, index)
+	self._data = command_data:new()
+	index = self._data:from_hex(raw, index)
+	return index
 end
 
-function li:from_hex(raw)
-	msg.from_hex(raw)
-	self._items = items_decode(self:data())
-end
-
-function li:items()
-	return self._items
+function li:data()
+	return self._data
 end
 
 return li

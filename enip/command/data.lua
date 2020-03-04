@@ -1,7 +1,7 @@
 local class = require 'middleclass'
 local item_parser = require 'enip.command.item.parser'
 
-local command_data = class('ENIP_CIP_PARSER')
+local command_data = class('ENIP_COMMAND_DATA')
 
 function command_data:initialize(items)
 	self._items = items or {}
@@ -9,10 +9,6 @@ end
 
 function command_data:__tostring()
 	return self:to_hex()
-end
-
-function command_data:__call(raw)
-	return self:from_hex(raw)
 end
 
 function command_data:to_hex()
@@ -50,11 +46,4 @@ function command_data:items()
 	return self._items
 end
 
-return {
-	parse = function(...)
-		local data = command_data:new()
-		local index = data:from_hex(...)
-		return data, index
-	end,
-	command_data = command_data
-}
+return command_data

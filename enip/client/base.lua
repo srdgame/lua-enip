@@ -20,8 +20,8 @@ end
 
 function client:register_session()
 	local rs = require 'cip.request.register_session'
-	local msg = rs:new(self._session)
-	return self:request(msg, function(resp, err)
+	local req = rs:new(self._session)
+	return self:request(req, function(resp, err)
 		if resp then
 			self._session:from_hex(resp)
 			return true
@@ -38,30 +38,31 @@ end
 
 function client:unregister_session()
 	local us = require 'cip.request.unregister_session'
-	local msg = us:new(self._session)
+	local req = us:new(self._session)
 	--- There is no response for this unregister session request.
-	return self:request(msg)
+	return self:request(req)
 end
 
 --[[
 -- message is the ENIP message
 -- response is nil when the request does not need any response replied from server
+--  function(reply, err) end
 --]]
-function client:request(msg, response)
+function client:request(request, response)
 	assert(false, "Not implemented")
 end
 
 function client:send_rr_data(session, data, response)
 	local send_rr_data = require 'enip.request.send_rr_data'
 
-	local msg = send_rr_data(session, data)
-	return self:request(msg, response)
+	local req = send_rr_data(session, data)
+	return self:request(req, response)
 end
 
 function client:send_unit_data(session, data, response)
 	local send_unit_data = require 'enip.request.send_unit_data'
-	local msg = send_unit_data(session, data)
-	return self:request(msg, response)
+	local req = send_unit_data(session, data)
+	return self:request(req, response)
 end
 
 return client

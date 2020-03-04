@@ -3,37 +3,9 @@ local class = require 'middleclass'
 local basexx = require 'basexx'
 
 local session = require 'enip.utils.session'
+local types = require 'enip.command.types'
 
-local header = class('LUA_ENIP_HEADER')
-
-header.static.CMD_NOP				= 0x00 --- TCP
-header.static.CMD_LIST_SERVICES		= 0x04 --- UDP or TCP
-header.static.CMD_LIST_IDENTITY		= 0x63 --- UDP or TCP
-header.static.CMD_LIST_INTERFACES	= 0x64
-header.static.CMD_REG_SESSION		= 0x65
-header.static.CMD_UNREG_SESSION		= 0x66
-header.static.CMD_SEND_RR_DATA		= 0x6f
-header.static.CMD_SEND_UNIT_DATA	= 0x70
-header.static.CMD_INDICATE_STATUS	= 0x72
-header.static.CMD_CANCEL			= 0x73
-
-
-local command_strings = {
-	[0x00] = 'NOP',
-	[0x04] = 'ListServices',
-	[0x63] = 'ListIdentity',
-	[0x64] = 'ListInterfaces',
-	[0x65] = 'RegisterSession',
-	[0x66] = 'UnRegisterSession'
-	[0x6f] = 'SendRRData',
-	[0x70] = 'SendUnitData',
-	[0x72] = 'IndicateStatus',
-	[0x73] = 'Cancel',
-}
-
-local function command_to_string(command)
-	return command_strings[command] or 'Unknown command : '..command
-end
+local header = class('LUA_ENIP_COMMAND_HEADER')
 
 --[[
 -- Length is the data length. and the total message will be the length + 24 (header size)
@@ -46,7 +18,7 @@ function header:initialize(session, command, length, status)
 	assert(session, "Session object missing")
 	assert(command, "Command missing")
 	assert(length > 0, "Length invalid")
-	self._command = command or self.CMD_NOP
+	self._command = command or types.CMD.NOP
 	self._length = length or 0
 	self._status = status or 0
 	self._options = 0
@@ -88,11 +60,7 @@ function header:len()
 end
 
 function header:command()
-	return self._command & (~header.static.CMD_REPLY_OK)
-end
-
-function header:is_reply()
-	return (self._command & header.static.CMD_REPLY_OK) == header.static.CMD_REPLY_OK
+	return self._command
 end
 
 function header:length()

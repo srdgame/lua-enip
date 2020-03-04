@@ -1,10 +1,11 @@
 local class = require 'middleclass'
 local msg = require 'enip.message'
+local types = require 'enip.command.types'
 
 local nop = class('LUA_ENIP_MSG_REQ_NOP')
 
 function nop:initialize(session, data)
-	self._msg = msg:new(session, msg.header.CMD_NOP, data or 'CIP_FROM_FREEEIOE')
+	self._msg = msg:new(session, types.CMD.NOP, data or 'CIP_FROM_FREEEIOE')
 end
 
 function nop:__tostring()

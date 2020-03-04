@@ -1,11 +1,12 @@
 local class = require 'middleclass'
+local types = require 'enip.command.types'
 local command = require 'enip.command.base'
-local command_parser = require 'enip.commmand.parser'
+local command_data = require 'enip.commmand.data'
 
 local li = class('LUA_ENIP_MSG_REPLY_LIST_IDENTITY', command)
 
 function li:initialize(session, data)
-	command:initialize(session, command.header.CMD_LIST_IDENTITY)
+	command:initialize(session, types.CMD.LIST_IDENTITY)
 
 	self._data = data or ''
 end
@@ -17,7 +18,8 @@ function li:encode()
 end
 
 function li:deocode(raw, index)
-	self._data, index = command_parser.parse(command_data)
+	self._data = command_data:new()
+	index = self._data:from_hex(raw, index)
 	return index
 end
 

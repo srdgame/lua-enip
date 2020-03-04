@@ -9,7 +9,7 @@ local function parse_conn_path(path)
 	proto = string.len(proto or '') == 0 and 'tcp' or proto
 	port = string.len(port or '') == 0 and 0xAF12 or tonumber(port)
 
-	return proto, addr, port
+	return string.lower(proto), string.lower(addr), port
 end
 
 local function test_parse_conn_path()

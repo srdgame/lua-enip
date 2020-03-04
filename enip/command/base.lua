@@ -42,5 +42,16 @@ function cmd:header()
 	return self._header
 end
 
+function cmd:command()
+	return self._header:command()
+end
+
+function cmd:status()
+	return self._header:status()
+end
+
+function cmd:session()
+	return self._header:session()
+end
 
 return cmd

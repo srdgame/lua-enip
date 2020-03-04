@@ -11,6 +11,20 @@ local epath = require 'enip.cip.epath'
 
 local client = class('LUA_ENIP_CLIENT_UNCONNECTED', client_base)
 
+function client:on_reply(reply)
+	local reply_session = reply:session()
+	local session_index = tonumber(reply_session:context(), 16)
+	local session_obj = self._session_map[session_index]
+	if not session_obj then
+		return nil, "Unknown session"
+	end
+	--- Check the command code
+	if session_obj.request:command() ~= reply:command() then
+		return nil, "Command code not matched"
+	end
+
+	return session_obj.response(reply)
+end
 
 function client:gen_session()
 	--- Session index is four bytes
@@ -41,6 +55,7 @@ function client:read_tag(tag_path, tag_type, reponse)
 	local data = command_parser.command_data:new({null, unconnected})
 
 	return self:send_rr_data(session_obj, data, function(msg, err)
+		self._session_map[session_index] = nil
 		--- TODO: using the tag_type to 
 	end)
 end
@@ -66,6 +81,7 @@ function client:write_tag(tag_path, tag_type, tag_value)
 	local data = command_parser.command_data:new({null, unconnected})
 
 	return self:send_rr_data(session_obj, data, function(msg, err)
+		self._session_map[session_index] = nil
 		--- TODO: Parse the result
 	end)
 end
