@@ -15,8 +15,6 @@ local header = class('LUA_ENIP_COMMAND_HEADER')
 --]]
 
 function header:initialize(session, command, length, status)
-	assert(session, "Session object missing")
-	assert(command, "Command missing")
 	self._command = command or types.CMD.NOP
 	self._length = length or -1
 	self._status = status or 0
@@ -43,16 +41,19 @@ end
 
 local fmt = '<I2I2I4I4c8I4'
 function header:to_hex()
-	assert(self._length >= 0)
+	assert(self._length >= 0, 'Length incorrect!')
+	assert(self._session, 'Session missing')
 	return string.pack(fmt, self._command, self._length, self._session:session(), 
 		self._status, tostring(self._session:context()), self._options)
 end
 
-function header:from_hex(raw)
-	assert(string.len(raw) >= string.packsize(fmt))
+function header:from_hex(raw, index)
+	--assert(string.len(raw) >= string.packsize(fmt))
+
 	local session_, context
-	self._command, self._length, session_, self._status, context, self._options = string.unpack(fmt, raw)
+	self._command, self._length, session_, self._status, context, self._options, index = string.unpack(fmt, raw, index)
 	self._session = session:new(session_, context)
+	return index
 end
 
 function header:len()

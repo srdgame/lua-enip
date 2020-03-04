@@ -16,18 +16,15 @@ function cmd:__tostring()
 end
 
 function cmd:from_hex(raw, index)
-	local index = self._header:from_hex(raw, index)
+	index = self._header:from_hex(raw, index)
 
 	local hdr_len = self._header:len()
 	local data_len = self._header:length()
-	--local data = string.sub(raw, index + hdr_len, index + hdr_len + data_len)
-	--
-	local data_index = index + hdr_len
+
 	if self.decode then
-		index = self:decode(raw, idnex + hdr_len)
+		index = self:decode(raw, index)
 	end
 
-	assert(index == data_index + data_len + 1)
 	return index
 end
 

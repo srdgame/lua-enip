@@ -6,7 +6,7 @@ local types = require 'enip.command.types'
 local function find_package_by_command(command)
 	for k, v in pairs(types.CMD) do
 		if tonumber(v) == tonumber(command) then
-			local r, p = pcall(require, 'enip.request.' .. string.tolower(k))
+			local r, p = pcall(require, 'enip.request.' .. string.lower(k))
 			if not r then
 				return nil, p
 			end
