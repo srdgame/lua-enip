@@ -35,39 +35,6 @@ local function command_to_string(command)
 	return command_strings[command] or 'Unknown command : '..command
 end
 
----[[
--- DATA
---]]
-header.static.CMD_READ_TAG			= 0x4c
-header.static.CMD_WRITE_TAG			= 0x4d
-header.static.CMD_READ_FRG			= 0x52
-header.static.CMD_WRITE_FRG			= 0x53
-
-header.static.CMD_REPLY_OK			= 0x80
-
-header.static.STATUS_OK				= 0x00
-header.static.ERR_NOT_SUPPORTED		= 0x01
-header.static.ERR_MEMEORY_LIMIT		= 0x02
-header.static.ERR_INVALID_MSG		= 0x03
-header.static.ERR_SESSION_HANDLE	= 0x63
-header.static.ERR_INVLIAD_LEN		= 0x64
-header.static.ERR_PROTOCOL_VER		= 0x69
-
-local status_strings = {
-	[0x00] = 'Successs',
-	[0x01] = 'The sender issued an invalid or unsupported encapsulation command.',
-	[0x02] = 'Insufficient memory resources in the receiver to handle the command.',
-	[0x03] = 'Poorly formed or incorrect data in the data portion of the encapsulation message.',
-	[0x64] = 'An originator used an invalid session handle when sending an encapsulation message to the target.',
-	[0x65] = 'The target received a message of invalid length',
-	[0x69] = 'Unsupported encapsulation protocol revision.',
-}
-
-local function status_to_string(status)
-	return status_string[status] or 'Unknown status code : '..status
-end
-
-
 --[[
 -- Length is the data length. and the total message will be the length + 24 (header size)
 -- Session handle: is returned from target to originator in reponse of a RegisterSession request

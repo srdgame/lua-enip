@@ -21,14 +21,15 @@ function req:to_hex()
 	return string.pack('<I1I1', self._code, string.len(path) // 2)..path..data
 end
 
-function req:from_hex(raw)
+function req:from_hex(raw, index)
 	local path_len = 0
-	self._code, path_len = string.unpack('<I1I1', raw)
+	self._code, path_len, index = string.unpack('<I1I1', raw, index)
 	
 	path_len = path_len * 2
-	local path_begin = string.packsize('<I1I1') + 1
-	local path = string.sub(raw, path_begin, path_begin + path_len)
-	self._data = string.sub(raw, path_begin + path_len + 1)
+	local path = string.sub(raw, index, index + path_len)
+	self._data = string.sub(raw, index + path_len + 1)
+
+	return string.len(raw) + 1 -- Read the end of current raw stream
 end
 
 return cpf

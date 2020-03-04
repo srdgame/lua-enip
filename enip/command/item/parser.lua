@@ -20,14 +20,22 @@ local item_parse = function(raw, index)
 	local p, err = get_package_from_type_code(item_code)
 
 	--- TODO:
-	assert(pn, err)
+	assert(p, err)
 
 	local item = p:new()
 	index = item:from_hex(raw, index)
 	return item, index
 end
 
+local item_build = function(type_code, ...)
+	local p, err = get_package_from_type_code(type_code)
+	assert(p, err)
+
+	return p:new(...)
+end
+
 
 return {
-	parse = item_parse
+	parse = item_parse,
+	build = item_build,
 }

@@ -51,16 +51,16 @@ function client:request(msg, response)
 	assert(false, "Not implemented")
 end
 
-function client:send_rr_data(session, cip, response)
+function client:send_rr_data(session, data, response)
 	local send_rr_data = require 'enip.request.send_rr_data'
 
-	local msg = send_rr_data(session, cip)
+	local msg = send_rr_data(session, data)
 	return self:request(msg, response)
 end
 
-function client:send_unit_data(session, cip, response)
+function client:send_unit_data(session, data, response)
 	local send_unit_data = require 'enip.request.send_unit_data'
-	local msg = send_unit_data(session, cip)
+	local msg = send_unit_data(session, data)
 	return self:request(msg, response)
 end
 
