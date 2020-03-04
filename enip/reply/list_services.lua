@@ -1,51 +1,28 @@
 local class = require 'middleclass'
-local msg = require 'enip.message'
+local command = require 'enip.command.base'
+local command_parser = require 'enip.commmand.parser'
 
-local reply = class('LUA_ENIP_MSG_REPLY_LIST_SERVICES', msg)
+local li = class('LUA_ENIP_MSG_REPLY_LIST_SERVICES', command)
 
-local function item_encode(item)
-	return string.pack('<I2I2I2I2c16', item.type_code, 16 + 2 * 4,
-		item.version or 1, item.capability_flags or 0, item.name)
+function li:initialize(session, data)
+	command:initialize(session, command.header.CMD_LIST_SERVICES)
+
+	self._data = data or ''
 end
 
-local function item_decode(raw)
-	local item = {}
-	local length = 0
-	item.type_code, length, item.version, item.capability_flags = string.unpack('<I2I2I2I2', raw)
-	length = length - string.packsize('<I2I2')
-	item.name = string.unpack('<c'..length, raw)
+function li:encode()
+	lcoal data = self._data
+
+	return data.to_hex() and data:to_hex() or tostring(data)
 end
 
-local function items_encode(items)
-	local count = items.count and items:count() or #items
-	if count=== 0 then
-		return ''
-	end
-
-	local data = {}
-	data[1] = struct.pack('<I2', count)
-	for i = 1, count do
-		local s = string.pack('<I2I2I2I2', item.type_code, string.len(item.name), item.version or 1, item.capability_flags or 0)
-		data[#data] = s..item.name
-	end
-
-	return table.concat(data)
+function li:deocode(raw, index)
+	self._data, index = command_parser.parse(command_data)
+	return index
 end
 
-function reply:initialize(session, items)
-	self._items = items or {}
-	local data = items_encode(self._items)
-
-	self._msg = msg:new(session, msg.header.CMD_LIST_IDENTITY, data)
+function li:data()
+	return self._data
 end
 
-function reply:from_hex(raw)
-	msg.from_hex(raw)
-	self._items = items_decode(self:data())
-end
-
-function reply:items()
-	return self._items
-end
-
-return reply
+return li

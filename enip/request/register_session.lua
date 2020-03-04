@@ -1,20 +1,23 @@
 local class = require 'middleclass'
-local msg = require 'enip.message'
+local command = require 'enip.command.base'
 
 --- UDP Only? List Identity
-local req = class('LUA_ENIP_MSG_REQ_REGISTER_SESSION', msg)
+local req = class('LUA_ENIP_MSG_REQ_REGISTER_SESSION', command)
 
 function req:initialize(session, protocol_version, options)
+	command:initialize(session, command.header.CMD_REG_SESSION)
+
 	self._protocol_version = protocol_version or 1
 	self._options = options or 0
-	local data = string.pack('<I2I2', self._protocol_version, self._options)
-	self._msg = msg:new(session, msg.header.CMD_REG_SESSION, data)
 end
 
-function req:from_hex(raw)
-	msg.from_hex(raw)
-	local data = self:data()
-	self._protocol_version, self._options = string.unpack('<I2I2', data)
+function req:encode()
+	return string.pack('<I2I2', self._protocol_version, self._options)
+end
+
+function req:decode(raw, index)
+	self._protocol_version, self._options, index = string.unpack('<I2I2', data, index)
+	return index
 end
 
 function req:protocol_version()

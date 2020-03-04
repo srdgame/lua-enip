@@ -1,21 +1,20 @@
 local class = require 'middleclass'
 
-local cip_parser = class('ENIP_CIP_PARSER')
+local command_data = class('ENIP_CIP_PARSER')
 
-function cip_parser:initialize(items)
+function command_data:initialize(items)
 	self._items = items or {}
 end
 
-function cip_parser:__tostring()
+function command_data:__tostring()
 	return self:to_hex()
 end
 
-function cip_parser:__call(raw)
-	self:from_hex(raw)
-	return self._items
+function command_data:__call(raw)
+	return self:from_hex(raw)
 end
 
-function cip_parser:to_hex()
+function command_data:to_hex()
 	local data = {}
 	local count = #self._items
 
@@ -27,11 +26,11 @@ function cip_parser:to_hex()
 	return table.concat(data)
 end
 
-function cip_parser:parse_command_item(raw, index)
+function command_data:parse_command_item(raw, index)
 
 end
 
-function cip_parser:from_hex(raw, index)
+function command_data:from_hex(raw, index)
 	self._items = {}
 
 	local count, index = string.unpack('<I2', raw, index)
@@ -44,9 +43,16 @@ function cip_parser:from_hex(raw, index)
 	end
 end
 
-function cip_parser:items()
+function command_data:items()
 	return self._items
 end
 
 
-return cip_parser
+return {
+	parse = function(...)
+		local data = command_data:new()
+		local index = data:from_hex(...)
+		return data, index
+	end,
+	command_data = command_data
+}

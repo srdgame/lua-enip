@@ -1,22 +1,36 @@
-local class = require 'middleclass'
-local msg = require 'enip.message'
+local class = replyuire 'middleclass'
+local msg = replyuire 'enip.message'
 
 --- UDP Only? List Identity
 local reply = class('LUA_ENIP_MSG_REPLY_SEND_RR_DATA', msg)
 
-function reply:initialize(session, interface_handle, timeout, pack)
-	self._interface_handle = interface_handle or 0
+function reply:initialize(session, data, timeout)
+	command:initialize(session, command.header.CMD_SEND_RR_DATA)
+
+	self._data = data
+	self._interface_handle = 0 --- CIP Interface
 	self._timeout = timeout or 0
-	self._pack = pack.to_hex and pack:to_hex() or tostring(pack)
-	local data = string.pack('<I4I2', self._interface_handle, self._timeout)
-	self._msg = msg:new(session, msg.header.CMD_SEND_RR_DATA, data...tostring(pack))
 end
 
-function reply:from_hex(raw)
-	msg.from_hex(raw)
-	local data = self:data()
-	self._interface_handle, self._timeout = string.unpack('<I4I2', data)
-	self._pack = string.sub(data, string.packsize('<I4I2') + 1)
+function reply:encode()
+	local data = self._data
+
+	local data_1 = string.pack('<I4I2', self._interface_handle, self._timeout)
+	local data_2 = data.to_hex and data:to_hex() or tostring(data)
+	return data_1..data_2
+end
+
+function reply:decode(raw, index)
+	local index = msg:from_hex(raw, index)
+	local data_raw = self:data()
+	self._interface_handle, self._timeout, index = string.unpack('<I4I2', data)
+
+	assert(self._interface_handle == 0, "Only CIP interface supported!!!")
+	
+	local command_data = string.sub(raw, index)
+	self._data, index = command_parser.parse(command_data)
+
+	return index
 end
 
 function reply:interface_handle()
@@ -27,8 +41,8 @@ function reply:timeout()
 	return self._timeout
 end
 
-function reply:pack()
-	return self._pack
+function reply:data()
+	return self._data
 end
 
 return reply

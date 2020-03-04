@@ -2,7 +2,7 @@
 local class = require 'middleclass'
 local basexx = require 'basexx'
 
-local session = require 'enip.session'
+local session = require 'enip.utils.session'
 
 local header = class('LUA_ENIP_HEADER')
 
