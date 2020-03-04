@@ -11,38 +11,18 @@ local epath = require 'enip.cip.epath'
 
 local client = class('LUA_ENIP_CLIENT_UNCONNECTED', client_base)
 
-function client:on_reply(reply)
-	local reply_session = reply:session()
-	local session_index = tonumber(reply_session:context(), 16)
-	local session_obj = self._session_map[session_index]
-	if not session_obj then
-		return nil, "Unknown session"
-	end
-	--- Check the command code
-	if session_obj.request:command() ~= reply:command() then
-		return nil, "Command code not matched"
-	end
-
-	return session_obj.response(reply)
-end
-
 function client:gen_session()
 	--- Session index is four bytes
 	self._session_index = ((self._session_index or 0) + 1 ) % 0xFFFFFFFF
 	local context = string.format('%08X', self._session_index)
 	local new_session = session:new(self._session:session(), context)
-	return self._session_index, new_session
+	return new_session, self._session_index 
 end
 
 --- 0x4C READ TAG
 function client:read_tag(tag_path, tag_type, reponse)
 	--- make the an session for this 
-	local session_index, session_obj = self:gen_session()
-	self._session_map[session_index] = {
-		session = session_obj,
-		request = msg,
-		response = response
-	}
+	local session_obj = self:gen_session()
 
 	local read_data = '\0\1\0\0'
 	local path = epath:new(tag_path)
@@ -55,7 +35,7 @@ function client:read_tag(tag_path, tag_type, reponse)
 	local data = command_parser.command_data:new({null, unconnected})
 
 	return self:send_rr_data(session_obj, data, function(msg, err)
-		self._session_map[session_index] = nil
+		print('got reply')
 		--- TODO: using the tag_type to 
 	end)
 end
@@ -63,12 +43,7 @@ end
 --- 0x4d WRITE_TAG
 function client:write_tag(tag_path, tag_type, tag_value)
 	--- make the an session for this 
-	local session_index, session_obj = self:gen_session()
-	self._session_map[session_index] = {
-		session = session_obj,
-		request = msg,
-		response = response
-	}
+	local session_obj = self:gen_session()
 
 	local write_data = buildin:new(tag_type, tag_value)
 	local path = epath:new(tag_path)
@@ -81,7 +56,7 @@ function client:write_tag(tag_path, tag_type, tag_value)
 	local data = command_parser.command_data:new({null, unconnected})
 
 	return self:send_rr_data(session_obj, data, function(msg, err)
-		self._session_map[session_index] = nil
+		print('got reply')
 		--- TODO: Parse the result
 	end)
 end
