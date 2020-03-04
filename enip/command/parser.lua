@@ -1,4 +1,5 @@
 local class = require 'middleclass'
+local item_parser = require 'enip.command.item.parser'
 
 local command_data = class('ENIP_CIP_PARSER')
 
@@ -27,7 +28,8 @@ function command_data:to_hex()
 end
 
 function command_data:parse_command_item(raw, index)
-
+	local item, index = item_parser.parse(raw, index)
+	return item, index
 end
 
 function command_data:from_hex(raw, index)
@@ -36,17 +38,17 @@ function command_data:from_hex(raw, index)
 	local count, index = string.unpack('<I2', raw, index)
 	if count > 0 then
 		for i = 1, count do
-			local item = self:parse_command_item(raw, index)
+			local item
+			item, index = self:parse_command_item(raw, index)
 			self._items[#self._items + 1] = item
-			index = index + item:len()
 		end
 	end
+	return index
 end
 
 function command_data:items()
 	return self._items
 end
-
 
 return {
 	parse = function(...)
