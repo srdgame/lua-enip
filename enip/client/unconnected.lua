@@ -6,6 +6,7 @@ local item_types = require 'enip.command.item.types'
 local item_parser = require 'enip.command.item.parser'
 local cip_request = require 'enip.cip.request'
 local cip_types = require 'enip.cip.types'
+local buildin = require 'enip.cip.buildin'
 local epath = require 'enip.cip.epath'
 
 local client = class('LUA_ENIP_CLIENT_UNCONNECTED', client_base)
@@ -39,7 +40,9 @@ function client:read_tag(tag_path, tag_type, reponse)
 
 	local data = command_parser.command_data:new({null, unconnected})
 
-	return self:send_rr_data(session_obj, data, response)
+	return self:send_rr_data(session_obj, data, function(msg, err)
+		--- TODO: using the tag_type to 
+	end)
 end
 
 --- 0x4d WRITE_TAG
@@ -52,10 +55,9 @@ function client:write_tag(tag_path, tag_type, tag_value)
 		response = response
 	}
 
-	--- TODO: Write data
-	local read_data = '\0\1\0\0'
+	local write_data = buildin:new(tag_type, tag_value)
 	local path = epath:new(tag_path)
-	local read_req = cip_request:new(cip_types.SERVICES.WRITE_TAG, path, read_data)
+	local read_req = cip_request:new(cip_types.SERVICES.WRITE_TAG, path, write_data)
 
 	--- Send RR Data Request
 	local null = item_parser.build(item_types.NULL)
@@ -63,7 +65,9 @@ function client:write_tag(tag_path, tag_type, tag_value)
 
 	local data = command_parser.command_data:new({null, unconnected})
 
-	return self:send_rr_data(session_obj, data, response)
+	return self:send_rr_data(session_obj, data, function(msg, err)
+		--- TODO: Parse the result
+	end)
 end
 
 --- 0x52 READ_FRG
