@@ -19,7 +19,7 @@ function client:connect()
 end
 
 function client:register_session()
-	local rs = require 'cip.request.register_session'
+	local rs = require 'enip.request.reg_session'
 	local req = rs:new(self._session)
 	return self:request(req, function(resp, err)
 		if resp then
@@ -37,7 +37,7 @@ function client:close()
 end
 
 function client:unregister_session()
-	local us = require 'cip.request.unregister_session'
+	local us = require 'enip.request.unreg_session'
 	local req = us:new(self._session)
 	--- There is no response for this unregister session request.
 	return self:request(req)

@@ -13,7 +13,7 @@ local types = {
 			local val, index = string.unpack('<I1', raw, index)
 			return val == 1, index
 		end
-	}
+	},
 	SINT	= '<i1',
 	INT		= '<i2', 
 	DINT	= '<i4',
@@ -38,7 +38,7 @@ local types = {
 		decode = function(raw, index)
 			return string.sub(raw, index or 1), string.len(raw) - (index or 1) + 2
 		end
-	}
+	},
 	STRING2 = {}, -- TODO:
 	STRINGN = {}, -- TODO:
 	SHORT_STRING = {
@@ -48,7 +48,7 @@ local types = {
 		decode = function(raw, index)
 			return string.unpack('<s1', raw, index)
 		end
-	}
+	},
 	BYTE	= '<c1',
 	WORD	= '<i2',
 	DWORD	= '<i4',
@@ -66,9 +66,10 @@ local types = {
 			return o, index
 		end
 	},
-	ENGUNITS = '<I4'
+	ENGUNITS = '<I4',
 }
 
+buildin.static.TYPES = {}
 for k, v in pairs(types) do
 	buildin.static.TYPES[k] = k
 end

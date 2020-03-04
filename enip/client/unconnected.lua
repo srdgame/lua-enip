@@ -1,7 +1,7 @@
 local class = require 'middleclass'
 local session = require 'enip.utils.session'
 local client_base = require 'enip.client.base'
-local command_parser = require 'enip.command.parser'
+local command_data = require 'enip.command.data'
 local item_types = require 'enip.command.item.types'
 local item_parser = require 'enip.command.item.parser'
 local cip_request = require 'enip.cip.request'
@@ -32,7 +32,7 @@ function client:read_tag(tag_path, tag_type, reponse)
 	local null = item_parser.build(item_types.NULL)
 	local unconnected = item_parser.build(item_types.UNCONNECTED, read_req)
 
-	local data = command_parser.command_data:new({null, unconnected})
+	local data = command_data:new({null, unconnected})
 
 	return self:send_rr_data(session_obj, data, function(msg, err)
 		print('got reply')
@@ -53,7 +53,7 @@ function client:write_tag(tag_path, tag_type, tag_value)
 	local null = item_parser.build(item_types.NULL)
 	local unconnected = item_parser.build(item_types.UNCONNECTED, read_req)
 
-	local data = command_parser.command_data:new({null, unconnected})
+	local data = command_data:new({null, unconnected})
 
 	return self:send_rr_data(session_obj, data, function(msg, err)
 		print('got reply')

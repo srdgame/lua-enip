@@ -32,7 +32,7 @@ end
 -- test_parse_conn_path()
 
 function path:initialize(conn_path)
-	self._proto, self._addr, self._port = parse_conn_path(path)
+	self._proto, self._addr, self._port = parse_conn_path(conn_path)
 end
 
 function path:__tostring()

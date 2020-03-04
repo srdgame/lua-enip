@@ -20,7 +20,7 @@ end
 
 function epath:from_hex(raw)
 	local seg, path_len = string.unpack('<I1I1', raw)
-	assert(seg === (0x80 | 0x11), 'Incorrect segment found!')
+	assert(seg == (0x80 | 0x11), 'Incorrect segment found!')
 	self._path = string.sub(raw, string.packsize('<I1I1') + 1, path_len)
 end
 

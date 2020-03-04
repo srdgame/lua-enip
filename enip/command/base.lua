@@ -6,8 +6,9 @@ local cmd = class('LUA_ENIP_COMMAND_MSG')
 
 cmd.static.header = header
 
-function cmd:initailize(session, command, status)
-	self._header = header:new(session, command, len, status)
+function cmd:initialize(session, command, length, status)
+	self._header = header:new(session, command, length, status)
+	assert(session == self._header:session())
 end
 
 function cmd:__tostring()
@@ -32,7 +33,9 @@ end
 
 function cmd:to_hex()
 	if self.encode then
-		return self._header:to_hex()..self:encode()
+		local data = self:encode()
+		self._header:set_length(string.len(data))
+		return self._header:to_hex()..data
 	else
 		return self._header:to_hex()
 	end
