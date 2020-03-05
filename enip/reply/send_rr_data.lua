@@ -23,7 +23,13 @@ function reply:encode()
 end
 
 function reply:decode(raw, index)
-	self._interface_handle, self._timeout, index = string.unpack('<I4I2', raw, idnex)
+	--[[
+	local basexx = require 'basexx'
+	print(index, basexx.to_hex(string.sub(raw, index)))
+	]]--
+
+	self._interface_handle, self._timeout, index = string.unpack('<I4I2', raw, index)
+	--print(self._interface_handle, self._timeout)
 
 	assert(self._interface_handle == 0, "Only CIP interface supported!!!")
 	

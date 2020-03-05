@@ -1,4 +1,5 @@
 local class = require 'middleclass'
+local data_parser = require 'enip.cip.data_parser'
 
 local req = class('LUA_ENIP_CIP_REQUEST')
 
@@ -27,9 +28,9 @@ function req:from_hex(raw, index)
 	
 	path_len = path_len * 2
 	local path = string.sub(raw, index, index + path_len)
-	self._data = string.sub(raw, index + path_len + 1)
+	self._data, index = data_parser(raw, index + path_len + 1)
 
-	return string.len(raw) + 1 -- Read the end of current raw stream
+	return index
 end
 
 return req

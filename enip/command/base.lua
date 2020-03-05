@@ -22,6 +22,10 @@ function cmd:from_hex(raw, index)
 	local data_len = self._header:length()
 
 	if self.decode then
+		--[[
+		local basexx = require 'basexx'
+		print(index, basexx.to_hex(string.sub(raw, index)))
+		]]--
 		index = self:decode(raw, index)
 	end
 
