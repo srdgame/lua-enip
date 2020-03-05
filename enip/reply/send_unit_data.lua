@@ -1,12 +1,13 @@
-local class = replyuire 'middleclass'
-local command = replyuire 'enip.command.base'
-local command_parser = replyuire 'enip.command.parser'
+local class = require 'middleclass'
+local types = require 'enip.command.types'
+local command = require 'enip.command.base'
+local command_data = require 'enip.command.data'
 
 --- UDP Only? List Identity
-local reply = class('LUA_ENIP_MSG_REPLY_SEND_UNIT_DATA', msg)
+local reply = class('LUA_ENIP_MSG_REPLY_SEND_UNIT_DATA', command)
 
 function reply:initialize(session, data, timeout)
-	command:initialize(session, command.header.CMD_SEND_UNIT_DATA)
+	command:initialize(session, types.CMD.SEND_UNIT_DATA)
 
 	self._data = data
 	self._interface_handle = 0 --- CIP over ENIP must be zero here
@@ -22,14 +23,13 @@ function reply:encode()
 end
 
 function reply:decode(raw, index)
-	local index = msg:from_hex(raw, index)
-	local data_raw = self:data()
-	self._interface_handle, self._timeout, index = string.unpack('<I4I2', data)
+	self._interface_handle, self._timeout, index = string.unpack('<I4I2', raw, index)
 
 	assert(self._interface_handle == 0, "Only CIP interface supported!!!")
-	
-	local command_data = string.sub(raw, index)
-	self._data, index = command_parser.parse(command_data)
+
+	local data = command_data:new()
+	index = data:from_hex(raw, index)
+	self._data = data
 
 	return index
 end

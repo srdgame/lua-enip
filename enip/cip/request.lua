@@ -1,6 +1,6 @@
 local class = require 'middleclass'
 
-local req = class('LUA_ENIP_CIP_MSG_ROUTER_REQUEST')
+local req = class('LUA_ENIP_CIP_REQUEST')
 
 function req:initialize(service_code, request_path, request_data)
 	self._code = service_code
@@ -17,7 +17,7 @@ end
 
 function req:to_hex()
 	local path = self._path.to_hex and self._path:to_hex() or tostring(self._path)
-	local data = self._data.to_hex and self._data:to_hex() or tostring(data)
+	local data = self._data.to_hex and self._data:to_hex() or tostring(self._data)
 	return string.pack('<I1I1', self._code, string.len(path) // 2)..path..data
 end
 
@@ -32,4 +32,4 @@ function req:from_hex(raw, index)
 	return string.len(raw) + 1 -- Read the end of current raw stream
 end
 
-return cpf
+return req

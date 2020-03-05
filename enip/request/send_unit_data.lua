@@ -23,15 +23,13 @@ function req:encode()
 end
 
 function req:decode(raw, index)
-	local index = msg:from_hex(raw, index)
-	local data_raw = self:data()
-	self._interface_handle, self._timeout, index = string.unpack('<I4I2', data)
+	self._interface_handle, self._timeout, index = string.unpack('<I4I2', raw, index)
 
 	assert(self._interface_handle == 0, "Only CIP interface supported!!!")
-	
-	
-	self._data = command_data:new()
-	index = self._data:from_hex(raw, index)
+
+	local data = command_data:new()
+	index = data:from_hex(raw, index)
+	self._data = data
 
 	return index
 end

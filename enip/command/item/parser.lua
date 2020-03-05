@@ -4,10 +4,10 @@ local types = require 'enip.command.item.types'
 local function get_package_from_type_code(code)
 	for k, v in pairs(types) do
 		if v == tonumber(code) then
-			local pn = 'enip.command.item.'..string.tolower(k)
+			local pn = 'enip.command.item.'..string.lower(k)
 			local r, p = pcall(require, pn)
 			if not r then
-				return nil, "Not found"
+				return nil, p
 			end
 			return p
 		end

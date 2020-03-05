@@ -23,7 +23,7 @@ function client:register_session()
 	local req = rs:new(self._session)
 	return self:request(req, function(resp, err)
 		if resp then
-			self._session:from_hex(resp)
+			self._session = resp:session()
 			return true
 		else
 			return nil, err

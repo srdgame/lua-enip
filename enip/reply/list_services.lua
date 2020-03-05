@@ -1,7 +1,7 @@
 local class = require 'middleclass'
 local types = require 'enip.command.types'
 local command = require 'enip.command.base'
-local command_parser = require 'enip.commmand.parser'
+local command_parser = require 'enip.command.parser'
 
 local li = class('LUA_ENIP_MSG_REPLY_LIST_SERVICES', command)
 

@@ -1,7 +1,7 @@
 local class = require 'middleclass'
 local types = require 'enip.command.types'
 local command = require 'enip.command.base'
-local command_data = require 'enip.commmand.data'
+local command_data = require 'enip.command.data'
 
 --- UDP Only? List Identity
 local req = class('LUA_ENIP_MSG_REQ_SEND_RR_DATA', command)
@@ -25,9 +25,7 @@ function req:encode()
 end
 
 function req:decode(raw, index)
-	local index = msg:from_hex(raw, index)
-	local data_raw = self:data()
-	self._interface_handle, self._timeout, index = string.unpack('<I4I2', data)
+	self._interface_handle, self._timeout, index = string.unpack('<I4I2', raw, index)
 
 	assert(self._interface_handle == 0, "Only CIP interface supported!!!")
 	

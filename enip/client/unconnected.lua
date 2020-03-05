@@ -24,7 +24,7 @@ function client:read_tag(tag_path, tag_type, reponse)
 	--- make the an session for this 
 	local session_obj = self:gen_session()
 
-	local read_data = '\0\1\0\0'
+	local read_data = '\1\0'
 	local path = epath:new(tag_path)
 	local read_req = cip_request:new(cip_types.SERVICES.READ_TAG, path, read_data)
 

@@ -15,6 +15,7 @@ function item:encode()
 end
 
 function item:decode(raw, index)
+	assert(raw, 'stream raw data is missing')
 	self._cip, index = cip_parser(raw, index)
 	return index
 end

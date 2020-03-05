@@ -22,8 +22,8 @@ return function(raw, index)
 	h:from_hex(raw, index)
 	local cmd = h:command()
 
-	local p = find_package_by_command(cmd)
-	assert(p, 'Package missing'..cmd)
+	local p, err = find_package_by_command(cmd)
+	assert(p, err)
 	local reply = p:new()
 	index = reply:from_hex(raw, index)
 

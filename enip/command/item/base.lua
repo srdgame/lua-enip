@@ -8,12 +8,13 @@ function item:initialize(type_id)
 end
 
 function item:to_hex()
-	local data = self.decode and self:decode() or ''
+	local data = self.encode and self:encode() or ''
 	self._data_len = string.len(data)
 	return string.pack('<I2I2', self._type_id, self._data_len)..data
 end
 
 function item:from_hex(raw, index)
+	assert(raw, 'stream raw data is missing')
 	local index = index or 1
 	self._type_id, self._data_len, index = string.unpack('<I2I2', raw, index)
 	if self._data_len > 0 then
