@@ -32,7 +32,7 @@ end
 -- Options: UDINT (unsigned int)
 --]]
 
-local hdr_fmt = 'CMD:%02X\tLEN:%d]\tSESSION:%04X\tSTATUS:%04X\tCTX:%s\tOPTS:%04X\nDATA:%s'
+local hdr_fmt = 'CMD:%02X\tLEN:%d]\tSESSION:%04X\tSTATUS:%04X\tCTX:%s\tOPTS:%04X'
 
 function header:__tostring()
 	return string.format(hdr_fmt, self._command, self._length, self._session:session(), 

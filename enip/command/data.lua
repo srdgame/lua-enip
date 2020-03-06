@@ -8,7 +8,14 @@ function command_data:initialize(items)
 end
 
 function command_data:__tostring()
-	return self:to_hex()
+	local str = {
+		string.format('COMMAND_DATA:\nCOUNT:%d', #self._items)
+	}
+	for _, v in ipairs(self._items) do
+		str[#str + 1] = '\n'
+		str[#str + 1] = tostring(v)
+	end
+	return table.concat(str)
 end
 
 function command_data:to_hex()
@@ -44,6 +51,23 @@ end
 
 function command_data:items()
 	return self._items
+end
+
+function command_data:find(type_id)
+	local item = nil
+	for _, v in pairs(self._items) do
+		if v:type_id() == type_id then
+			if item == nil then
+				item = v
+			end
+			if type(item) ~= 'table' then
+				item = {item, v}
+			else
+				item[#item + 1] = v
+			end
+		end
+	end
+	return item
 end
 
 return command_data

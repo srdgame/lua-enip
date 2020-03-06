@@ -20,7 +20,7 @@ function client:gen_session()
 end
 
 --- 0x4C READ TAG
-function client:read_tag(tag_path, tag_type, reponse)
+function client:read_tag(tag_path, tag_type, response)
 	--- make the an session for this 
 	local session_obj = self:gen_session()
 
@@ -34,14 +34,39 @@ function client:read_tag(tag_path, tag_type, reponse)
 
 	local data = command_data:new({null, unconnected})
 
-	return self:send_rr_data(session_obj, data, function(msg, err)
-		print('got reply')
-		--- TODO: using the tag_type to 
+	return self:send_rr_data(session_obj, data, function(reply, err)
+		if reply:status() ~= 0 then
+			return response(nil, "ERROR Status")
+		end
+
+		local command_data = reply:data()
+
+		local item, err = command_data:find(item_types.UNCONNECTED)
+		if not item then
+			return response(nil, 'ERROR: Item not found')
+		end
+
+		local cip_reply = item:cip()
+		if not cip_reply then
+			return response(nil, 'ERROR: CIP reply not found')
+		end
+
+		if cip_reply:status() ~= 0 then
+			local sts = cip_types.status_to_string(cip_reply:status())
+			return response(nil, 'ERROR: CIP reply status error:', sts or cip_reply:status())
+		end
+
+		local cip_data = cip_reply:data()
+		if not cip_data then
+			return reponse(nil, 'ERROR: CIP reply has no data')
+		end
+
+		return response(cip_data:value())
 	end)
 end
 
 --- 0x4d WRITE_TAG
-function client:write_tag(tag_path, tag_type, tag_value)
+function client:write_tag(tag_path, tag_type, tag_value, response)
 	--- make the an session for this 
 	local session_obj = self:gen_session()
 
@@ -56,7 +81,7 @@ function client:write_tag(tag_path, tag_type, tag_value)
 	local data = command_data:new({null, unconnected})
 
 	return self:send_rr_data(session_obj, data, function(msg, err)
-		print('got reply')
+		-- print('got reply')
 		--- TODO: Parse the result
 	end)
 end

@@ -30,6 +30,10 @@ function seg:initialize(seg_type, seg_fmt)
 	self._seg_fmt = seg_fmt and ((seg_fmt or 0) & 0x1F) or -1
 end
 
+function seg:__tostring()
+	return string.format('DATA_E:\tTYPE:%d\tFMT:%d\tVALUE:%s', self._seg_type, self._seg_fmt, self:value())
+end
+
 function seg:to_hex()
 	assert(self._seg_type ~= -1, 'Invalid segment type')
 	assert(self._seg_fmt ~= -1, 'Invalid segment format')

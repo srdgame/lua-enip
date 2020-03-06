@@ -12,7 +12,7 @@ function cmd:initialize(session, command, length, status)
 end
 
 function cmd:__tostring()
-	return string.format('ENIP_COMMAND:\nHDR:%s\n', tostring(self._header))
+	return string.format('ENIP Comamnd Object:\nHDR:\t%s\n', tostring(self._header))
 end
 
 function cmd:from_hex(raw, index)

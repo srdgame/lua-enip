@@ -162,7 +162,9 @@ function buildin:decode(raw, index)
 	else
 		self._val, index = type_i.decode(raw, index)
 	end
-	print('DATA_E', self._val)
+
+	-- print('DATA_E', self._val)
+
 	return index
 end
 

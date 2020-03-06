@@ -12,11 +12,11 @@ parser_map.LOGICAL = function(fmt, raw, index)
 end
 
 parser_map.NETWORK = function(fmt, raw, index)
-	print('NETWORK')
+	assert(nil, 'NETWORK not implmented')
 end
 
 parser_map.SYMBOLIC = function(fmt, raw, index)
-	print('SYMBOLIC')
+	assert(nil, 'SYMBOLIC not implmented')
 end
 
 parser_map.DATA = function(fmt, raw, index)
@@ -57,8 +57,10 @@ local function seg_type_to_string(seg_type)
 end
 
 return function (raw, index)
+	--[[
 	local basexx = require 'basexx'
 	print(basexx.to_hex(string.sub(raw, index)))
+	]]--
 
 	local index = index or 1
 	local seg = string.unpack('<I1', raw, index)
