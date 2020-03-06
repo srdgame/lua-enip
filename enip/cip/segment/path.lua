@@ -1,11 +1,11 @@
 local class = require 'middleclass'
 
-local segment = require 'enip.cip.segment'
+local segment = require 'enip.cip.segment.base'
 
 local path = class('LUA_ENIP_CIP_SEG_EPATH', segment)
 
 function path:initialize(path)
-	segment:initialize(segment.TYPE_DATA, segment.FMT_PATH)
+	segment:initialize(segment.TYPES.DATA, segment.FORMATS.PATH)
 	self._path = path
 end
 
@@ -26,6 +26,14 @@ function path:decode(raw, index)
 		index = index + 1 -- the padding zero
 	end
 	return index
+end
+
+function path:value()
+	return self._path
+end
+
+function path:path()
+	return self._path
 end
 
 return path

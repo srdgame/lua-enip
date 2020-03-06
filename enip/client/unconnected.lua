@@ -6,8 +6,8 @@ local item_types = require 'enip.command.item.types'
 local item_parser = require 'enip.command.item.parser'
 local cip_request = require 'enip.cip.request'
 local cip_types = require 'enip.cip.types'
-local buildin = require 'enip.cip.buildin'
-local epath = require 'enip.cip.epath'
+local buildin = require 'enip.cip.segment.buildin'
+local seg_path = require 'enip.cip.segment.path'
 
 local client = class('LUA_ENIP_CLIENT_UNCONNECTED', client_base)
 
@@ -25,7 +25,7 @@ function client:read_tag(tag_path, tag_type, reponse)
 	local session_obj = self:gen_session()
 
 	local read_data = '\1\0'
-	local path = epath:new(tag_path)
+	local path = seg_path:new(tag_path)
 	local read_req = cip_request:new(cip_types.SERVICES.READ_TAG, path, read_data)
 
 	--- Send RR Data Request
@@ -46,7 +46,7 @@ function client:write_tag(tag_path, tag_type, tag_value)
 	local session_obj = self:gen_session()
 
 	local write_data = buildin:new(tag_type, tag_value)
-	local path = epath:new(tag_path)
+	local path = seg_path:new(tag_path)
 	local read_req = cip_request:new(cip_types.SERVICES.WRITE_TAG, path, write_data)
 
 	--- Send RR Data Request

@@ -1,7 +1,7 @@
 local class = require 'middleclass'
 
 local types = require 'enip.cip.types'
-local data_parser = require 'enip.cip.data_parser'
+local seg_parser = require 'enip.cip.segment.parser'
 
 local reply = class('LUA_ENIP_CIP_REPLY')
 
@@ -37,7 +37,7 @@ function reply:from_hex(raw, index)
 
 	if status_ex_size == 0 then
 		if self._status == types.STATUS.OK then
-			self._data, index = data_parser(raw, index)
+			self._data, index = seg_parser(raw, index)
 		end
 	else
 		assert(nil, "Not support")

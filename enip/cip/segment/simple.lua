@@ -1,11 +1,11 @@
 local class = require 'middleclass'
 
-local segment = require 'enip.cip.segment'
+local segment = require 'enip.cip.segment.base'
 
 local data = class('LUA_ENIP_CIP_SEG_SIMPLE_DATA', segment)
 
 function data:initialize(data, parser)
-	segment:initialize(segment.TYPE_DATA, segment.FMT_SIMPLE_DATA)
+	segment:initialize(segment.TYPES.DATA, segment.FORMATS.SIMPLE)
 	self._data = data
 	self._parser = parser
 end

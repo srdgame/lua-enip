@@ -1,9 +1,12 @@
 local class = require 'middleclass'
 
-local buildin = class('LUA_ENIP_CIP_BUILDIN_DATA_TYPES')
+local segment = require 'enip.cip.segment.base'
+
+local buildin = class('LUA_ENIP_CIP_BUILDIN_DATA_TYPES', segment)
 
 
 local types = {
+	UNKNOWN = '',
 	BOOL	= {
 		-- Boolean 0 - FALSE, 1 - TRUE
 		encode = function(val)
@@ -24,6 +27,14 @@ local types = {
 	ULINT	= '<I8',
 	REAL	= '<f',
 	LREAL	= '<d',
+	STIME	= {
+		encode = function(val)
+			assert(nil, "????")
+		end,
+		decode = function(raw, index)
+			assert(nil, "?????")
+		end
+	},
 	ITIME	= '<i2',
 	TIME	= '<i4', ---- milliseconds
 	FTIME	= '<i4', ---- micro-seconds
@@ -74,7 +85,50 @@ for k, v in pairs(types) do
 	buildin.static.TYPES[k] = k
 end
 
+local segment_fmt_map = {
+	UNKNOWN = 0,
+	BOOL	= 1,
+	SINT	= 2,
+	INT		= 3,
+	DINT	= 4,
+	LINT	= 5,
+	USINT	= 6,
+	UINT	= 7,
+	UDINT	= 8,
+	ULINT	= 9,
+	REAL	= 10,
+	LREAL	= 11,
+	STIME	= 12,
+	DATE	= 13,
+	TOD		= 14,
+	DT		= 15,
+	STRING	= 16,
+	BYTE	= 17,
+	WORD	= 18,
+	DWORD	= 19,
+	LWORD	= 20,
+	STRING2 = 21,
+	FTIME	= 22,
+	LTIME	= 23,
+	ITIME	= 24,
+	EPATH	= 27,
+	STRINGN = 26,
+	TIME	= 27,
+	EPATH	= 28,
+	ENGUNITS = 29,
+}
+
+local function type_from_segment_fmt(seg_fmt)
+	for k, v in pairs(segment_fmt_map) do
+		if v == tonumber(seg_fmt) then
+			return buildin.static.TYPES[k]
+		end
+	end
+	return nil, "Not found type"
+end
+
 function buildin:intialize(data_type, val)
+	segment:initialize(segment.TYPES.DATA_E, segment_fmt_map[data_type])
 	self._data_type = data_type
 	self._val = val
 end
@@ -83,17 +137,24 @@ function buildin:value()
 	return self._val
 end
 
-function buildin:to_hex()
+function buildin:encode()
+	local pre = string.pack('<I1', 0)
 	local type_i = types[self._data_type]
 	assert(type_i, 'Type is not supported!!!')
 	if type(type_i) == 'string' then
-		return string.pack(type_i, self._val)
+		return pre..string.pack(type_i, self._val)
 	else
-		return type_i.encode(self._val)
+		return pre..type_i.encode(self._val)
 	end
 end
 
-function buildin:from_hex(raw, index)
+function buildin:decode(raw, index)
+	self._data_type = type_from_segment_fmt(self:segment_format())
+
+	local pre = 0
+	pre, index = string.unpack('<I1', raw, index)
+	assert(pre == 0, 'following must be zeor in buildin types')
+
 	local type_i = types[self._data_type]
 	assert(type_i, 'Type is not supported!!!')
 	if type(type_i) == 'string' then
@@ -101,8 +162,8 @@ function buildin:from_hex(raw, index)
 	else
 		self._val, index = type_i.decode(raw, index)
 	end
+	print('DATA_E', self._val)
 	return index
 end
 
 return buildin
-
