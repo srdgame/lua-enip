@@ -5,10 +5,11 @@ local seg_parser = require 'enip.cip.segment.parser'
 
 local reply = class('LUA_ENIP_CIP_REPLY')
 
-function reply:initialize(service_code, status, data)
+function reply:initialize(service_code, status, data, additional_status)
 	self._code = service_code | types.SERVICES.REPLY
 	self._status = status or -1
 	self._data = data
+	self._additional_status = additional_status
 end
 
 function reply:service_code()
@@ -19,6 +20,10 @@ function reply:status()
 	return self._status
 end
 
+function reply:additional_status()
+	return self._additional_status
+end
+
 function reply:data()
 	return self._data
 end
@@ -27,8 +32,12 @@ function reply:to_hex()
 	assert(self._status, 'status is missing')
 	assert(self._data, 'data is missing')
 
-	local data = self._data.to_hex and self._data:to_hex() or tostring(self._data)
-	return string.pack('<I1I1I1I1', self._code, 0, self._status, 0)..data
+	if not self._additional_status then
+		local data = self._data.to_hex and self._data:to_hex() or tostring(self._data)
+		return string.pack('<I1I1I1I1', self._code, 0, self._status, 0)..data
+	else
+		return string.pack('<I1I1I1I1I2', self._code, 0, self._status, 1, self._additional_status)
+	end
 end
 
 function reply:from_hex(raw, index)
@@ -40,7 +49,9 @@ function reply:from_hex(raw, index)
 			self._data, index = seg_parser(raw, index)
 		end
 	else
-		assert(nil, "Not support")
+		assert(self._status ~= types.STATUS.OK, 'Status must not be OK')
+		assert(status_ex_size == 1, 'Only word status support for now')
+		self._additional_status, index = string.unpack('<I2', raw, index)
 	end
 
 	return index

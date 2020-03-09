@@ -53,7 +53,7 @@ function client:read_tag(tag_path, tag_type, response)
 
 		if cip_reply:status() ~= 0 then
 			local sts = cip_types.status_to_string(cip_reply:status())
-			return response(nil, 'ERROR: CIP reply status error:', sts or cip_reply:status())
+			return response(nil, 'ERROR: '..(sts or 'STATUS ['..cip_reply:status()..']'))
 		end
 
 		local cip_data = cip_reply:data()

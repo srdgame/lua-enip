@@ -6,9 +6,11 @@ local simple = require 'enip.cip.segment.simple'
 local parser_map = {}
 
 parser_map.PORT = function(fmt, raw, index)
+	assert(nil, "PORT not implmented")
 end
 
 parser_map.LOGICAL = function(fmt, raw, index)
+	assert(nil, "LOGICAL not implmented")
 end
 
 parser_map.NETWORK = function(fmt, raw, index)
