@@ -20,11 +20,12 @@ function client:gen_session()
 end
 
 --- 0x4C READ TAG
-function client:read_tag(tag_path, tag_type, response)
-	--- make the an session for this 
+function client:read_tag(tag_path, tag_type, tag_count, response)
+	--- make the an session for identify the request
 	local session_obj = self:gen_session()
 
-	local read_data = '\1\0'
+	--local read_data = buildin:new(buildin.TYPES.UINT, tag_count)
+	local read_data = string.pack('<I2', tag_count)
 	local path = seg_path:new(tag_path)
 	local read_req = cip_request:new(cip_types.SERVICES.READ_TAG, path, read_data)
 
@@ -35,32 +36,97 @@ function client:read_tag(tag_path, tag_type, response)
 	local data = command_data:new({null, unconnected})
 
 	return self:send_rr_data(session_obj, data, function(reply, err)
+		-- ENIP reply
 		if reply:status() ~= 0 then
 			return response(nil, "ERROR Status")
 		end
 
+		--- ENIP command data
 		local command_data = reply:data()
 
+		--- Find the unconnected item
 		local item, err = command_data:find(item_types.UNCONNECTED)
 		if not item then
 			return response(nil, 'ERROR: Item not found')
 		end
 
+		--- Get the item CIP reply
 		local cip_reply = item:cip()
 		if not cip_reply then
 			return response(nil, 'ERROR: CIP reply not found')
 		end
 
+		--- Get the CIP reply status
 		if cip_reply:status() ~= 0 then
 			local sts = cip_types.status_to_string(cip_reply:status())
 			return response(nil, 'ERROR: '..(sts or 'STATUS ['..cip_reply:status()..']'))
 		end
 
+		--- Get the CIP data
 		local cip_data = cip_reply:data()
 		if not cip_data then
 			return reponse(nil, 'ERROR: CIP reply has no data')
 		end
 
+		-- TODO: check about the tag_type???
+
+		--- callback
+		return response(cip_data:value())
+	end)
+end
+
+--- 0x52 REAG TAG FREGMENT
+function client:reag_tag_frq(tag_path, tag_count, offset, response)
+	--- make the an session for identify the request
+	local session_obj = self:gen_session()
+
+	--local read_data = buildin:new(buildin.TYPES.UINT, tag_count)
+	local read_data = string.pack('<I2I4', tag_count, offset)
+	local path = seg_path:new(tag_path)
+	local read_req = cip_request:new(cip_types.SERVICES.READ_TAG, path, read_data)
+
+	--- Send RR Data Request
+	local null = item_parser.build(item_types.NULL)
+	local unconnected = item_parser.build(item_types.UNCONNECTED, read_req)
+
+	local data = command_data:new({null, unconnected})
+
+	return self:send_rr_data(session_obj, data, function(reply, err)
+		-- ENIP reply
+		if reply:status() ~= 0 then
+			return response(nil, "ERROR Status")
+		end
+
+		--- ENIP command data
+		local command_data = reply:data()
+
+		--- Find the unconnected item
+		local item, err = command_data:find(item_types.UNCONNECTED)
+		if not item then
+			return response(nil, 'ERROR: Item not found')
+		end
+
+		--- Get the item CIP reply
+		local cip_reply = item:cip()
+		if not cip_reply then
+			return response(nil, 'ERROR: CIP reply not found')
+		end
+
+		--- Get the CIP reply status
+		if cip_reply:status() ~= 0 then
+			local sts = cip_types.status_to_string(cip_reply:status())
+			return response(nil, 'ERROR: '..(sts or 'STATUS ['..cip_reply:status()..']'))
+		end
+
+		--- Get the CIP data
+		local cip_data = cip_reply:data()
+		if not cip_data then
+			return reponse(nil, 'ERROR: CIP reply has no data')
+		end
+
+		-- TODO: check about the tag_type???
+
+		--- callback
 		return response(cip_data:value())
 	end)
 end
@@ -70,7 +136,9 @@ function client:write_tag(tag_path, tag_type, tag_value, response)
 	--- make the an session for this 
 	local session_obj = self:gen_session()
 
-	local write_data = buildin:new(tag_type, tag_value)
+	local write_obj = buildin:new(tag_type, tag_value)
+	local write_data = string.pack('<I2I2', tag_type, 1)..write_obj:to_hex()
+
 	local path = seg_path:new(tag_path)
 	local read_req = cip_request:new(cip_types.SERVICES.WRITE_TAG, path, write_data)
 
@@ -81,8 +149,42 @@ function client:write_tag(tag_path, tag_type, tag_value, response)
 	local data = command_data:new({null, unconnected})
 
 	return self:send_rr_data(session_obj, data, function(msg, err)
-		-- print('got reply')
-		--- TODO: Parse the result
+		-- ENIP reply
+		if reply:status() ~= 0 then
+			return response(nil, "ERROR Status")
+		end
+
+		--- ENIP command data
+		local command_data = reply:data()
+
+		--- Find the unconnected item
+		local item, err = command_data:find(item_types.UNCONNECTED)
+		if not item then
+			return response(nil, 'ERROR: Item not found')
+		end
+
+		--- Get the item CIP reply
+		local cip_reply = item:cip()
+		if not cip_reply then
+			return response(nil, 'ERROR: CIP reply not found')
+		end
+
+		--- Get the CIP reply status
+		if cip_reply:status() ~= 0 then
+			local sts = cip_types.status_to_string(cip_reply:status())
+			return response(nil, 'ERROR: '..(sts or 'STATUS ['..cip_reply:status()..']'))
+		end
+
+		-- TODO: Will be there data???
+
+		--- Get the CIP data
+		local cip_data = cip_reply:data()
+		if not cip_data then
+			return reponse(nil, 'ERROR: CIP reply has no data')
+		end
+
+		--- callback
+		return response(cip_data:value())
 	end)
 end
 
