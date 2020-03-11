@@ -127,10 +127,22 @@ local function type_from_segment_fmt(seg_fmt)
 	return nil, "Not found type"
 end
 
-function buildin:intialize(data_type, val)
+buildin.static.type_to_fmt = function(data_type)
+	return segment_fmt_map[data_type]
+end
+
+function buildin:initialize(data_type, val)
 	segment:initialize(segment.TYPES.DATA_E, segment_fmt_map[data_type])
 	self._data_type = data_type
 	self._val = val
+end
+
+function buildin:data_type()
+	return self._data_type
+end
+
+function buildin:data_type_fmt()
+	return segment_fmt_map[self._data_type]
 end
 
 function buildin:value()

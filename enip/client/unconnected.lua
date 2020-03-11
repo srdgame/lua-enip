@@ -11,6 +11,11 @@ local seg_path = require 'enip.cip.segment.path'
 
 local client = class('LUA_ENIP_CLIENT_UNCONNECTED', client_base)
 
+local function convert_tag_type_to_fmt(tag_type)
+	local data_type = type(tag_type) == 'string' and buildin.TYPES[tag_type] or tag_type
+	return data_type, buildin.type_to_fmt(data_type)	
+end
+
 function client:gen_session()
 	--- Session index is four bytes
 	self._session_index = ((self._session_index or 0) + 1 ) % 0xFFFFFFFF
@@ -23,6 +28,7 @@ end
 function client:read_tag(tag_path, tag_type, tag_count, response)
 	--- make the an session for identify the request
 	local session_obj = self:gen_session()
+	local data_type, data_type_fmt = convert_tag_type_to_fmt(tag_type)
 
 	--local read_data = buildin:new(buildin.TYPES.UINT, tag_count)
 	local read_data = string.pack('<I2', tag_count)
@@ -79,6 +85,7 @@ end
 function client:reag_tag_frq(tag_path, tag_count, offset, response)
 	--- make the an session for identify the request
 	local session_obj = self:gen_session()
+	local data_type, data_type_fmt = convert_tag_type_to_fmt(tag_type)
 
 	--local read_data = buildin:new(buildin.TYPES.UINT, tag_count)
 	local read_data = string.pack('<I2I4', tag_count, offset)
@@ -136,8 +143,10 @@ function client:write_tag(tag_path, tag_type, tag_value, response)
 	--- make the an session for this 
 	local session_obj = self:gen_session()
 
-	local write_obj = buildin:new(tag_type, tag_value)
-	local write_data = string.pack('<I2I2', tag_type, 1)..write_obj:to_hex()
+	local data_type, data_type_fmt = convert_tag_type_to_fmt(tag_type)
+
+	local write_obj = buildin:new(data_type, tag_value)
+	local write_data = string.pack('<I2I2', data_type_fmt, 1)..write_obj:to_hex()
 
 	local path = seg_path:new(tag_path)
 	local read_req = cip_request:new(cip_types.SERVICES.WRITE_TAG, path, write_data)
