@@ -28,6 +28,16 @@ function reply:data()
 	return self._data
 end
 
+function reply:error_info()
+	local sts = types.status_to_string(self._status)
+	sts = sts or 'STATUS: 0x'..string.format('%02X', self._status)
+	if self._additional_status then
+		sts = sts..'. Additional status: 0x'..string.format('%04X', self._additional_status)
+	end
+
+	return sts
+end
+
 function reply:to_hex()
 	assert(self._status, 'status is missing')
 	assert(self._data, 'data is missing')

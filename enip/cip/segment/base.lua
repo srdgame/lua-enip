@@ -62,6 +62,10 @@ function seg:segment_format()
 	return self._seg_fmt
 end
 
+function seg:type_num()
+	return (((self._seg_type & 0x07) << 5) & 0xE0) + self._seg_fmt
+end
+
 function seg:value()
 	assert(nil, "Not implemented")
 end

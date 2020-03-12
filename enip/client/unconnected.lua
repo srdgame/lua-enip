@@ -64,8 +64,11 @@ function client:read_tag(tag_path, tag_type, tag_count, response)
 
 		--- Get the CIP reply status
 		if cip_reply:status() ~= 0 then
+			--[[
 			local sts = cip_types.status_to_string(cip_reply:status())
 			return response(nil, 'ERROR: '..(sts or 'STATUS ['..cip_reply:status()..']'))
+			]]--
+			return response(nil, cip_reply:error_info())
 		end
 
 		--- Get the CIP data
@@ -121,8 +124,11 @@ function client:reag_tag_frq(tag_path, tag_count, offset, response)
 
 		--- Get the CIP reply status
 		if cip_reply:status() ~= 0 then
+			--[[
 			local sts = cip_types.status_to_string(cip_reply:status())
 			return response(nil, 'ERROR: '..(sts or 'STATUS ['..cip_reply:status()..']'))
+			]]--
+			return response(nil, cip_reply:error_info())
 		end
 
 		--- Get the CIP data
@@ -146,7 +152,9 @@ function client:write_tag(tag_path, tag_type, tag_value, response)
 	local data_type, data_type_fmt = convert_tag_type_to_fmt(tag_type)
 
 	local write_obj = buildin:new(data_type, tag_value)
-	local write_data = string.pack('<I2I2', data_type_fmt, 1)..write_obj:to_hex()
+	local write_obj_hex = write_obj:to_hex()
+
+	local write_data = string.pack('<I2I2', write_obj:type_num(), 1)..string.sub(write_obj_hex, 3) -- skip the type_number
 
 	local path = seg_path:new(tag_path)
 	local read_req = cip_request:new(cip_types.SERVICES.WRITE_TAG, path, write_data)
@@ -157,7 +165,7 @@ function client:write_tag(tag_path, tag_type, tag_value, response)
 
 	local data = command_data:new({null, unconnected})
 
-	return self:send_rr_data(session_obj, data, function(msg, err)
+	return self:send_rr_data(session_obj, data, function(reply, err)
 		-- ENIP reply
 		if reply:status() ~= 0 then
 			return response(nil, "ERROR Status")
@@ -180,8 +188,11 @@ function client:write_tag(tag_path, tag_type, tag_value, response)
 
 		--- Get the CIP reply status
 		if cip_reply:status() ~= 0 then
+			--[[
 			local sts = cip_types.status_to_string(cip_reply:status())
 			return response(nil, 'ERROR: '..(sts or 'STATUS ['..cip_reply:status()..']'))
+			]]--
+			return response(nil, cip_reply:error_info())
 		end
 
 		-- TODO: Will be there data???
