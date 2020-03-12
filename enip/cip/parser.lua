@@ -1,6 +1,11 @@
 local types = require 'enip.cip.types'
-local request = require 'enip.cip.request'
+--local request = require 'enip.cip.request'
 local reply = require 'enip.cip.reply'
+
+local services_req_map = {
+	[types.SERVICES.READ_TAG] = require 'enip.cip.request.read_tag',
+	[types.SERVICES.WRITE_TAG] = require 'enip.cip.request.write_tag',
+}
 
 ---- Parser the cip message from raw to object
 return function(raw, index)
@@ -18,7 +23,10 @@ return function(raw, index)
 		index = rep:from_hex(raw, index)
 		return rep, index
 	else
-		local req = request:new(service_code)
+		--local req = request:new(service_code)
+		local req_class = services_req_map[service_code]
+		assert(req_class, 'Service code is not supported')
+		local req = req_class:new()
 		index = req:from_hex(raw, index)
 		return req, index
 	end

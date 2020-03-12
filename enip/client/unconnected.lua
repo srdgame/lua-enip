@@ -4,10 +4,11 @@ local client_base = require 'enip.client.base'
 local command_data = require 'enip.command.data'
 local item_types = require 'enip.command.item.types'
 local item_parser = require 'enip.command.item.parser'
-local cip_request = require 'enip.cip.request'
+local cip_read_tag = require 'enip.cip.request.read_tag'
+local cip_write_tag = require 'enip.cip.request.write_tag'
 local cip_types = require 'enip.cip.types'
 local buildin = require 'enip.cip.segment.buildin'
-local seg_path = require 'enip.cip.segment.path'
+--local seg_path = require 'enip.cip.segment.path'
 
 local client = class('LUA_ENIP_CLIENT_UNCONNECTED', client_base)
 
@@ -30,10 +31,12 @@ function client:read_tag(tag_path, tag_type, tag_count, response)
 	local session_obj = self:gen_session()
 	local data_type, data_type_fmt = convert_tag_type_to_fmt(tag_type)
 
-	--local read_data = buildin:new(buildin.TYPES.UINT, tag_count)
+	--[[
 	local read_data = string.pack('<I2', tag_count)
 	local path = seg_path:new(tag_path)
 	local read_req = cip_request:new(cip_types.SERVICES.READ_TAG, path, read_data)
+	]]--
+	local read_req = cip_read_tag:new(tag_path, tag_count)
 
 	--- Send RR Data Request
 	local null = item_parser.build(item_types.NULL)
@@ -150,6 +153,7 @@ function client:write_tag(tag_path, tag_type, tag_value, response)
 	local session_obj = self:gen_session()
 
 	local data_type, data_type_fmt = convert_tag_type_to_fmt(tag_type)
+	--[[
 
 	local write_obj = buildin:new(data_type, tag_value)
 	local write_obj_hex = write_obj:to_hex()
@@ -158,10 +162,12 @@ function client:write_tag(tag_path, tag_type, tag_value, response)
 
 	local path = seg_path:new(tag_path)
 	local read_req = cip_request:new(cip_types.SERVICES.WRITE_TAG, path, write_data)
+	]]--
+	local write_req = cip_write_tag:new(tag_path, tag_type, tag_value)
 
 	--- Send RR Data Request
 	local null = item_parser.build(item_types.NULL)
-	local unconnected = item_parser.build(item_types.UNCONNECTED, read_req)
+	local unconnected = item_parser.build(item_types.UNCONNECTED, write_req)
 
 	local data = command_data:new({null, unconnected})
 
