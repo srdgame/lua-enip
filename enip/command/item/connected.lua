@@ -6,7 +6,7 @@ local item_base = require 'enip.command.item.base'
 local item = class('LUA_ENIP_COMMAND_ITEM_CONNECTED', item_base)
 
 function item:initialize(identifier)
-	item_base:initialize(types.CONNECTED)
+	item_base.initialize(self, types.CONNECTED)
 
 	self._identifier = identifier
 end

@@ -132,7 +132,7 @@ buildin.static.type_to_fmt = function(data_type)
 end
 
 function buildin:initialize(data_type, val)
-	segment:initialize(segment.TYPES.DATA_E, segment_fmt_map[data_type])
+	segment.initialize(self, segment.TYPES.DATA_E, segment_fmt_map[data_type])
 	self._data_type = data_type
 	self._val = val
 end

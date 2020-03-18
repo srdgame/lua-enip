@@ -2,7 +2,7 @@ local class = require 'middleclass'
 local types = require 'enip.cip.types'
 local logical = require 'enip.cip.segment.logical'
 
-local mr = class('ENIP_CIP_MESSAGE_REQUEST')
+local mr = class('ENIP_CIP_REPLY_COMMON_MULTI_PACK')
 
 function mr:initialize(replies)
 	self._service_code = types.SERVICES.MULTI_SRV_PACK

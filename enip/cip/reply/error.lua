@@ -6,7 +6,7 @@ local base = require 'enip.cip.reply.base'
 local reply = class('LUA_ENIP_CIP_REPLY_ERROR', base)
 
 function reply:initialize(service_code, status, error_code)
-	base:initialize(service_code, status, 1)
+	base.initialize(self, service_code, status, 1)
 	self._error_code = error_code
 end
 

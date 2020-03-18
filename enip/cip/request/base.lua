@@ -2,7 +2,7 @@ local class = require 'middleclass'
 --local seg_parser = require 'enip.cip.segment.parser'
 local seg_path = require 'enip.cip.segment.path'
 
-local req = class('LUA_ENIP_CIP_REQUEST')
+local req = class('LUA_ENIP_CIP_REQUEST_BASE')
 
 function req:initialize(service_code, request_path)
 	self._code = service_code
@@ -10,6 +10,10 @@ function req:initialize(service_code, request_path)
 		request_path = seg_path:new(request_path)
 	end
 	self._path = request_path
+end
+
+function req:__tostring()
+	return string.format('CODE: %02X\tPATH: %s', self._code, tostring(self._path))
 end
 
 function req:to_hex()

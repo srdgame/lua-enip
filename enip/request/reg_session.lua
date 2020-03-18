@@ -6,7 +6,7 @@ local types = require 'enip.command.types'
 local req = class('LUA_ENIP_MSG_REQ_REGISTER_SESSION', command)
 
 function req:initialize(session, protocol_version, options)
-	command:initialize(session, types.CMD.REG_SESSION)
+	command.initialize(self, session, types.CMD.REG_SESSION)
 
 	self._protocol_version = protocol_version or 1
 	self._options = options or 0

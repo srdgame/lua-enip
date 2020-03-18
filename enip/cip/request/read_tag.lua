@@ -5,7 +5,7 @@ local types = require 'enip.cip.types'
 local req = class('ENIP_CLIENT_SERVICES_READ_TAG', base)
 
 function req:initialize(path, count)
-	base:initialize(types.SERVICES.READ_TAG, path)
+	base.initialize(self, types.SERVICES.READ_TAG, path)
 	self._count = count
 end
 

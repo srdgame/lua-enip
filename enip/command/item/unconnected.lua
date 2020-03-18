@@ -6,7 +6,7 @@ local item_base = require 'enip.command.item.base'
 local item = class('LUA_ENIP_COMMAND_UNCONNECTED_ITEM', item_base)
 
 function item:initialize(cip)
-	item_base:initialize(types.UNCONNECTED)
+	item_base.initialize(self, types.UNCONNECTED)
 	self._cip = cip or ''
 end
 

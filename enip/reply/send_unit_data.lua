@@ -7,7 +7,7 @@ local command_data = require 'enip.command.data'
 local reply = class('LUA_ENIP_MSG_REPLY_SEND_UNIT_DATA', command)
 
 function reply:initialize(session, data, timeout)
-	command:initialize(session, types.CMD.SEND_UNIT_DATA)
+	command.initialize(self, session, types.CMD.SEND_UNIT_DATA)
 
 	self._data = data
 	self._interface_handle = 0 --- CIP over ENIP must be zero here

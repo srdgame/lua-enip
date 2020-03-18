@@ -6,7 +6,7 @@ local buildin = require 'enip.cip.segment.buildin'
 local req = class('ENIP_CLIENT_SERVICES_WRITE_TAG', base)
 
 function req:initialize(path, data_type, value)
-	base:initialize(types.SERVICES.WRITE_TAG, path)
+	base.initialize(self, types.SERVICES.WRITE_TAG, path)
 	self._data_type = data_type
 	self._value = value
 end

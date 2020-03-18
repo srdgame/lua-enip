@@ -3,15 +3,18 @@ local base = require 'enip.cip.request.base'
 local types = require 'enip.cip.types'
 local seg_path = require 'enip.cip.segment.path'
 local logical_path = require 'enip.cip.segment.logical_path'
+local request_multi_pack = require 'enip.cip.request.common.multi_service_packet'
 
 local req = class('ENIP_CLIENT_SERVICES_READ_TAG_FRQ', base)
 
-function req:initialize(priority, timeout_ticks, multi_request, route_path)
+function req:initialize(priority, timeout_ticks, requests, route_path)
+	assert(requests, 'Requests are required')
+	assert(route_path, 'Route path is required')
 	local path = logical_path:new(0x06, 0x01) -- 0x06: Connection Manager Class
-	base:initialize(types.SERVICES.READ_TAG, path)
+	base.initialize(self, types.SERVICES.READ_FRG, path)
 	self._priority = priority or 5
 	self._timeout_ticks = timeout_ticks or 157
-	self._mr = multi_request
+	self._mr = request_multi_pack:new(requests)
 	self._route_path = route_path or nil
 end
 

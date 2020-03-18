@@ -5,7 +5,7 @@ local item_base = require 'enip.command.item.base'
 local item = class('LUA_ENIP_COMMAND_ITEM_IDENTITY', item_base)
 
 function item:initialize(info)
-	item_base:initialize(types.LIST_IDENTITY)
+	item_base.initialize(self, types.LIST_IDENTITY)
 	self._info = info or {}
 end
 

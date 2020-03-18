@@ -6,7 +6,7 @@ local parser = require 'enip.cip.segment.parser'
 local reply = class('ENIP_CLIENT_SERVICES_WRITE_TAG', base)
 
 function reply:initialize(path, data)
-	base:initialize(types.SERVICES.WRITE_TAG, 0)
+	base.initialize(self, types.SERVICES.WRITE_TAG, 0)
 	self._data = data
 end
 

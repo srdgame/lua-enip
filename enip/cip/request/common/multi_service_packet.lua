@@ -3,7 +3,7 @@ local types = require 'enip.cip.types'
 local logical = require 'enip.cip.segment.logical'
 local logical_path = require 'enip.cip.segment.logical_path'
 
-local mr = class('ENIP_CIP_MESSAGE_REQUEST')
+local mr = class('ENIP_CIP_REQUEST_COMMON_MULTI_PACK')
 
 function mr:initialize(requests)
 	self._service_code = types.SERVICES.MULTI_SRV_PACK
@@ -32,7 +32,7 @@ function mr:to_hex()
 	local request_data = {}
 	for _, v in ipairs(self._requests) do
 		local data = v:to_hex()
-		request_data[#servcie_data] = data
+		request_data[#request_data + 1] = data
 		offsets[#offsets + 1] = string.len(data)
 	end
 

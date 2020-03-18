@@ -5,7 +5,7 @@ local item_base = require 'enip.command.item.base'
 local item = class('LUA_ENIP_COMMAND_ITEM_SERVICE', item_base)
 
 function item:initialize(service_name, version, capability_flags)
-	item_base:initialize(types.LIST_SERVICES)
+	item_base.initialize(self, types.LIST_SERVICES)
 	self._service_name = service_name or 'UNKNOWN'
 	self._version = version or 1
 	self._capability_flags = capability_flags or 0

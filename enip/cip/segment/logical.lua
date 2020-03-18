@@ -23,7 +23,7 @@ logical.static.FORMATS = {
 
 function logical:initialize(logical_type, logical_fmt, value)
 	local fmt = (logical_type << 2) + logical_fmt
-	base:initialize(base.TYPES.LOGICAL, fmt)
+	base.initialize(self, base.TYPES.LOGICAL, fmt)
 	self._value = value
 end
 
@@ -43,26 +43,26 @@ end
 
 function logical:encode()
 	local fmt = self:logical_format()
-	if fmt == self.FORMATS.USINT then
+	if fmt == logical.static.FORMATS.USINT then
 		return string.pack('<I1', self._value)
 	end
-	if fmt == self.FORMATS.UINT then
+	if fmt == logical.static.FORMATS.UINT then
 		return string.pack('<I2', self._value)
 	end
-	if fmt == self.FORMATS.UDINT then
+	if fmt == logical.static.FORMATS.UDINT then
 		return string.pack('<I3', self._value)
 	end
 end
 
 function logical:decode(raw, index)
 	local fmt = self:logical_format()
-	if fmt == self.FORMATS.USINT then
+	if fmt == logical.static.FORMATS.USINT then
 		self._value, index = string.unpack('<I1', raw, index)
 	end
-	if fmt == self.FORMATS.UINT then
+	if fmt == logical.static.FORMATS.UINT then
 		self._value, index = string.unpack('<I2', raw, index)
 	end
-	if fmt == self.FORMATS.UDINT then
+	if fmt == logical.static.FORMATS.UDINT then
 		self._value, index = string.unpack('<I2', raw, index)
 	end
 

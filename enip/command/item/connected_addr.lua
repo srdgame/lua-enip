@@ -5,7 +5,7 @@ local item_base = require 'enip.command.item.base'
 local item = class('LUA_ENIP_COMMAND_CONNECTED_ADDRESS_ITEM', item_base)
 
 function item:initialize(conn_identity)
-	item_base:initialize(types.CONNECTED_ADDR)
+	item_base.initialize(self, types.CONNECTED_ADDR)
 	self._conn_identity = tonumber(conn_identity) or 0
 end
 

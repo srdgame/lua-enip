@@ -2,11 +2,12 @@ local class = require 'middleclass'
 
 local segment = require 'enip.cip.segment.base'
 
-local path = class('LUA_ENIP_CIP_SEG_EPATH', segment)
+local path = class('LUA_ENIP_CIP_SEG_ROUTE_PATH', segment)
 
-function path:initialize(path)
-	segment.initialize(self, segment.TYPES.DATA, segment.FORMATS.PATH)
-	self._path = path
+function path:initialize(port, link)
+	segment.initialize(self.segment.TYPES.DATA, segment.FORMATS.PATH)
+	self._link = link
+	self._port = port
 end
 
 function path:encode()

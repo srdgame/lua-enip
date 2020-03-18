@@ -9,7 +9,7 @@ local req = class('LUA_ENIP_MSG_REQ_SEND_RR_DATA', command)
 --- For CIP over enip, the interface_handle must be 0
 -- data for command specific data
 function req:initialize(session, data, timeout) 
-	command:initialize(session, types.CMD.SEND_RR_DATA)
+	command.initialize(self, session, types.CMD.SEND_RR_DATA)
 
 	self._data = data
 	self._interface_handle = 0 --- CIP 

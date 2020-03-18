@@ -5,6 +5,7 @@ local command_data = require 'enip.command.data'
 local item_types = require 'enip.command.item.types'
 local item_parser = require 'enip.command.item.parser'
 local cip_read_tag = require 'enip.cip.request.read_tag'
+local cip_read_frq = require 'enip.cip.request.read_frq'
 local cip_write_tag = require 'enip.cip.request.write_tag'
 local cip_types = require 'enip.cip.types'
 local buildin = require 'enip.cip.segment.buildin'
@@ -88,17 +89,18 @@ function client:read_tag(tag_path, tag_type, tag_count, response)
 end
 
 --- 0x52 REAG TAG FREGMENT
-function client:reag_tag_frq(tags, response)
+function client:read_tag_frq(tags, response)
 	--- make the an session for identify the request
 	local session_obj = self:gen_session()
 
 	local requests = {}
 	for _, v in ipairs(tags) do
-		local read_req = cip_read_tag:new(v.path, v.count)
+		requests[#requests + 1] = cip_read_tag:new(v.path, v.count or 1)
 	end
 
 	local route_path = nil
-	local read_req = cip_read_frq:new(nil, nil, requests, nil)
+	local read_req = cip_read_frq:new(nil, nil, requests, route_path)
+	print('DDDDDDDDDDDD')
 
 	--- Send RR Data Request
 	local null = item_parser.build(item_types.NULL)

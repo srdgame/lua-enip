@@ -3,10 +3,10 @@ local base = require 'enip.cip.reply.base'
 local types = require 'enip.cip.types'
 local parser = require 'enip.cip.segment.parser'
 
-local reply = class('ENIP_CLIENT_SERVICES_READ_TAG', base)
+local reply = class('ENIP_CIP_REPLY_READ_TAG', base)
 
 function reply:initialize(path, data)
-	base:initialize(types.SERVICES.READ_TAG, 0)
+	base.initialize(self, types.SERVICES.READ_TAG, 0)
 	self._data = data
 end
 

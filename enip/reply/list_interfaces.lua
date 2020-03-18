@@ -5,7 +5,7 @@ local command = require 'enip.command.base'
 local li = class('LUA_ENIP_MSG_REPLY_LIST_INTERFACES', command)
 
 function li:initialize(session, data)
-	command:initialize(session, types.CMD.LIST_INTERFACES)
+	command.initialize(self, session, types.CMD.LIST_INTERFACES)
 
 	self._data = data
 end

@@ -7,7 +7,7 @@ local reply = class('LUA_ENIP_CIP_REPLY_REGISTER_SESSION', command)
 --- If status is 0 means register session is ok
 -- or status should be 0x69 
 function reply:initialize(session, protocol_version, options, status)
-	command:initialize(session, types.CMD.REG_SESSION)
+	command.initialize(self, session, types.CMD.REG_SESSION)
 
 	self._protocol_version = protocol_version or 1
 	self._options = options or 0

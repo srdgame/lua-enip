@@ -6,7 +6,7 @@ local command_parser = require 'enip.command.parser'
 local li = class('LUA_ENIP_MSG_REPLY_LIST_SERVICES', command)
 
 function li:initialize(session, data)
-	command:initialize(session, types.CMD.LIST_SERVICES)
+	command.initialize(self, session, types.CMD.LIST_SERVICES)
 
 	self._data = data or ''
 end

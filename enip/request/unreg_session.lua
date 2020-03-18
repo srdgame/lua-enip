@@ -6,7 +6,7 @@ local command = require 'enip.command.base'
 local req = class('LUA_ENIP_MSG_REQ_UNREGISTER_SESSION', command)
 
 function req:initialize(session)
-	command:initialize(session, types.CMD.UNREG_SESSION)
+	command.initialize(self, session, types.CMD.UNREG_SESSION)
 end
 
 return req
