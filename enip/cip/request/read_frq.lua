@@ -2,10 +2,12 @@ local class = require 'middleclass'
 local base = require 'enip.cip.request.base'
 local types = require 'enip.cip.types'
 local seg_path = require 'enip.cip.segment.path'
+local logical_path = require 'enip.cip.segment.logical_path'
 
 local req = class('ENIP_CLIENT_SERVICES_READ_TAG_FRQ', base)
 
-function req:initialize(path, priority, timeout_ticks, multi_request, route_path)
+function req:initialize(priority, timeout_ticks, multi_request, route_path)
+	local path = logical_path:new(0x06, 0x01) -- 0x06: Connection Manager Class
 	base:initialize(types.SERVICES.READ_TAG, path)
 	self._priority = priority or 5
 	self._timeout_ticks = timeout_ticks or 157

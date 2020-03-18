@@ -88,15 +88,17 @@ function client:read_tag(tag_path, tag_type, tag_count, response)
 end
 
 --- 0x52 REAG TAG FREGMENT
-function client:reag_tag_frq(tag_path, tag_count, offset, response)
+function client:reag_tag_frq(tags, response)
 	--- make the an session for identify the request
 	local session_obj = self:gen_session()
-	local data_type, data_type_fmt = convert_tag_type_to_fmt(tag_type)
 
-	--local read_data = buildin:new(buildin.TYPES.UINT, tag_count)
-	local read_data = string.pack('<I2I4', tag_count, offset)
-	local path = seg_path:new(tag_path)
-	local read_req = cip_request:new(cip_types.SERVICES.READ_TAG, path, read_data)
+	local requests = {}
+	for _, v in ipairs(tags) do
+		local read_req = cip_read_tag:new(v.path, v.count)
+	end
+
+	local route_path = nil
+	local read_req = cip_read_frq:new(nil, nil, requests, nil)
 
 	--- Send RR Data Request
 	local null = item_parser.build(item_types.NULL)
@@ -139,8 +141,6 @@ function client:reag_tag_frq(tag_path, tag_count, offset, response)
 		if not cip_data then
 			return reponse(nil, 'ERROR: CIP reply has no data')
 		end
-
-		-- TODO: check about the tag_type???
 
 		--- callback
 		return response(cip_data:value())
