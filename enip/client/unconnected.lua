@@ -9,6 +9,7 @@ local cip_read_frq = require 'enip.cip.request.read_frq'
 local cip_write_tag = require 'enip.cip.request.write_tag'
 local cip_types = require 'enip.cip.types'
 local buildin = require 'enip.cip.segment.buildin'
+local route_path = require 'enip.cip.segment.route_path'
 --local seg_path = require 'enip.cip.segment.path'
 
 local client = class('LUA_ENIP_CLIENT_UNCONNECTED', client_base)
@@ -98,9 +99,8 @@ function client:read_tag_frq(tags, response)
 		requests[#requests + 1] = cip_read_tag:new(v.path, v.count or 1)
 	end
 
-	local route_path = nil
+	local route_path = route_path:new(1, 0)
 	local read_req = cip_read_frq:new(nil, nil, requests, route_path)
-	print('DDDDDDDDDDDD')
 
 	--- Send RR Data Request
 	local null = item_parser.build(item_types.NULL)

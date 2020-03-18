@@ -25,9 +25,10 @@ function req:encode()
 		data = data..'\0'
 	end
 	local hdr = string.pack('<I1I1I2', self._priority, self._timeout_ticks, data_len)
+
 	local route_path = ''
 	if self._route_path then
-		route_path = seg_path:new(self._route_path):to_hex()
+		route_path = string.pack('<I1I1', 1, 0) .. self._route_path:to_hex()
 	end
 
 	return hdr..data..route_path

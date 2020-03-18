@@ -4,37 +4,50 @@ local segment = require 'enip.cip.segment.base'
 
 local path = class('LUA_ENIP_CIP_SEG_ROUTE_PATH', segment)
 
+--- Current we only support numberic link
+--
 function path:initialize(port, link)
-	segment.initialize(self.segment.TYPES.DATA, segment.FORMATS.PATH)
-	self._link = link
+	local fmt = self:get_seg_fmt(port, link)
+	segment.initialize(self, segment.TYPES.PORT, fmt)
 	self._port = port
+	self._link = link
+end
+
+function path:get_seg_fmt(port, link)
+	if link > 0xFF then
+		assert(nil, 'Link larger than 0xFF is not supprt')
+	else
+		return (port < 0x0F) and port or 0x0F
+	end
+
 end
 
 function path:encode()
-	local path_len = string.len(self._path)
-	local data = string.pack('<I1', path_len)..self._path
-	if path_len % 2 == 1 then
-		data = data..'\0' --- Pading the string
+	if self._port > 0x0F then
+		return string.pack('<I2I1', self._port, self._link)
+	else
+		return string.pack('<I1', self._link)
 	end
-	return data
 end
 
 function path:decode(raw, index)
-	local path_len = string.unpack('<I1', raw)
-	self._path = string.sub(raw, string.packsize('<I1') + 1, path_len)
+	local seg_fmt = self:segment_format()
 
-	if path_len % 2 == 1 then
-		index = index + 1 -- the padding zero
+	if seg_fmt == 0x0F then
+		self._port, self._link, index = string.unpack('<I2I1', raw, index)
+	else
+		self._port = seg_fmt
+		self._link, index = string.unpack('<I1', raw, index)
 	end
 	return index
 end
 
-function path:value()
-	return self._path
+function path:port()
+	return self._port
 end
 
-function path:path()
-	return self._path
+function path:link()
+	return self._link
 end
 
 return path
