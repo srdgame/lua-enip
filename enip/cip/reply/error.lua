@@ -21,10 +21,11 @@ function reply:encode()
 end
 
 function reply:decode(raw, index)
-	local status = self:status()
-	assert(self:status ~= types.STATUS.OK, 'Status must not be OK')
-	assert(self:additional_status_size() == 1, 'Only word status support for now')
-	self._error_code, index = string.unpack('<I2', raw, index)
+	assert(self:status() ~= types.STATUS.OK, 'Status must not be OK')
+	assert(self:additional_status_size() <= 1, 'Only word status support for now')
+	if self:additional_status_size() == 1 then
+		self._error_code, index = string.unpack('<I2', raw, index)
+	end
 
 	return index
 end

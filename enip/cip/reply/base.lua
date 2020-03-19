@@ -6,7 +6,7 @@ local seg_parser = require 'enip.cip.segment.parser'
 local reply = class('LUA_ENIP_CIP_REPLY')
 
 function reply:initialize(service_code, status, additional_status_size)
-	self._code = service_code | types.SERVICES.REPLY
+	self._code = (service_code or 0) | types.SERVICES.REPLY
 	self._status = status or -1
 	self._additional_status_size = additional_status_size or 0
 end

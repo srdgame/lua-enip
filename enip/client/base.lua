@@ -1,6 +1,7 @@
 local class = require 'middleclass'
 local session = require 'enip.utils.session'
 local enip_conn_path = require 'enip.utils.conn_path'
+local cip_types = require 'enip.cip.types'
 
 local client = class('LUA_ENIP_CLIENT')
 
@@ -63,6 +64,24 @@ function client:send_unit_data(session, data, response)
 	local send_unit_data = require 'enip.request.send_unit_data'
 	local req = send_unit_data(session, data)
 	return self:request(req, response)
+end
+
+function client:get_reply_value(cip_reply, data_type)
+	--- Get the CIP reply status
+	if cip_reply:status() ~= cip_types.STATUS.OK then
+		return nil, cip_reply:error_info()
+	end
+
+	--- Get the CIP data
+	local cip_data = cip_reply:data()
+	if not cip_data then
+		return nil, 'ERROR: CIP reply has no data'
+	end
+
+	-- TODO: check about the data_type???
+
+	--- callback
+	return cip_data:value()
 end
 
 return client

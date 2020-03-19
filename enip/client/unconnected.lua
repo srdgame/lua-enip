@@ -5,7 +5,7 @@ local command_data = require 'enip.command.data'
 local item_types = require 'enip.command.item.types'
 local item_parser = require 'enip.command.item.parser'
 local cip_read_tag = require 'enip.cip.request.read_tag'
-local cip_read_frq = require 'enip.cip.request.read_frq'
+local cip_read_frg = require 'enip.cip.request.read_frg'
 local cip_write_tag = require 'enip.cip.request.write_tag'
 local cip_types = require 'enip.cip.types'
 local buildin = require 'enip.cip.segment.buildin'
@@ -67,30 +67,12 @@ function client:read_tag(tag_path, tag_type, tag_count, response)
 			return response(nil, 'ERROR: CIP reply not found')
 		end
 
-		--- Get the CIP reply status
-		if cip_reply:status() ~= 0 then
-			--[[
-			local sts = cip_types.status_to_string(cip_reply:status())
-			return response(nil, 'ERROR: '..(sts or 'STATUS ['..cip_reply:status()..']'))
-			]]--
-			return response(nil, cip_reply:error_info())
-		end
-
-		--- Get the CIP data
-		local cip_data = cip_reply:data()
-		if not cip_data then
-			return reponse(nil, 'ERROR: CIP reply has no data')
-		end
-
-		-- TODO: check about the tag_type???
-
-		--- callback
-		return response(cip_data:value())
+		return response(self:get_reply_value(cip_reply, tag_type))
 	end)
 end
 
 --- 0x52 REAG TAG FREGMENT
-function client:read_tag_frq(tags, response)
+function client:read_tag_frg(tags, response)
 	--- make the an session for identify the request
 	local session_obj = self:gen_session()
 
@@ -100,7 +82,7 @@ function client:read_tag_frq(tags, response)
 	end
 
 	local route_path = route_path:new(1, 0)
-	local read_req = cip_read_frq:new(nil, nil, requests, route_path)
+	local read_req = cip_read_frg:new(nil, nil, requests, route_path)
 
 	--- Send RR Data Request
 	local null = item_parser.build(item_types.NULL)
@@ -130,22 +112,19 @@ function client:read_tag_frq(tags, response)
 		end
 
 		--- Get the CIP reply status
-		if cip_reply:status() ~= 0 then
-			--[[
-			local sts = cip_types.status_to_string(cip_reply:status())
-			return response(nil, 'ERROR: '..(sts or 'STATUS ['..cip_reply:status()..']'))
-			]]--
-			return response(nil, cip_reply:error_info())
+		if cip_reply:status() ~= cip_types.STATUS.OK then
+			-- The status should be skipped as all sub reply has it's own status
+			--return response(nil, cip_reply:error_info())
 		end
 
 		--- Get the CIP data
 		local cip_data = cip_reply:data()
 		if not cip_data then
-			return reponse(nil, 'ERROR: CIP reply has no data')
+			return response(nil, 'ERROR: CIP reply has no data')
 		end
 
 		--- callback
-		return response(cip_data:value())
+		return response(cip_data:replies())
 	end)
 end
 
@@ -212,7 +191,7 @@ function client:write_tag(tag_path, tag_type, tag_value, response)
 		end
 
 		--- callback
-		return response(cip_data:value())
+		return response(cip_data:replies())
 	end)
 end
 

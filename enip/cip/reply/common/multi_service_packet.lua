@@ -39,18 +39,31 @@ function mr:to_hex()
 end
 
 function mr:from_hex(raw, index)
+	--[[
+	local basexx = require 'basexx'
+	print(basexx.to_hex(string.sub(raw, index)))
+	]]--
+
+	local parser = require 'enip.cip.reply.parser'
+
 	local count = 0
 	count, index = string.unpack('<I2', raw, index)
 
 	local offsets = {}
 	for i = 1, count do
-		offsets[#offset + 1], index = string.unpack('<I2', raw, index)
+		offsets[#offsets + 1], index = string.unpack('<I2', raw, index)
 	end
+	local base_index = index
 
-	local data = {}
+	local replies = {}
 	for i = 1, count do
-		data[#data], index = parser(raw, index)	
+		local offset = offsets[i] - (1 + count) * 2
+		assert(offset == index - base_index, "Offset error!!!")
+		local data = nil
+		data, index = parser(raw, index)
+		replies[#replies + 1] = data
 	end
+	self._replies = replies
 end
 
 return mr
