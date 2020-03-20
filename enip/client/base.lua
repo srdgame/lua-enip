@@ -6,14 +6,11 @@ local cip_types = require 'enip.cip.types'
 
 local client = class('LUA_ENIP_CLIENT')
 
-local default_route_path = {
-	port = 1,
-	link = 0,
-}
+local default_route_path = '1/0'
 
 function client:initialize(conn_path, route_path)
 	self._conn_path = enip_conn_path(conn_path)
-	self._route_path = route_path or default_route_path
+	self._route_path = enip_route_path(route_path or default_route_path)
 	self._session = session:new()
 end
 
@@ -22,7 +19,7 @@ function client:conn_path()
 end
 
 function client:route_path()
-	return route_path:new(self._route_path.port, self._route_path.link)
+	return route_path:new(self._route_path:port(), self._route_path:link())
 end
 
 --- Start the Register Session stuff
