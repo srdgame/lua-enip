@@ -9,7 +9,6 @@ local cip_read_frg = require 'enip.cip.request.read_frg'
 local cip_write_tag = require 'enip.cip.request.write_tag'
 local cip_types = require 'enip.cip.types'
 local buildin = require 'enip.cip.segment.buildin'
-local route_path = require 'enip.cip.segment.route_path'
 --local seg_path = require 'enip.cip.segment.path'
 
 local client = class('LUA_ENIP_CLIENT_UNCONNECTED', client_base)
@@ -72,7 +71,7 @@ function client:read_tag(tag_path, tag_type, tag_count, response)
 end
 
 --- 0x52 REAG TAG FREGMENT
-function client:read_tag_frg(tags, response)
+function client:read_tags(tags, response)
 	--- make the an session for identify the request
 	local session_obj = self:gen_session()
 
@@ -81,7 +80,7 @@ function client:read_tag_frg(tags, response)
 		requests[#requests + 1] = cip_read_tag:new(v.path, v.count or 1)
 	end
 
-	local route_path = route_path:new(1, 0)
+	local route_path = self:route_path()
 	local read_req = cip_read_frg:new(nil, nil, requests, route_path)
 
 	--- Send RR Data Request
@@ -126,6 +125,11 @@ function client:read_tag_frg(tags, response)
 		--- callback
 		return response(cip_data:replies())
 	end)
+end
+
+-- 0x52 Read the tag by offset and count
+function client:read_frg(path, count, offset, response)
+	-- TODO: Is this only happens with AB PLC????
 end
 
 --- 0x4d WRITE_TAG
