@@ -1,53 +1,103 @@
 local class = require 'middleclass'
 
+local logger = require 'enip.logger'
 local segment = require 'enip.cip.segment.base'
 
-local path = class('LUA_ENIP_CIP_SEG_PORT_ROUTE_PATH', segment)
+local port = class('LUA_ENIP_CIP_SEG_PORT', segment)
 
---- Current we only support numberic link
---
-function path:initialize(port, link)
-	local fmt = self:get_seg_fmt(port, link)
+function port:initialize(port, link)
+	local port, port_ext = self:get_port_value(port)
+	local link, link_ext_size = self:get_seg_fmt(port, link)
+
+	-- Generrate Port Segment Format
+	local fmt = (((link_ext_size > 0) and 0x01 or 0x00) << 8) + port & 0x0F
+
 	segment.initialize(self, segment.TYPES.PORT, fmt)
 	self._port = port
+	self._port_ext = port_ext
 	self._link = link
+	self._link_ext_size = link_ext_size
 end
 
-function path:get_seg_fmt(port, link)
-	if link > 0xFF then
-		assert(nil, 'Link larger than 0xFF is not supprt')
-	else
-		return (port < 0x0F) and port or 0x0F
+function port:get_port_value(port)
+	local port = port or 0
+	if port < 0x0F then
+		return port, nil
 	end
-
+	return 0x0F, port
 end
 
-function path:encode()
-	if self._port > 0x0F then
-		return string.pack('<I2I1', self._port, self._link)
-	else
-		return string.pack('<I1', self._link)
+function port:get_link_value(link)
+	if type(link) == 'number' and link <= 0xFF then
+		return link, 0
 	end
+	return tostring(link), string.len(link)
 end
 
-function path:decode(raw, index)
-	local seg_fmt = self:segment_format()
-
-	if seg_fmt == 0x0F then
-		self._port, self._link, index = string.unpack('<I2I1', raw, index)
+function port:encode()
+	local raw = nil
+	if self._link_ext_size == 0 then
+		if self._port_ext then
+			-- Extended Port Identifier (2 Bytes) + Link Address
+			raw = string.pack('<I2I1', self._port_ext, self._link)
+		else
+			-- No Extended Port, just Link Address
+			raw = string.pack('<I1', self._link)
+		end
 	else
-		self._port = seg_fmt
-		self._link, index = string.unpack('<I1', raw, index)
+		if self._port_ext then
+			-- Link Address Size (1 Byte) + Extended Port Identifier (2 Bytes) + Link Address
+			raw = string.pack('<I1I2', self._link_ext_size, self._port_ext)..self._link
+		else
+			raw = string.pack('<I1', self._link_ext_size, self._port)..self._link
+		end
+		--- Pad byte
+		if self._link_ext_size % 2 == 1 then
+			raw = raw..'\0'
+		end
 	end
+
+	logger.dump('segment.port.encode', raw)
+	
+	return raw
+end
+
+function port:decode(raw, index)
+	local fmt = self:format()
+	local typ = self:type()
+
+	logger.dump('segment.port.decode', raw, index)
+
+	if (type & 0x01 == 0x00) then
+		if fmt == 0x0F then
+			self._port = 0x0F
+			self._port_ext, self._link, index = string.unpack('<I2I1', raw, index)
+		else
+			self._port = fmt
+			self._link, index = string.unpack('<I1', raw, index)
+		end
+	else
+		self._link_ext_size, index = string.unpack('<I1', raw, index)
+		if fmt == 0x0F then
+			self._port = 0x0F
+			self._port_ext, self._link, index = string.unpack('<I2c'..self._link_ext_size, raw, index)
+		else
+			self._link, index = string.unpack('<c'..self._link_ext_size, raw, index)
+		end
+		if self._link_ext_size % 2 == 1 then
+			index = index + 1 -- Pad byte
+		end
+	end
+
 	return index
 end
 
-function path:port()
-	return self._port
+function port:port()
+	return self._port_ext and self._port_ext or self._port
 end
 
-function path:link()
+function port:link()
 	return self._link
 end
 
-return path
+return port
