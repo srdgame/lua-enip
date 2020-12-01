@@ -1,6 +1,7 @@
 local class = require 'middleclass'
+local serializable = require 'serializable'
 
-local seg = class('LUA_ENIP_CIP_SEGMENT')
+local seg = class('LUA_ENIP_CIP_SEGMENT', serializable)
 
 seg.static.TYPES = {
 	PORT		= 0,
@@ -26,7 +27,9 @@ function seg:initialize(seg_type, seg_fmt)
 end
 
 function seg:__tostring()
-	return string.format('SEGMENT:\tTYPE:%d\tFMT:%d\tVALUE:%s', self._type, self._fmt, self:value())
+	local val_str = tostring(self:value())
+	return string.format('SEGMENT:\tTYPE:%d\tFMT:%d\tVALUE:%s',
+		self._type, self._fmt, val_str)
 end
 
 function seg:to_hex()
