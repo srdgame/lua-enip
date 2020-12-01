@@ -165,7 +165,7 @@ function buildin:decode(raw, index)
 
 	local pre = 0
 	pre, index = string.unpack('<I1', raw, index)
-	assert(pre == 0, 'following must be zeor in buildin types')
+	assert(pre == 0, 'following must be zero in buildin types')
 
 	local type_i = types[self._data_type]
 	assert(type_i, 'Type is not supported!!!')
