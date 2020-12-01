@@ -58,7 +58,11 @@ function mr:from_hex(raw, index)
 	local replies = {}
 	for i = 1, count do
 		local offset = offsets[i] - (1 + count) * 2
-		assert(offset == index - base_index, "Offset error!!!")
+		assert(offset >= index - base_index, "Offset error!!!")
+		if offset > index - base_index then
+			index = base_index + offset
+		end
+
 		local data = nil
 		data, index = parser(raw, index)
 		replies[#replies + 1] = data
