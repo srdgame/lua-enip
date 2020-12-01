@@ -8,14 +8,9 @@ seg.static.TYPES = {
 	NETWORK		= 2,
 	SYMBOLIC	= 3,
 	DATA		= 4,
-	DATA_C		= 5,
-	DATA_E		= 6,
+	DATA_STRUCT	= 5,
+	DATA_SIMPLE	= 6,
 	RESERVED	= 7,
-}
-
-seg.static.FORMATS = {
-	SIMPLE		= 0x00, -- DATA Segment
-	PATH		= 0x11, -- DATA Segment
 }
 
 seg.static.parse = function(segment)
@@ -26,20 +21,20 @@ seg.static.parse = function(segment)
 end
 
 function seg:initialize(seg_type, seg_fmt)
-	self._seg_type = seg_type and (seg_type & 0x07) or -1
-	self._seg_fmt = seg_fmt and ((seg_fmt or 0) & 0x1F) or -1
+	self._type = seg_type and (seg_type & 0x07) or -1
+	self._fmt = seg_fmt and ((seg_fmt or 0) & 0x1F) or -1
 end
 
 function seg:__tostring()
-	return string.format('DATA_E:\tTYPE:%d\tFMT:%d\tVALUE:%s', self._seg_type, self._seg_fmt, self:value())
+	return string.format('SEGMENT:\tTYPE:%d\tFMT:%d\tVALUE:%s', self._type, self._fmt, self:value())
 end
 
 function seg:to_hex()
-	assert(self._seg_type ~= -1, 'Invalid segment type')
-	assert(self._seg_fmt ~= -1, 'Invalid segment format')
+	assert(self._type ~= -1, 'Invalid segment type')
+	assert(self._fmt ~= -1, 'Invalid segment format')
 
-	local sn = ((self._seg_type & 0x07) << 5) & 0xE0
-	sn = sn + self._seg_fmt
+	local sn = ((self._type & 0x07) << 5) & 0xE0
+	sn = sn + self._fmt
 	local s = string.pack('<I1', sn)
 
 	return s..self:encode()
@@ -48,22 +43,22 @@ end
 function seg:from_hex(raw, index)
 	local sn = 0
 	sn, index = string.unpack('<I1', raw, index)
-	self._seg_type = ((sn & 0xE0) >> 5 ) & 0x07
-	self._seg_fmt = sn & 0x1F
+	self._type = ((sn & 0xE0) >> 5 ) & 0x07
+	self._fmt = sn & 0x1F
 
 	return self:decode(raw, index)
 end
 
-function seg:segment_type()
-	return self._seg_type
+function seg:type()
+	return self._type
 end
 
-function seg:segment_format()
-	return self._seg_fmt
+function seg:format()
+	return self._fmt
 end
 
 function seg:type_num()
-	return (((self._seg_type & 0x07) << 5) & 0xE0) + self._seg_fmt
+	return (((self._type & 0x07) << 5) & 0xE0) + self._fmt
 end
 
 function seg:value()

@@ -8,14 +8,14 @@ local cip_read_tag = require 'enip.cip.request.read_tag'
 local cip_read_frg = require 'enip.cip.request.read_frg'
 local cip_write_tag = require 'enip.cip.request.write_tag'
 local cip_types = require 'enip.cip.types'
-local buildin = require 'enip.cip.segment.buildin'
+local data_elem = require 'enip.cip.segment.data_elem'
 --local seg_path = require 'enip.cip.segment.path'
 
 local client = class('LUA_ENIP_CLIENT_UNCONNECTED', client_base)
 
 local function convert_tag_type_to_fmt(tag_type)
-	local data_type = type(tag_type) == 'string' and buildin.TYPES[tag_type] or tag_type
-	return data_type, buildin.type_to_fmt(data_type)	
+	local data_type = type(tag_type) == 'string' and data_elem.TYPES[tag_type] or tag_type
+	return data_type, data_elem.type_to_fmt(data_type)	
 end
 
 function client:gen_session()
@@ -140,7 +140,7 @@ function client:write_tag(tag_path, tag_type, tag_value, response)
 	local data_type, data_type_fmt = convert_tag_type_to_fmt(tag_type)
 	--[[
 
-	local write_obj = buildin:new(data_type, tag_value)
+	local write_obj = data_elem:new(data_type, tag_value)
 	local write_obj_hex = write_obj:to_hex()
 
 	local write_data = string.pack('<I2I2', write_obj:type_num(), 1)..string.sub(write_obj_hex, 3) -- skip the type_number

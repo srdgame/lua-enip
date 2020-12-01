@@ -2,7 +2,7 @@ local class = require 'middleclass'
 
 local segment = require 'enip.cip.segment.base'
 
-local path = class('LUA_ENIP_CIP_SEG_ROUTE_PATH', segment)
+local path = class('LUA_ENIP_CIP_SEG_PORT_ROUTE_PATH', segment)
 
 --- Current we only support numberic link
 --
