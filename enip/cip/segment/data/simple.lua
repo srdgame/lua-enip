@@ -1,16 +1,15 @@
 local class = require 'middleclass'
 
-local segment = require 'enip.cip.segment.base'
+local serializable = require 'enip.serializable'
 
-local data = class('LUA_ENIP_CIP_SEG_SIMPLE_DATA', segment)
+local data = class('enip.cpi.segment.data.simple', serializable)
 
 function data:initialize(data, parser)
-	segment.initialize(self, segment.TYPES.DATA, segment.FORMATS.SIMPLE)
 	self._data = data
 	self._parser = parser
 end
 
-function data:encode()
+function data:to_hex()
 	assert(self._data, 'Data missing')
 	local data_raw = self._data.to_hex and self._data:to_hex() or tostring(self._data)
 
@@ -23,7 +22,7 @@ function data:encode()
 	end
 end
 
-function data:decode(raw, index)
+function data:from_hex(raw, index)
 	local data_len = 0
 	data_len, index = string.unpack('<I1', raw, index)
 
@@ -35,8 +34,12 @@ function data:decode(raw, index)
 	return index + data_len + 1
 end
 
-function data:value()
+function data:data()
 	return self._data
+end
+
+function data:paser()
+	return self._parser
 end
 
 return data

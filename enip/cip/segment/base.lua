@@ -1,7 +1,8 @@
 local class = require 'middleclass'
 local serializable = require 'serializable'
+local logger = require 'logger'
 
-local seg = class('LUA_ENIP_CIP_SEGMENT', serializable)
+local seg = class('enip.cip.segment.base', serializable)
 
 seg.static.TYPES = {
 	PORT		= 0,
@@ -40,6 +41,8 @@ function seg:to_hex()
 	sn = sn + self._fmt
 	local s = string.pack('<I1', sn)
 
+	logger.dump(self.name..'.to_hex', s)
+
 	return s..self:encode()
 end
 
@@ -48,6 +51,8 @@ function seg:from_hex(raw, index)
 	sn, index = string.unpack('<I1', raw, index)
 	self._type = ((sn & 0xE0) >> 5 ) & 0x07
 	self._fmt = sn & 0x1F
+
+	logger.dump(self.name..'.from_hex', raw, index)
 
 	return self:decode(raw, index)
 end

@@ -1,48 +1,49 @@
 local class		= require 'middleclass'
+local logger	= require 'enip.logger'
 local base		= require 'enip.cip.segment.base'
-local path		= require 'enip.cip.segment.path'
+local epath		= require 'enip.cip.segment.epath'
 local simple	= require 'enip.cip.segment.simple'
 
-local seg = class('LUA_ENIP_CIP_SEGMENT_DATA', base)
+local seg = class('enip.cip.segment.data', base)
 
 seg.static.FORMATS = {
-	SIMPLE		= 0x00, -- DATA Segment
-	PATH		= 0x11, -- DATA Segment
+	SIMPLE		= 0x00, -- Simple Data Segment
+	EPATH		= 0x11, -- ANSI Extended Symbol Segment
 }
 
-function buildin:initialize(data_type, val)
-	segment.initialize(self, segment.TYPES.DATA_E, segment_fmt_map[data_type])
-	self._data_type = data_type
-	self._val = val
+function seg:initialize(format, ...)
+	segment.initialize(self, segment.TYPES.DATA, data_format)
+	if format == seg.static.FORMATS.SIMPLE then
+		self._val = simple:new(...)
+	end
+	if format == seg.static.FORMATS.EPATH then
+		self._val = epath:new(...)
+	end
 end
 
-function buildin:value()
+function seg:value()
 	return self._val
 end
 
-function buildin:encode()
-	local pre = string.pack('<I1', 0)
-	local type_i = types[self._data_type]
-	assert(type_i, 'Type is not supported!!!')
-	if type(type_i) == 'string' then
-		return pre..string.pack(type_i, self._val)
-	else
-		return pre..type_i.encode(self._val)
-	end
+function seg:encode()
+	return self._val:to_hex()
 end
 
-function buildin:decode(raw, index)
-	if fmt == 0x11 then
-		local p = path:new()
+function seg:decode(raw, index)
+	if fmt == seg.static.FORMATS.EPATH then
+		--- 
+		local p = epath:new()
 		index = p:from_hex(raw, index)
 		return index
 	end
-	if fmt == 0x00 then
+	if fmt == seg.static.FORMATS.SIMPLE then
 		-- Simple Data Segement
 		local p = simple:new()
 		index = p:from_hex(raw, index)
+		return index
 	end
-	return index
+
+	assert(nil, "FORMAT Illgel")
 end
 
-return buildin
+return seg

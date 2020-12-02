@@ -1,9 +1,9 @@
 local class = require 'middleclass'
 local base = require 'enip.cip.segment.base'
 
-local logical = class('ENIP_CIP_SEGMENT_LOGICAL', base)
+local logical = class('enip.cip.segment.logical', base)
 
-logical.static.LOGICAL_TYPES =  {
+logical.static.SUB_TYPES =  {
 	CLASS_ID			= 0x0,
 	INSTANCE_ID			= 0x1,
 	MEMBER_ID			= 0x2,
@@ -14,7 +14,7 @@ logical.static.LOGICAL_TYPES =  {
 	RESERVED			= 0x7
 }
 
-logical.static.LOGICAL_FORMATS = {
+logical.static.FORMATS = {
 	USINT		= 0x0, -- 8-bit
 	UINT		= 0x1, -- 16-bit
 	UDINT		= 0x2, -- 32-bit
@@ -24,31 +24,31 @@ logical.static.LOGICAL_FORMATS = {
 function logical:initialize(logical_type, logical_fmt, value, pad)
 	local fmt = (logical_type << 2) + logical_fmt
 	--- Validation
-	if logical_fmt == logical.static.LOGICAL_FORMATS.UDINT then
-		assert(logical_type == logical.static.LOGICAL_TYPES.INSTANCE_ID
-			or logical_type == logical.static.LOGICAL_TYPES_CONNECTION_POINT)
+	if logical_fmt == logical.static.FORMATS.UDINT then
+		assert(logical_type == logical.static.SUB_TYPES.INSTANCE_ID
+			or logical_type == logical.static.SUB_TYPES_CONNECTION_POINT)
 	end
-	if logical_type == logical.static.LOGICAL_TYPES.SERVICE_ID then
+	if logical_type == logical.static.SUB_TYPES.SERVICE_ID then
 		-- Only 8-Bit Service ID Segment defined in specs
-		assert(logical_fmt == logical.static.LOGICAL_FORMATS.USINT)
+		assert(logical_fmt == logical.static.FORMATS.USINT)
 	end
-	if logical_type == logical.static.LOGICAL_TYPES.SERVICE_ID then
+	if logical_type == logical.static.SUB_TYPES.SERVICE_ID then
 		-- Only Electronic Key Segment defined in specs
-		assert(logical_fmt == logical.static.LOGICAL_FORMATS.USINT)
+		assert(logical_fmt == logical.static.FORMATS.USINT)
 	end
 
 	base.initialize(self, base.TYPES.LOGICAL, fmt)
-	self._pad = pad
 	self._value = value
+	self._pad = pad
 end
 
-function logical:logical_type()
-	local fmt = self:segment_format()
+function logical:sub_type()
+	local fmt = self:format()
 	return fmt >> 2
 end
 
-function logical:logical_format()
-	local fmt = self:segment_format()
+function logical:value_format()
+	local fmt = self:format()
 	return fmt & 0x03
 end
 
@@ -70,14 +70,14 @@ end
 
 function logical:encode()
 	local raw = nil
-	local fmt = self:logical_format()
-	if fmt == logical.static.LOGICAL_FORMATS.USINT then
+	local fmt = self:value_format()
+	if fmt == logical.static.FORMATS.USINT then
 		raw = string.pack('<I1', self._value)
 	end
-	if fmt == logical.static.LOGICAL_FORMATS.UINT then
+	if fmt == logical.static.FORMATS.UINT then
 		raw = string.pack('<I2', self._value)
 	end
-	if fmt == logical.static.LOGICAL_FORMATS.UDINT then
+	if fmt == logical.static.FORMATS.UDINT then
 		raw = string.pack('<I4', self._value)
 	end
 	if self._pad then
@@ -90,15 +90,15 @@ end
 
 function logical:decode(raw, index)
 	local index = index or 1
-	local fmt = self:logical_format()
-	if fmt == logical.static.LOGICAL_FORMATS.USINT then
+	local fmt = self:value_format()
+	if fmt == logical.static.FORMATS.USINT then
 		self._value, index = string.unpack('<I1', raw, index)
 	end
-	if fmt == logical.static.LOGICAL_FORMATS.UINT then
+	if fmt == logical.static.FORMATS.UINT then
 		index = self._pad and index + 1 or index
 		self._value, index = string.unpack('<I2', raw, index)
 	end
-	if fmt == logical.static.LOGICAL_FORMATS.UDINT then
+	if fmt == logical.static.FORMATS.UDINT then
 		index = self._pad and index + 1 or index
 		self._value, index = string.unpack('<I4', raw, index)
 	end

@@ -1,15 +1,14 @@
 local class = require 'middleclass'
 
-local segment = require 'enip.cip.segment.base'
+local base = require 'enip.serializable'
 
-local path = class('LUA_ENIP_CIP_SEG_DATA_EPATH', segment)
+local epath = class('enip.cip.segment.data.epath', base)
 
-function path:initialize(path)
-	segment.initialize(self, segment.TYPES.DATA, segment.FORMATS.PATH)
+function epath:initialize(path)
 	self._path = path
 end
 
-function path:encode()
+function epath:to_hex()
 	local path_len = string.len(self._path)
 	local data = string.pack('<I1', path_len)..self._path
 	if path_len % 2 == 1 then
@@ -18,22 +17,18 @@ function path:encode()
 	return data
 end
 
-function path:decode(raw, index)
+function epath:from_hex(raw, index)
 	local path_len = string.unpack('<I1', raw)
 	self._path = string.sub(raw, string.packsize('<I1') + 1, path_len)
 
 	if path_len % 2 == 1 then
-		index = index + 1 -- the padding zero
+		index = index + 1 -- skip the padding zero
 	end
 	return index
 end
 
-function path:value()
+function epath:path()
 	return self._path
 end
 
-function path:path()
-	return self._path
-end
-
-return path
+return epath

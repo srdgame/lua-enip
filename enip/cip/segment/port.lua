@@ -3,14 +3,14 @@ local class = require 'middleclass'
 local logger = require 'enip.logger'
 local segment = require 'enip.cip.segment.base'
 
-local port = class('LUA_ENIP_CIP_SEG_PORT', segment)
+local port = class('enip.cip.segment.port', segment)
 
 function port:initialize(port, link)
 	local port, port_ext = self:get_port_value(port)
 	local link, link_ext_size = self:get_seg_fmt(port, link)
 
 	-- Generrate Port Segment Format
-	local fmt = (((link_ext_size > 0) and 0x01 or 0x00) << 8) + port & 0x0F
+	local fmt = ((link_ext_size > 0) and 0x10 or 0x00) + port & 0x0F
 
 	segment.initialize(self, segment.TYPES.PORT, fmt)
 	self._port = port
@@ -57,29 +57,28 @@ function port:encode()
 		end
 	end
 
-	logger.dump('segment.port.encode', raw)
+	logger.dump(self.name..'.encode', raw)
 	
 	return raw
 end
 
 function port:decode(raw, index)
 	local fmt = self:format()
-	local typ = self:type()
 
-	logger.dump('segment.port.decode', raw, index)
+	logger.dump(self.name..'.decode', raw, index)
 
-	if (type & 0x01 == 0x00) then
-		if fmt == 0x0F then
-			self._port = 0x0F
+	self._port = fmt & 0x0F
+	self._port_ext = nil
+
+	if (fmt < 0x10) then
+		if self._port == 0x0F then
 			self._port_ext, self._link, index = string.unpack('<I2I1', raw, index)
 		else
-			self._port = fmt
 			self._link, index = string.unpack('<I1', raw, index)
 		end
 	else
 		self._link_ext_size, index = string.unpack('<I1', raw, index)
-		if fmt == 0x0F then
-			self._port = 0x0F
+		if self._port == 0x0F then
 			self._port_ext, self._link, index = string.unpack('<I2c'..self._link_ext_size, raw, index)
 		else
 			self._link, index = string.unpack('<c'..self._link_ext_size, raw, index)
