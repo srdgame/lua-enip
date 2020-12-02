@@ -4,7 +4,7 @@ local command = require 'enip.command.base'
 local command_data = require 'enip.command.data'
 
 --- UDP Only? List Identity
-local req = class('LUA_ENIP_MSG_REQ_SEND_UNIT_DATA', msg)
+local req = class('enip.request.send_unit_data', msg)
 
 function req:initialize(session, data, timeout)
 	command.initialize(self, session, types.CMD.SEND_UNIT_DATA)

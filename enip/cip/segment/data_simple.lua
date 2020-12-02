@@ -1,8 +1,8 @@
 local class = require 'middleclass'
 
-local segment = require 'enip.cip.segment.base'
+local base = require 'enip.cip.segment.base'
 
-local buildin = class('LUA_ENIP_CIP_BUILDIN_DATA_TYPES', segment)
+local buildin = class('enip.cip.segment.data_simple', base)
 
 
 local types = {
@@ -66,12 +66,12 @@ local types = {
 	LWORD	= '<I8',
 	EPATH	= {
 		encode = function(val)
-			local epath = require 'enip.cip.epth'
+			local epath = require 'enip.cip.segment.epath'
 			local o = epath:new(val)
 			return o:to_hex()
 		end,
 		decode = function(raw, index)
-			local epath = require 'enip.cip.epth'
+			local epath = require 'enip.cip.segment.epath'
 			local o = epath:new(val)
 			local index = o:from_hex(raw, index)
 			return o, index
@@ -132,7 +132,7 @@ buildin.static.type_to_fmt = function(data_type)
 end
 
 function buildin:initialize(data_type, val)
-	segment.initialize(self, segment.TYPES.DATA_E, segment_fmt_map[data_type])
+	base.initialize(self, base.TYPES.DATA_E, segment_fmt_map[data_type])
 	self._data_type = data_type
 	self._val = val
 end

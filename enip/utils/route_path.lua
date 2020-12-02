@@ -1,6 +1,6 @@
 local class = require 'middleclass'
 
-local path = class('LUA_ENIP_PATH')
+local path = class('enip.utils.route_path')
 
 local function parse_route_path(path)
 	local port, link = string.match(path, '^(%d+),(%d+)$')

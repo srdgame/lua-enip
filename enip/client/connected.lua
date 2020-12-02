@@ -2,7 +2,7 @@ local class = require 'middleclass'
 local session = require 'cip.session'
 local enip_conn_path = require 'enip.conn_path'
 
-local client = class('LUA_ENIP_CLIENT')
+local client = class('enip.client.connected')
 
 function client:initialize(conn_path)
 	self._conn_path = enip_conn_path(conn_path)

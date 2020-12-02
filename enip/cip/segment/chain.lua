@@ -1,6 +1,8 @@
 --- Segment Definition Hierarchy
 --
 
+--- TODO: Encoded Path Shortcut Rules is not supported yet
+
 local class = require 'middleclass'
 local logger = require 'enip.logger'
 local base = require 'enip.serializable'

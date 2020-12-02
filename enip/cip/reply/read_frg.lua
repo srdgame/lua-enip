@@ -3,7 +3,7 @@ local base = require 'enip.cip.reply.base'
 local types = require 'enip.cip.types'
 local multi_pack = require 'enip.cip.reply.common.multi_service_packet'
 
-local reply = class('ENIP_CLIENT_SERVICES_REPLY_READ_FRQ_FRQ', base)
+local reply = class('enip.cip.reply.read_frg', base)
 
 function reply:initialize(replies)
 	--assert(replies, 'Replies are required')

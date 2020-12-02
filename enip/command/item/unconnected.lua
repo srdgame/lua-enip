@@ -3,7 +3,7 @@ local cip_parser = require 'enip.cip.parser'
 local types = require 'enip.command.item.types'
 local item_base = require 'enip.command.item.base'
 
-local item = class('LUA_ENIP_COMMAND_UNCONNECTED_ITEM', item_base)
+local item = class('enip.command.item.unconnected', item_base)
 
 function item:initialize(cip)
 	item_base.initialize(self, types.UNCONNECTED)

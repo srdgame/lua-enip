@@ -3,7 +3,7 @@ local command = require 'enip.command.base'
 local types = require 'enip.command.types'
 
 --- UDP Only? List Identity
-local req = class('LUA_ENIP_MSG_REQ_REGISTER_SESSION', command)
+local req = class('enip.request.reg_session', command)
 
 function req:initialize(session, protocol_version, options)
 	command.initialize(self, session, types.CMD.REG_SESSION)

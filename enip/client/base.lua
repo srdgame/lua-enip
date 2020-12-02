@@ -6,7 +6,7 @@ local session = require 'enip.utils.session'
 local enip_conn_path = require 'enip.utils.conn_path'
 local enip_route_path = require 'enip.utils.route_path'
 
-local client = class('LUA_ENIP_CLIENT')
+local client = class('enip.client.base')
 
 local default_route_path = '1/0'
 

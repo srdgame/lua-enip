@@ -2,7 +2,7 @@ local class = require 'middleclass'
 --local seg_parser = require 'enip.cip.segment.parser'
 local seg_path = require 'enip.cip.segment.path'
 
-local req = class('LUA_ENIP_CIP_REQUEST_BASE')
+local req = class('enip.cip.request.base')
 
 function req:initialize(service_code, request_path)
 	self._code = service_code

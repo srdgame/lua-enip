@@ -11,7 +11,7 @@ local cip_types = require 'enip.cip.types'
 local data_elem = require 'enip.cip.segment.data_elem'
 --local seg_path = require 'enip.cip.segment.path'
 
-local client = class('LUA_ENIP_CLIENT_UNCONNECTED', client_base)
+local client = class('enip.client.unconnected', client_base)
 
 local function convert_tag_type_to_fmt(tag_type)
 	local data_type = type(tag_type) == 'string' and data_elem.TYPES[tag_type] or tag_type

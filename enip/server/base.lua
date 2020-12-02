@@ -1,6 +1,6 @@
 local class = require 'middleclass'
 
-local server = class('LUA_ENIP_SERVER')
+local server = class('enip.server')
 
 function server:initialize(addr)
 	self._addr = addr

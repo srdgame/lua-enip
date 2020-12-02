@@ -2,20 +2,20 @@
 local class = require 'middleclass'
 local header = require 'enip.command.header'
 
-local cmd = class('LUA_ENIP_COMMAND_MSG')
+local base = class('enip.command.base')
 
-cmd.static.header = header
+base.static.header = header
 
-function cmd:initialize(session, command, length, status)
+function base:initialize(session, command, length, status)
 	self._header = header:new(session, command, length, status)
 	assert(session == self._header:session())
 end
 
-function cmd:__tostring()
+function base:__tostring()
 	return string.format('ENIP Comamnd Object:\nHDR:\t%s\n', tostring(self._header))
 end
 
-function cmd:from_hex(raw, index)
+function base:from_hex(raw, index)
 	index = self._header:from_hex(raw, index)
 
 	local hdr_len = self._header:len()
@@ -32,7 +32,7 @@ function cmd:from_hex(raw, index)
 	return index
 end
 
-function cmd:to_hex()
+function base:to_hex()
 	if self.encode then
 		local data = self:encode()
 		self._header:set_length(string.len(data))
@@ -42,20 +42,20 @@ function cmd:to_hex()
 	end
 end
 
-function cmd:header()
+function base:header()
 	return self._header
 end
 
-function cmd:command()
+function base:command()
 	return self._header:command()
 end
 
-function cmd:status()
+function base:status()
 	return self._header:status()
 end
 
-function cmd:session()
+function base:session()
 	return self._header:session()
 end
 
-return cmd
+return base

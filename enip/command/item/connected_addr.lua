@@ -2,7 +2,7 @@ local class = require 'middleclass'
 local types = require 'enip.command.item.types'
 local item_base = require 'enip.command.item.base'
 
-local item = class('LUA_ENIP_COMMAND_CONNECTED_ADDRESS_ITEM', item_base)
+local item = class('enip.command.item.connected_addr', item_base)
 
 function item:initialize(conn_identity)
 	item_base.initialize(self, types.CONNECTED_ADDR)

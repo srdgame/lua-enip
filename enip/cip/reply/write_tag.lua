@@ -3,7 +3,7 @@ local base = require 'enip.cip.reply.base'
 local types = require 'enip.cip.types'
 local parser = require 'enip.cip.segment.parser'
 
-local reply = class('ENIP_CLIENT_SERVICES_WRITE_TAG', base)
+local reply = class('enip.cip.reply.write_tag', base)
 
 function reply:initialize(data)
 	base.initialize(self, types.SERVICES.WRITE_TAG, 0)

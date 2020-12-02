@@ -2,7 +2,7 @@ local class = require 'middleclass'
 local types = require 'enip.command.types'
 local command = require 'enip.command.base'
 
-local li = class('LUA_ENIP_MSG_REPLY_LIST_INTERFACES', command)
+local li = class('enip.reply.list_interfaces', command)
 
 function li:initialize(session, data)
 	command.initialize(self, session, types.CMD.LIST_INTERFACES)

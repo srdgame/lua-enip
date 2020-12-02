@@ -3,7 +3,7 @@ local types = require 'enip.cip.types'
 local logical = require 'enip.cip.segment.logical'
 local logical_path = require 'enip.cip.segment.logical_path'
 
-local mr = class('ENIP_CIP_REQUEST_COMMON_MULTI_PACK')
+local mr = class('enip.cip.request.common.multi_service_packet')
 
 function mr:initialize(requests)
 	self._service_code = types.SERVICES.MULTI_SRV_PACK

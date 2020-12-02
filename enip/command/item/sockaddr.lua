@@ -2,7 +2,7 @@ local class = require 'middleclass'
 local types = require 'enip.command.item.types'
 local item_base = require 'enip.command.item.base'
 
-local item = class('LUA_ENIP_COMMAND_SOCKADDR_INFO_ITEM', item_base)
+local item = class('enip.command.item.sockaddr', item_base)
 
 function item:intialize(from_target, info)
 	item_base:intialize(from_target and types.SOCK_ADDR_S or types.SOCK_ADDR_C)

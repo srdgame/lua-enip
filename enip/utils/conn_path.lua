@@ -1,6 +1,6 @@
 local class = require 'middleclass'
 
-local path = class('LUA_ENIP_PATH')
+local path = class('enip.utils.conn_path')
 
 local function parse_conn_path(path)
 	local proto, addr, port = string.match(path, '^([^:]-)[://]-([^:]+):?(%d-)$')

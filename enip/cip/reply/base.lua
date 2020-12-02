@@ -3,7 +3,7 @@ local class = require 'middleclass'
 local types = require 'enip.cip.types'
 local seg_parser = require 'enip.cip.segment.parser'
 
-local reply = class('LUA_ENIP_CIP_REPLY')
+local reply = class('enip.cip.reply.base')
 
 function reply:initialize(service_code, status, additional_status_size)
 	self._code = (service_code or 0) | types.SERVICES.REPLY

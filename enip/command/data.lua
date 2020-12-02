@@ -1,7 +1,7 @@
 local class = require 'middleclass'
 local item_parser = require 'enip.command.item.parser'
 
-local command_data = class('ENIP_COMMAND_DATA')
+local command_data = class('enip.command.data')
 
 function command_data:initialize(items)
 	self._items = items or {}

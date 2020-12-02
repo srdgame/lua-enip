@@ -2,7 +2,7 @@ local class = require 'middleclass'
 local types = require 'enip.command.types'
 local command = require 'enip.command.base'
 
-local reply = class('LUA_ENIP_CIP_REPLY_REGISTER_SESSION', command)
+local reply = class('enip.reply.reg_session', command)
 
 --- If status is 0 means register session is ok
 -- or status should be 0x69 

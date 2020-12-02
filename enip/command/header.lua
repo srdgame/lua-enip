@@ -5,7 +5,7 @@ local basexx = require 'basexx'
 local session = require 'enip.utils.session'
 local types = require 'enip.command.types'
 
-local header = class('LUA_ENIP_COMMAND_HEADER')
+local header = class('enip.command.header')
 
 --[[
 -- Length is the data length. and the total message will be the length + 24 (header size)

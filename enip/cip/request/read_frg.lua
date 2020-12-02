@@ -5,7 +5,7 @@ local seg_path = require 'enip.cip.segment.path'
 local logical_path = require 'enip.cip.segment.logical_path'
 local request_multi_pack = require 'enip.cip.request.common.multi_service_packet'
 
-local req = class('ENIP_CLIENT_SERVICES_REQ_READ_TAG_FRQ', base)
+local req = class('enip.cip.request.read_frg', base)
 
 function req:initialize(priority, timeout_ticks, requests, route_path)
 	assert(requests, 'Requests are required')

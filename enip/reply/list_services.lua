@@ -3,7 +3,7 @@ local types = require 'enip.command.types'
 local command = require 'enip.command.base'
 local command_parser = require 'enip.command.parser'
 
-local li = class('LUA_ENIP_MSG_REPLY_LIST_SERVICES', command)
+local li = class('enip.reply.list_services', command)
 
 function li:initialize(session, data)
 	command.initialize(self, session, types.CMD.LIST_SERVICES)

@@ -2,7 +2,7 @@ local class = require 'middleclass'
 local base = require 'enip.cip.request.base'
 local types = require 'enip.cip.types'
 
-local req = class('ENIP_CLIENT_SERVICES_READ_TAG', base)
+local req = class('enip.cip.request.read_tag', base)
 
 function req:initialize(path, count)
 	base.initialize(self, types.SERVICES.READ_TAG, path)

@@ -1,6 +1,6 @@
 local class = require 'middleclass'
 
-local item = class('LUA_ENIP_COMMAND_ITEM_BASE')
+local item = class('enip.command.item.base')
 
 function item:initialize(type_id)
 	self._type_id = type_id or 0x0000 --- NULL

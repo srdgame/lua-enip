@@ -2,7 +2,7 @@ local class = require 'middleclass'
 local types = require 'enip.command.item.types'
 local item_base = require 'enip.command.item.base'
 
-local item = class('LUA_ENIP_COMMAND_ITEM_IDENTITY', item_base)
+local item = class('enip.command.item.identity', item_base)
 
 function item:initialize(info)
 	item_base.initialize(self, types.LIST_IDENTITY)

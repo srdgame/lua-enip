@@ -3,7 +3,7 @@ local base = require 'enip.cip.request.base'
 local types = require 'enip.cip.types'
 local data_elem = require 'enip.cip.segment.data_elem'
 
-local req = class('ENIP_CLIENT_SERVICES_WRITE_TAG', base)
+local req = class('enip.cip.request.write_tag', base)
 
 function req:initialize(path, data_type, value)
 	base.initialize(self, types.SERVICES.WRITE_TAG, path)

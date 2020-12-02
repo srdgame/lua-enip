@@ -5,7 +5,7 @@
 
 local class = require 'middleclass'
 
-local session = class('LUA_ENIP_SESSION')
+local session = class('enip.utils.session')
 
 function session:initialize(session, context)
 	self._session = session or 0

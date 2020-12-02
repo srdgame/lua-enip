@@ -4,7 +4,7 @@ local command = require 'enip.command.base'
 local command_data = require 'enip.command.data'
 
 --- UDP Only? List Identity
-local req = class('LUA_ENIP_MSG_REQ_SEND_RR_DATA', command)
+local req = class('enip.request.send_rr_data', command)
 
 --- For CIP over enip, the interface_handle must be 0
 -- data for command specific data
