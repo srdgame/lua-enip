@@ -22,6 +22,9 @@ logical.static.FORMATS = {
 }
 
 function logical:initialize(logical_type, logical_fmt, value, pad)
+	local logical_type = logical_type or 0
+	local logical_fmt = logical_fmt or 0
+
 	local fmt = (logical_type << 2) + logical_fmt
 	--- Validation
 	if logical_fmt == logical.static.FORMATS.UDINT then

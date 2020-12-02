@@ -1,5 +1,5 @@
+local logger = require 'enip.logger'
 local base = require 'enip.cip.segment.base'
-
 
 local function seg_type_to_string(seg_type)
 	for k, v in pairs(base.TYPES) do
@@ -20,9 +20,8 @@ local function find_seg_type(seg_type)
 end
 
 return function (raw, index)
-	if _ENV.DEBUG_RAW then
-		_ENV.DEBUG_RAW('segment.parser', string.sub(raw, index))
-	end
+
+	logger.dump('enip.cip.segment.parser', string.sub(raw, index))
 
 	local index = index or 1
 	local seg = string.unpack('<I1', raw, index)

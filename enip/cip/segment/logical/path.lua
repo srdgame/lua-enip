@@ -1,6 +1,8 @@
 local class = require 'middleclass'
 local logical = require 'enip.cip.segment.logical'
 
+--- TODO: Delete this as we have epath class
+
 local path = class('ENIP_CIP_SEGMENT_LOGICAL_PATH')
 
 function path:initialize(class_id, instance_id)
