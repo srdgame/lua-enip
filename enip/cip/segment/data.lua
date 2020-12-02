@@ -1,14 +1,14 @@
 local class		= require 'middleclass'
 local logger	= require 'enip.logger'
 local base		= require 'enip.cip.segment.base'
-local epath		= require 'enip.cip.segment.epath'
+local ansi		= require 'enip.cip.segment.ansi'
 local simple	= require 'enip.cip.segment.simple'
 
 local seg = class('enip.cip.segment.data', base)
 
 seg.static.FORMATS = {
 	SIMPLE		= 0x00, -- Simple Data Segment
-	EPATH		= 0x11, -- ANSI Extended Symbol Segment
+	ANSI		= 0x11, -- ANSI Extended Symbol Segment
 }
 
 function seg:initialize(format, ...)
@@ -16,8 +16,8 @@ function seg:initialize(format, ...)
 	if format == seg.static.FORMATS.SIMPLE then
 		self._val = simple:new(...)
 	end
-	if format == seg.static.FORMATS.EPATH then
-		self._val = epath:new(...)
+	if format == seg.static.FORMATS.ANSI then
+		self._val = ansi:new(...)
 	end
 end
 
@@ -30,9 +30,9 @@ function seg:encode()
 end
 
 function seg:decode(raw, index)
-	if fmt == seg.static.FORMATS.EPATH then
-		--- 
-		local p = epath:new()
+	if fmt == seg.static.FORMATS.ANSI then
+		--- ANSI Extended Symbol
+		local p = ansi:new()
 		index = p:from_hex(raw, index)
 		return index
 	end
