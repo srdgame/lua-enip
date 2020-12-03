@@ -5,21 +5,53 @@ local logger = require 'logger'
 local seg = class('enip.cip.segment.base', serializable)
 
 seg.static.TYPES = {
-	PORT		= 0,
-	LOGICAL		= 1,
-	NETWORK		= 2,
-	SYMBOLIC	= 3,
-	DATA		= 4,
-	DATA_STRUCT	= 5,
-	DATA_SIMPLE	= 6,
-	RESERVED	= 7,
+	PORT			= 0,
+	LOGICAL			= 1,
+	NETWORK			= 2,
+	SYMBOLIC		= 3,
+	DATA			= 4,
+	DATA_DERIVED	= 5,
+	DATA_SIMPLE		= 6,
+	RESERVED		= 7,
 }
 
-seg.static.parse = function(segment)
+seg.static.type_name = function(typ)
+	for k, v in pairs(seg.static.TYPES) do
+		if v == tonumber(typ) then
+			return k
+		end
+	end
+	return 'UNKNOWN'
+end
+
+local function parse_segment_type(raw, index)
+	local tf, index = string.unpack('<I1', raw, index)
 	local seg_type = ((segment & 0xE0) >> 5 ) & 0x07
 	local seg_fmt = segment & 0x1F
 
-	return seg_type, seg_fmt
+	return seg_type, seg_fmt, index
+end
+
+local function encode_segment_type(type, format)
+	local val = (((self._type & 0x07) << 5) & 0xE0) + self._fmt
+	return string.pack('<I1', val)
+end
+
+seg.static.parse_segment_type = parse_segment_type
+seg.static.encode_segment_type = encode_segment_type
+
+seg.static.parse = function(raw, index)
+	local seg_type, seg_fmt, index = parse_segment_type(raw, index)
+	local type_name = seg.static.type_name(seg_type)
+
+	local m = require 'enip.cip.segment.'..type_name
+	if not m.static.parse then
+		local o = m:new(seg_type, seg_fmt)
+		index = o:from_hex(raw, index - 1)
+		return o, index
+	else
+		return m.static.parse(raw, index)
+	end
 end
 
 function seg:initialize(seg_type, seg_fmt)
@@ -37,9 +69,7 @@ function seg:to_hex()
 	assert(self._type ~= -1, 'Invalid segment type')
 	assert(self._fmt ~= -1, 'Invalid segment format')
 
-	local sn = ((self._type & 0x07) << 5) & 0xE0
-	sn = sn + self._fmt
-	local s = string.pack('<I1', sn)
+	local s = string.pack('<I1', self:type_num())
 
 	logger.dump(self.name..'.to_hex', s)
 
@@ -47,12 +77,9 @@ function seg:to_hex()
 end
 
 function seg:from_hex(raw, index)
-	local sn = 0
-	sn, index = string.unpack('<I1', raw, index)
-	self._type = ((sn & 0xE0) >> 5 ) & 0x07
-	self._fmt = sn & 0x1F
-
 	logger.dump(self.name..'.from_hex', raw, index)
+
+	self._type, self._fmt, index = seg.static.parse_segment_type(raw, index)
 
 	return self:decode(raw, index)
 end

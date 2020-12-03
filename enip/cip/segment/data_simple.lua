@@ -4,8 +4,13 @@ local base = require 'enip.cip.segment.base'
 
 local buildin = class('enip.cip.segment.data_simple', base)
 
+local date_and_time = base.easy_create('enip.cip.segment.data_simple.date_and_time', {
+	{ name = 'time_of_day', fmt = '<I4' },
+	{ name = 'date', fmt = '<I2' },
+})
 
-local types = {
+
+local data_fmt_map = {
 	UNKNOWN = '',
 	BOOL	= {
 		-- Boolean 0 - FALSE, 1 - TRUE
@@ -27,30 +32,38 @@ local types = {
 	ULINT	= '<I8',
 	REAL	= '<f',
 	LREAL	= '<d',
-	STIME	= {
+	STIME	= '<i4',
+	DATE	= '<I2',
+	TIME_OF_DAY		= '<I4', --- Time of day, milliseconds
+	DATE_AND_TIME	= {
 		encode = function(val)
-			assert(nil, "????")
+			return date_and_time.to_hex(val)
 		end,
 		decode = function(raw, index)
-			assert(nil, "?????")
-		end
+			local val = date_and_time:new()
+			index = val:from_hex(raw, index)
+			self._val = val
+			return index
+		end,
 	},
-	ITIME	= '<i2',
-	TIME	= '<i4', ---- milliseconds
-	FTIME	= '<i4', ---- micro-seconds
-	LTIME	= '<i8',
-	DATE	= '<I2',
-	TOD		= '<I4', --- Time of day, milliseconds
-	DT		= '',	--- TODO:
 	STRING	= {
 		encode = function(val)
-			return val
+			return string.pack('<s2', val)
+			--return val
 		end,
 		decode = function(raw, index)
-			return string.sub(raw, index or 1), string.len(raw) - (index or 1) + 2
+			return string.unpack('<s2', raw, index)
+			--return string.sub(raw, index or 1), string.len(raw) - (index or 1) + 2
 		end
 	},
+	BYTE	= '<I1',
+	WORD	= '<I2',
+	DWORD	= '<I4',
+	LWORD	= '<I8',
 	STRING2 = {}, -- TODO:
+	FTIME	= '<i4', ---- micro-seconds
+	LTIME	= '<i8',
+	ITIME	= '<i2',
 	STRINGN = {}, -- TODO:
 	SHORT_STRING = {
 		encode = function(val)
@@ -60,10 +73,7 @@ local types = {
 			return string.unpack('<s1', raw, index)
 		end
 	},
-	BYTE	= '<c1',
-	WORD	= '<i2',
-	DWORD	= '<i4',
-	LWORD	= '<I8',
+	TIME	= '<i4', ---- milliseconds
 	EPATH	= {
 		encode = function(val)
 			local epath = require 'enip.cip.segment.epath'
@@ -77,15 +87,11 @@ local types = {
 			return o, index
 		end
 	},
-	ENGUNITS = '<I4',
+	ENGUNIT = '<I2',
+	STRINGI = {}, -- TODO:
 }
 
-buildin.static.TYPES = {}
-for k, v in pairs(types) do
-	buildin.static.TYPES[k] = k
-end
-
-local segment_fmt_map = {
+buildin.static.FORMATS = {
 	UNKNOWN = 0,
 	BOOL	= 1,
 	SINT	= 2,
@@ -100,8 +106,8 @@ local segment_fmt_map = {
 	LREAL	= 11,
 	STIME	= 12,
 	DATE	= 13,
-	TOD		= 14,
-	DT		= 15,
+	TIME_OF_DAY		= 14,
+	DATE_AND_TIME	= 15,
 	STRING	= 16,
 	BYTE	= 17,
 	WORD	= 18,
@@ -115,34 +121,21 @@ local segment_fmt_map = {
 	STRINGN = 26,
 	TIME	= 27,
 	EPATH	= 28,
-	ENGUNITS = 29,
+	ENGUNIT = 29,
+	STRINGI = 30,
 }
 
-local function type_from_segment_fmt(seg_fmt)
-	for k, v in pairs(segment_fmt_map) do
-		if v == tonumber(seg_fmt) then
-			return buildin.static.TYPES[k]
+local function get_format_parser(fmt)
+	for k, v in pairs(build.static.FORMATS) do
+		if v == tonumber(fmt) then
+			return data_fmt_map[k]
 		end
 	end
-	return nil, "Not found type"
 end
 
-buildin.static.type_to_fmt = function(data_type)
-	return segment_fmt_map[data_type]
-end
-
-function buildin:initialize(data_type, val)
-	base.initialize(self, base.TYPES.DATA_E, segment_fmt_map[data_type])
-	self._data_type = data_type
+function buildin:initialize(data_fmt, val)
+	base.initialize(self, base.TYPES.DATA_SIMPLE, data_fmt)
 	self._val = val
-end
-
-function buildin:data_type()
-	return self._data_type
-end
-
-function buildin:data_type_fmt()
-	return segment_fmt_map[self._data_type]
 end
 
 function buildin:value()
@@ -151,12 +144,12 @@ end
 
 function buildin:encode()
 	local pre = string.pack('<I1', 0)
-	local type_i = types[self._data_type]
-	assert(type_i, 'Type is not supported!!!')
-	if type(type_i) == 'string' then
-		return pre..string.pack(type_i, self._val)
+	local parser = get_format_parser(self:format())
+	assert(parser, 'Type is not supported!!!')
+	if type(parser) == 'string' then
+		return pre..string.pack(parser, self._val)
 	else
-		return pre..type_i.encode(self._val)
+		return pre..parser.encode(self._val)
 	end
 end
 
@@ -167,15 +160,13 @@ function buildin:decode(raw, index)
 	pre, index = string.unpack('<I1', raw, index)
 	assert(pre == 0, 'following must be zero in buildin types')
 
-	local type_i = types[self._data_type]
-	assert(type_i, 'Type is not supported!!!')
-	if type(type_i) == 'string' then
-		self._val, index = string.unpack(type_i, raw, index)
+	local parser = get_format_parser(self:format())
+	assert(parser, 'Type is not supported!!!')
+	if type(parser) == 'string' then
+		self._val, index = string.unpack(parser, raw, index)
 	else
-		self._val, index = type_i.decode(raw, index)
+		self._val, index = parser.decode(raw, index)
 	end
-
-	-- print('DATA_E', self._val)
 
 	return index
 end
