@@ -1,41 +1,71 @@
 local class = require 'middleclass'
---local seg_parser = require 'enip.cip.segment.parser'
-local seg_path = require 'enip.cip.segment.path'
+local serializable = require 'enip.serializable'
+local epath = require 'encip.cip.segment.epath'
 
-local req = class('enip.cip.request.base')
+local req = class('enip.cip.request.base', base)
 
 function req:initialize(service_code, request_path)
-	self._code = service_code
+	self._service = service_code or -1
+	if not request_path then
+		return
+	end
+
 	if type(request_path) == 'string' then
-		request_path = seg_path:new(request_path)
+		request_path = seg_epath:new(request_path)
 	end
 	self._path = request_path
 end
 
+function req:service()
+	return self._service
+end
+
+function req:path()
+	return self._path
+end
+
 function req:__tostring()
-	return string.format('CODE: %02X\tPATH: %s', self._code, tostring(self._path))
+	return string.format(self.name..'\tService: %02X\tPath: %s',
+		self._service, tostring(self._path))
+end
+
+function req:data()
+	assert(nil, "Not Implemented")
+end
+
+function req:encode()
+	assert(nil, "Not Implemented")
+end
+
+function req:decode(raw, index)
+	assert(nil, "Not Implemented")
 end
 
 function req:to_hex()
-	assert(self._path, "Path is missing")
-	local path = self._path.to_hex and self._path:to_hex() or tostring(self._path)
-	--local data = self._data.to_hex and self._data:to_hex() or tostring(self._data)
-	local data = self.encode and self:encode() or ''
-	return string.pack('<I1I1', self._code, string.len(path) // 2)..path..data
+	local path_raw = self._path:to_hex()
+	assert(string.len(path_raw) % 2 == 0)
+	local path_len = string.len(path_raw) // 2
+
+	local hdr = string.pack('<I1I1', self._service, path_len)
+
+	local data_raw = self:encode()
+
+	return hdr..path_raw..data_raw
 end
 
 function req:from_hex(raw, index)
 	local path_len = 0
-	self._code, path_len, index = string.unpack('<I1I1', raw, index)
-	
-	path_len = path_len * 2
-	local path = string.sub(raw, index, index + path_len)
-	--local data, index = seg_parser(raw, index + path_len + 1)
-	if self.decode then
-		index = self:decode(raw, index + path_len + 1)
-	end
+	self._service, path_len, index = string.unpack('<I1I1', raw, index)
 
-	return index
+	local start = index
+	local path = epath:new()
+
+	index = path:from_hex(raw, index)
+	assert(index == start + path_len * 2, "EPATH decode error")
+
+	self._path = path
+
+	return self:decode(raw, index)
 end
 
 return req

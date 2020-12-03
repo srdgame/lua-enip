@@ -12,39 +12,54 @@ local symbolic = require 'enip.cip.segment.symbolic'
 local data = require 'enip.cip.segment.data'
 local parser = require 'enip.cip.segment.parser'
 
-local chain = class('enip.cip.segment.chain', base)
+local object_path = class('enip.cip.segment.object_path', base)
+
+object_path.static.easy_create = function(class, instance, attribute, member)
+	local o = object_path:new()
+	o:append_logical(logical.SUB_TYPES.CLASS_ID, class)
+	if instance ~= nil then
+		o:append_logical(logical.SUB_TYPES.INSTANCE_ID, instance)
+	end
+	if attribute ~= nil then
+		o:append_logical(logical.SUB_TYPES.ATTRIBUTE_ID, attribute)
+	end
+	if member ~= nil then
+		o:append_logical(logical.SUB_TYPES.MEMBER_ID, member)
+	end
+end
 
 ---
 -- pad: whether the logical segment in Pad or Packed format
 --		default is packed
-function chain:initialize(pad)
+function object_path:initialize(pad)
 	self._pad = pad
 	self._segments = {}
 end
 
-function chain:pad()
+function object_path:pad()
 	return self._pad
 end
 
-function chain:segments()
+function object_path:segments()
 	return self._segments
 end
 
 local ltypes = logical.SUB_TYPES
+
 local logical_type_level = {
 	[ltypes.CLASS_ID] = {19},
 	[ltypes.INSTANCE_ID] = {29},
+	[ltypes.CONNECTION_POINT] = {29,30},
 	[ltypes.ATTRIBUTE_ID] = {39},
 	[ltypes.MEMBER_ID] = {30,40},
-	[ltypes.CONNECTION_POINT] = {29,30},
 }
 
 local symbolic_type_level = {
-	[ltypes.MEMBER_ID] = [19],
-	[ltypes.CONNECTION_POINT] = [19],
+	[ltypes.MEMBER_ID] = {19},
+	[ltypes.CONNECTION_POINT] = {19},
 }
 
-function chain:append(seg)
+function object_path:append(seg)
 	if seg:type() == seg_base.TYPES.SYMBOLIC then
 		assert(#self._segments == 0, "Symbolic ID must be the first segment")
 	else
@@ -62,23 +77,21 @@ function chain:append(seg)
 	table.insert(self._segments, seg)
 end
 
-function chain:append_symbolic(val, ext_format, numeric_type)
+function object_path:append_symbolic(val, ext_format, numeric_type)
 	local seg = symbolic:new(val, ext_format, numeric_type)
 	return self:append(seg)
 end
 
-function chain:append_logical(logical_type, logical_fmt, value)
+function object_path:append_logical(logical_type, logical_fmt, value)
 	local seg = logical:new(logical_type, logical_fmt, value, self._pad)
 	return self:append(seg)
 end
 
-function chain:segments()
+function object_path:segments()
 	return self._segments
 end
 
-function chain:to_hex()
-	assert(self._path)
-
+function object_path:to_hex()
 	local raw = {}
 	for _, seg in ipairs(self._segments) do
 		raw[#raw + 1] = seg:to_hex()
@@ -90,7 +103,7 @@ function chain:to_hex()
 end
 
 
-function chain:from_hex(raw, index)
+function object_path:from_hex(raw, index)
 	logger.dump(self.name..'.from_hex', raw, index)
 	--- Clear the segments
 	self._segments = {}
@@ -101,13 +114,13 @@ function chain:from_hex(raw, index)
 		if seg:type() == seg_base.TYPES.SYMBOLIC or
 			seg:type() == seg_base.TYPES.LOGICAL then
 			table.insert(self._segments, seg)
-			index = new_index
 		else
 			break
 		end
+		index = new_index
 	end
 
 	return index
 end
 
-return chain
+return object_path

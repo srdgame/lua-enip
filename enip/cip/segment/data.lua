@@ -1,8 +1,8 @@
 local class		= require 'middleclass'
 local logger	= require 'enip.logger'
 local base		= require 'enip.cip.segment.base'
-local ansi		= require 'enip.cip.segment.ansi'
-local simple	= require 'enip.cip.segment.simple'
+local ansi		= require 'enip.cip.segment.data.ansi'
+local simple	= require 'enip.cip.segment.data.simple'
 
 local seg = class('enip.cip.segment.data', base)
 

@@ -1,5 +1,6 @@
 local class = require 'middleclass'
 local base = require 'enip.cip.segment.base'
+local special = require 'enip.cip.segment.logical.special'
 
 local logical = class('enip.cip.segment.logical', base)
 
@@ -21,9 +22,19 @@ logical.static.FORMATS = {
 	RESERVED	= 0x3, -- Reserved
 }
 
-function logical:initialize(logical_type, logical_fmt, value, pad)
+local function guess_fmt(value)
+	if value <= 0xFF then
+		return logical.static.FORMATS.USINT
+	end
+	if value <= 0xFFFF then
+		return logical.static.FORMATS.UINT
+	end
+	return logical.static.FORMATS.UDINT
+end
+
+function logical:initialize(logical_type, value, pad)
 	local logical_type = logical_type or 0
-	local logical_fmt = logical_fmt or 0
+	local logica_fmt = guess_fmt(value)
 
 	local fmt = (logical_type << 2) + logical_fmt
 	--- Validation
@@ -35,7 +46,7 @@ function logical:initialize(logical_type, logical_fmt, value, pad)
 		-- Only 8-Bit Service ID Segment defined in specs
 		assert(logical_fmt == logical.static.FORMATS.USINT)
 	end
-	if logical_type == logical.static.SUB_TYPES.SERVICE_ID then
+	if logical_type == logical.static.SUB_TYPES.SPECIAL then
 		-- Only Electronic Key Segment defined in specs
 		assert(logical_fmt == logical.static.FORMATS.USINT)
 	end
@@ -75,7 +86,11 @@ function logical:encode()
 	local raw = nil
 	local fmt = self:value_format()
 	if fmt == logical.static.FORMATS.USINT then
-		raw = string.pack('<I1', self._value)
+		if self:sub_type() == logical.static.SUB_TYPES.SPECIAL then
+			raw = self._value:to_hex()
+		else
+			raw = string.pack('<I1', self._value)
+		end
 	end
 	if fmt == logical.static.FORMATS.UINT then
 		raw = string.pack('<I2', self._value)
@@ -95,7 +110,12 @@ function logical:decode(raw, index)
 	local index = index or 1
 	local fmt = self:value_format()
 	if fmt == logical.static.FORMATS.USINT then
-		self._value, index = string.unpack('<I1', raw, index)
+		if self:sub_type() == logical.static.SUB_TYPES.SPECIAL then
+			self._value = special:new()
+			index = self._value:from_hex(raw, index)
+		else
+			self._value, index = string.unpack('<I1', raw, index)
+		end
 	end
 	if fmt == logical.static.FORMATS.UINT then
 		index = self._pad and index + 1 or index

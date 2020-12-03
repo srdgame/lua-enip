@@ -1,11 +1,14 @@
 local class = require 'middleclass'
+local logger = require 'enip.logger'
 local types = require 'enip.cip.types'
 local logical = require 'enip.cip.segment.logical'
+local parser = require 'enip.cip.reply.parser'
+local base = require 'enip.cip.reply.base'
 
-local mr = class('enip.cip.reply.common.multi_service_packet')
+local mr = class('enip.cip.reply.common.multi_service_packet', base)
 
-function mr:initialize(replies)
-	self._service_code = types.SERVICES.MULTI_SRV_PACK
+function mr:initialize(replies, status, ext_status)
+	base.initialize(self, types.SERVICES.MULTI_SRV_PACK, status, ext_status)
 	self._replies = replies
 end
 
@@ -13,39 +16,34 @@ function mr:replies()
 	return self._replies
 end
 
-function mr:to_hex()
-	assert(self._service_code, 'Service code missing')
+function mr:encode()
 	assert(self._requests, 'Data is missing')
 
 	local count = #self._requests
+
 	local offsets = {}
-	local request_data = {}
+	local reply_data = {}
 	for _, v in ipairs(self._requests) do
 		local data = v:to_hex()
-		request_data[#servcie_data] = data
+		reply_data[#servcie_data] = data
 		offsets[#offsets + 1] = string.len(data)
 	end
 
 	local data = {
 		string.pack('<I2', count)
 	}
-	local offset = 2 * ( 1 + #offsets)
+
+	local offset = 2 * ( 1 + count)
 	for _, v in ipairs(offsets) do
 		data[#data + 1] = string.pack('<I2', offset)
 		offset = offset + v
 	end
 
-	return hdr..table.concat(data)..table.concat(request_data)
+	return table.concat(data)..table.concat(reply_data)
 end
 
 function mr:from_hex(raw, index)
-	--[[
-	local basexx = require 'basexx'
-	print(basexx.to_hex(string.sub(raw, index)))
-	]]--
-
-	local parser = require 'enip.cip.reply.parser'
-
+	local start = index
 	local count = 0
 	count, index = string.unpack('<I2', raw, index)
 
@@ -53,20 +51,23 @@ function mr:from_hex(raw, index)
 	for i = 1, count do
 		offsets[#offsets + 1], index = string.unpack('<I2', raw, index)
 	end
-	local base_index = index
 
 	local replies = {}
 	for i = 1, count do
 		local offset = offsets[i] - (1 + count) * 2
-		assert(offset >= index - base_index, "Offset error!!!")
-		if offset > index - base_index then
-			index = base_index + offset
+
+		assert(offsets[i] >= index - start, "Offset error!!!")
+		if offsets[i] > index - start then
+			logger.log('INFO', "Correct offset. i:%d index:%d start:%d offset[i]:%d",
+				i, index, start, offset[i])
+			index = start + offsets[i]
 		end
 
-		local data = nil
-		data, index = parser(raw, index)
+		local data, index = parser(raw, index)
 		replies[#replies + 1] = data
 	end
+	assert(offsets[count] >= index - start, "Offset error!!!")
+
 	self._replies = replies
 end
 

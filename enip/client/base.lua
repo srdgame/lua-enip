@@ -1,6 +1,6 @@
 local class = require 'middleclass'
 local cip_types = require 'enip.cip.types'
-local cip_route_path = require 'enip.cip.segment.route_path'
+local cip_port = require 'enip.cip.segment.port'
 
 local session = require 'enip.utils.session'
 local enip_conn_path = require 'enip.utils.conn_path'
@@ -21,7 +21,7 @@ function client:conn_path()
 end
 
 function client:route_path()
-	return cip_route_path:new(self._route_path:port(), self._route_path:link())
+	return cip_port:new(self._route_path:port(), self._route_path:link())
 end
 
 --- Start the Register Session stuff

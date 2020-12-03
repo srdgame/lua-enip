@@ -1,12 +1,12 @@
 local class = require 'middleclass'
 local types = require 'enip.cip.types'
-local logical = require 'enip.cip.segment.logical'
-local logical_path = require 'enip.cip.segment.logical_path'
+local object_path = require 'enip.cip.segment.object_path'
+local base = require 'enip.cip.request.base'
 
-local mr = class('enip.cip.request.common.multi_service_packet')
+local mr = class('enip.cip.request.common.multi_service_packet', base)
 
-function mr:initialize(requests)
-	self._service_code = types.SERVICES.MULTI_SRV_PACK
+function mr:initialize(object_path, requests)
+	base.initialize(self, types.SERVICES.MULTI_SRV_PACK, object_path)
 	self._requests = requests
 end
 
@@ -14,42 +14,62 @@ function mr:requests()
 	return self._requests
 end
 
-function mr:to_hex()
-	assert(self._service_code, 'Service code missing')
+function mr:encode()
 	assert(self._requests, 'Data is missing')
 
-	local hdr_srv = string.pack('<I1I1', self._service_code, 0x02)
-	local path = logical_path:new(0x02, 0x01)
-	--[[
-	local class_id = logical:new(logical.TYPES.CLASS_ID, logical.FORMATS.USINT, 0x02)
-	local inst_id = logical:new(logical.TYPES.INSTANCE_ID, logical.FORMATS.USINT, 0x01)
-	local hdr = hdr_srv..class_id:to_hex()..inst_id:to_hex()
-	]]--
-	local hdr = hdr_srv..path:to_hex()
+	local count = #self._requests -- Request Ojbect count
+	local offsets = {}		-- Offset map
+	local request_data = {}		-- Request Object data
 
-	local count = #self._requests
-	local offsets = {}
-	local request_data = {}
 	for _, v in ipairs(self._requests) do
 		local data = v:to_hex()
 		request_data[#request_data + 1] = data
 		offsets[#offsets + 1] = string.len(data)
 	end
 
+	--- Create offset data map
 	local data = {
 		string.pack('<I2', count)
 	}
-	local offset = 2 * ( 1 + #offsets)
+
+	-- Base offset
+	local offset = 2 * ( 1 + count)
+
+	-- Update offsets
 	for _, v in ipairs(offsets) do
 		data[#data + 1] = string.pack('<I2', offset)
 		offset = offset + v
 	end
 
-	return hdr..table.concat(data)..table.concat(request_data)
+	return table.concat(data)..table.concat(request_data)
 end
 
-function mr:from_hex(raw, index)
-	assert(nil, "Not implemented!")
+function mr:decode(raw, index)
+	local start = index
+	local count, index = string.unpack('<I2', raw, index)
+
+	local offsets = {}
+	for i = 1, count do
+		local offset, index = string.unpack('<I2', raw, index)
+		offsets[#offsets + 1] = offset
+	end
+
+	local requests = {}
+	for i = 1, count do
+		assert(offsets[i] >= index - start, 'Offset error!')
+
+		if offsets[i] > index - start then
+			logger.log('INFO', "Correct offset. i:%d index:%d start:%d offset[i]:%d",
+				i, index, start, offset[i])
+			index = start + offsets[i]
+		end
+
+		local req, index = parser(raw, index)
+		requests[#requests + 1] = req
+	end
+	assert(offsets[count] >= index - start, 'Offset error!')
+
+	return index
 end
 
 return mr

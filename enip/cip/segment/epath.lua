@@ -59,16 +59,23 @@ function epath:from_hex(raw, index)
 	logger.dump(self.name..'.from_hex', raw, index)
 	--- Clear the segments
 	self._segments = {}
+	self._path = nil
 
 	while index < string.len(raw) do
 		local seg, index = parser(raw, index)
 		if seg:type() == seg_base.TYPES.DATA then
 			assert(seg:format() == data.FORMATS.ANSI, "Path must be ANSI extended symbol segment")
+			if self._path then
+				table.insert(self._segments, self._path)
+			end
 			self._path = seg
-			break
-		else
+		elseif seg:type() == seg_base.TYPES.LOGICAL or
+			seg:type() == seg_base.TYPES.SYMBOLIC then
 			table.insert(self._segments, seg)
+		else
+			break
 		end
+		index = new_index
 	end
 
 	return index

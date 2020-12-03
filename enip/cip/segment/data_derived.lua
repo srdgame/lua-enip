@@ -28,7 +28,7 @@ seg.static.parse = function(raw, index)
 end
 
 function seg:initialize(fmt)
-	base.initialize(base.TYPES.DATA_DERIVED, fmt)
+	base.initialize(self, base.TYPES.DATA_DERIVED, fmt)
 end
 
 function seg:parse_value(raw, index)

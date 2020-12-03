@@ -1,6 +1,6 @@
 local class = require 'middleclass'
-local serializable = require 'serializable'
-local logger = require 'logger'
+local serializable = require 'enip.serializable'
+local logger = require 'enip.logger'
 
 local seg = class('enip.cip.segment.base', serializable)
 
