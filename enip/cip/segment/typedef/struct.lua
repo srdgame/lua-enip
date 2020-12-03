@@ -6,7 +6,7 @@ local base = require 'enip.cip.segment.data_derived'
 local formal = class('enip.cip.segment.typedef.formal', base)
 
 function formal:initialize(attrs)
-	base.initialize(self, base.FORMAT.FORMAL)
+	base.initialize(self, base.FORMAT.STRUCT)
 	self._attrs = attrs
 end
 

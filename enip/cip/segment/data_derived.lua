@@ -4,9 +4,9 @@ local base = require 'enip.cip.segment.base'
 local seg = class('enip.cip.segment.data_derived', base)
 
 seg.static.FORMATS = {
-	ABB_FORMAL	= 0x00,
+	ABB_STRUCT	= 0x00,
 	ABB_ARRAY	= 0x01,
-	FORMAL		= 0x02,
+	STRUCT		= 0x02,
 	ARRAY		= 0x03,
 }
 
