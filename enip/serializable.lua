@@ -2,6 +2,9 @@ local class = require 'middleclass'
 
 local M = class('enip.serializable')
 
+function M:initialize()
+end
+
 function M:to_hex()
 	assert(nil, "Not implemented!")
 end
