@@ -6,9 +6,12 @@ local data = require 'enip.cip.segment.data'
 
 local epath = base:subclass('enip.cip.segment.epath')
 
-function epath:initialize(packed)
+function epath:initialize(path, packed)
 	self._pad = packed and false or true
 	self._segments = {}
+	if path then
+		self:append(path)
+	end
 end
 
 function epath:pad()

@@ -8,8 +8,8 @@ function ansi:initialize(symbol)
 end
 
 function ansi:to_hex()
-	local path_len = string.len(self.symbol)
-	local data = string.pack('<I1', path_len)..self.symbol
+	local path_len = string.len(self._symbol)
+	local data = string.pack('<I1', path_len)..self._symbol
 	if path_len % 2 == 1 then
 		data = data..'\0' --- Pading the string
 	end

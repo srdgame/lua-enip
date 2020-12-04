@@ -1,5 +1,4 @@
 local types = require 'enip.cip.types'
-local epath = require 'enip.cip.segment.epath'
 local base = require 'enip.cip.request.base'
 
 local mr = base:subclass('enip.cip.request.multi_srv_pack')

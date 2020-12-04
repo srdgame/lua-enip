@@ -11,7 +11,7 @@ seg.static.FORMATS = {
 }
 
 function seg:initialize(format, ...)
-	base.initialize(self, base.TYPES.DATA, data_format)
+	base.initialize(self, base.TYPES.DATA, format)
 	if format == seg.static.FORMATS.SIMPLE then
 		self._val = simple:new(...)
 	end
