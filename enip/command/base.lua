@@ -44,9 +44,9 @@ command.static.min_size = function()
 	return string.packsize(header_fmt)
 end
 
-command.static.data_len = function(raw, index)
+command.static.parse_header = function(raw, index)
 	local command, len = string.unpack(header_fmt, raw, index)	
-	return len
+	return command, len
 end
 
 --[[

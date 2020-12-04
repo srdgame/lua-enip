@@ -1,29 +1,13 @@
 
-local header = require 'enip.command.header' 
-local types = require 'enip.command.types' 
+local base = require 'enip.command.base' 
+local pfinder = require 'enip.utils.pfinder'
 
+local finder = pfinder(base.COMMAND, 'enip.reply')
 
-local function find_package_by_command(command)
-	for k, v in pairs(types.CMD) do
-		if tonumber(v) == tonumber(command) then
-			local r, p = pcall(require, 'enip.reply.' .. string.lower(k))
-			if not r then
-				return nil, p
-			end
-			return p
-		end
-	end
-
-	return nil, "Not found"
-end
-
-return function(raw, index)
-	local h = header:new()
-	h:from_hex(raw, index)
-	local cmd = h:command()
-
-	local p, err = find_package_by_command(cmd)
+return function(command, raw, index)
+	local p, err = finder(command)
 	assert(p, err)
+
 	local reply = p:new()
 	index = reply:from_hex(raw, index)
 

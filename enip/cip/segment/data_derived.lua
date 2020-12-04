@@ -1,4 +1,5 @@
 local class = require 'middleclass'
+local pfinder = require 'enip.utils.pfinder'
 local base = require 'enip.cip.segment.base'
 
 local seg = class('enip.cip.segment.data_derived', base)
@@ -10,21 +11,18 @@ seg.static.FORMATS = {
 	ARRAY		= 0x03,
 }
 
+local finder = pfinder(seg.static.FORMATS, 'enip.cip.segment.typedef')
+
 seg.static.parse = function(raw, index)
 	local seg_type, seg_fmt, index = base.static.parse_segment_type(raw, index)
 	assert(seg_type == base.TYPES.DATA_DERIVED, "Invalid segment type!")
 
-	for k, v in pairs(seg.static.FORMATS) do
-		if v == tonumber(seg_fmt) then
-			local r, m = pcall(require, 'enip.cip.segment.typedef.'..string.lower(k))
-			assert(r, m)
-			local o = m:new()
-			index = o:from_hex(raw, index - 1)
-			return o, index
-		end
-	end
+	local m, err = finder(tonumber(seg_fmt))
+	assert(m, err)
 
-	assert(nil, "Invalid format!!!")
+	local o = m:new()
+	index = o:from_hex(raw, index - 1)
+	return o, index
 end
 
 function seg:initialize(fmt)

@@ -1,6 +1,8 @@
 local class = require 'middleclass'
+local base = require 'enip.serializable'
+local pfinder = require 'enip.utils.pfinder'
 
-local item = class('enip.command.item.base')
+local item = class('enip.command.item.base', base)
 
 item.static.TYPES = {
 	NULL				= 0x0000,	-- NULL
@@ -13,6 +15,25 @@ item.static.TYPES = {
 	SOCK_ADDR_S			= 0x8002,	-- Socketaddr Info, target to originator
 	SEQUENCED_ADDR		= 0x8002,	-- Sequenced Addresss Item
 }
+
+local p_finder = pfinder(item.static.TYPES, 'enip.command.item')
+
+item.static.parse = function(raw, index)
+	local item_code, item_length = string.unpack('<I2I2', raw, index)
+	local p, err = p_finder(item_code)
+	assert(p, err)
+
+	local item = p:new()
+	index = item:from_hex(raw, index)
+	return item, index
+end
+
+item.static.build = function(type_code, ...)
+	local p, err = p_finder(type_code)
+	assert(p, err)
+
+	return p:new(...)
+end
 
 function item:initialize(type_id)
 	self._type_id = type_id or 0x0000 --- NULL

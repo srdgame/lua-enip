@@ -1,11 +1,10 @@
 local class = require 'middleclass'
-local types = require 'enip.command.item.types'
-local item_base = require 'enip.command.item.base'
+local base = require 'enip.command.item.base'
 
-local item = class('enip.command.item.connected_addr', item_base)
+local item = class('enip.command.item.connected_addr', base)
 
 function item:initialize(conn_identity)
-	item_base.initialize(self, types.CONNECTED_ADDR)
+	base.initialize(self, base.TYPES.CONNECTED_ADDR)
 	self._conn_identity = tonumber(conn_identity) or 0
 end
 

@@ -1,11 +1,10 @@
 local class = require 'middleclass'
-local item_base = require 'enip.command.item.base'
-local types = require 'enip.command.item.types'
+local base = require 'enip.command.item.base'
 
-local null = class('enip.command.item.null', item_base)
+local null = class('enip.command.item.null', base)
 
 function null:intialize()
-	item_base.initialize(self, types.NULL)
+	base.initialize(self, base.TYPES.NULL)
 end
 
 return null

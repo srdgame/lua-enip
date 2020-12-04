@@ -1,8 +1,9 @@
 local class = require 'middleclass'
-local serializable = require 'enip.serializable'
 local logger = require 'enip.logger'
+local base = require 'enip.serializable'
+local pfinder = require 'enip.utils.pfinder'
 
-local seg = class('enip.cip.segment.base', serializable)
+local seg = class('enip.cip.segment.base', base)
 
 seg.static.TYPES = {
 	PORT			= 0,
@@ -14,15 +15,6 @@ seg.static.TYPES = {
 	DATA_SIMPLE		= 6,
 	RESERVED		= 7,
 }
-
-seg.static.type_name = function(typ)
-	for k, v in pairs(seg.static.TYPES) do
-		if v == tonumber(typ) then
-			return k
-		end
-	end
-	return 'UNKNOWN'
-end
 
 local function parse_segment_type(raw, index)
 	local tf, index = string.unpack('<I1', raw, index)
@@ -40,12 +32,12 @@ end
 seg.static.parse_segment_type = parse_segment_type
 seg.static.encode_segment_type = encode_segment_type
 
+local finder = pfinder(seg.static.TYPES, 'enip.cip.segment')
 seg.static.parse = function(raw, index)
 	local seg_type, seg_fmt, index = parse_segment_type(raw, index)
-	local type_name = seg.static.type_name(seg_type)
 
-	local r, m = pcall(require, 'enip.cip.segment.'..type_name)
-	assert(r, string.format('Segment type %s[%02X] not found!', type_name, seg_type))	
+	local m, err = finder(seg_type)
+	assert(m, err)
 
 	if not m.static.parse then
 		local o = m:new(seg_type, seg_fmt)
@@ -57,6 +49,7 @@ seg.static.parse = function(raw, index)
 end
 
 function seg:initialize(seg_type, seg_fmt)
+	base.initialize(self)
 	self._type = seg_type and (seg_type & 0x07) or -1
 	self._fmt = seg_fmt and ((seg_fmt or 0) & 0x1F) or -1
 end
