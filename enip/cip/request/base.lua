@@ -25,8 +25,8 @@ function req:path()
 end
 
 function req:__tostring()
-	return string.format(self.name..'\tService: %02X\tPath: %s',
-		self._service, tostring(self._path))
+	return string.format('Service: %02X\tPath: %s',
+		self._service, tostring(self._path or "NIL"))
 end
 
 function req:data()
@@ -42,6 +42,8 @@ function req:decode(raw, index)
 end
 
 function req:to_hex()
+	assert(self._path, "Path is missing")
+
 	local path_raw = self._path:to_hex()
 	assert(string.len(path_raw) % 2 == 0)
 	local path_len = string.len(path_raw) // 2

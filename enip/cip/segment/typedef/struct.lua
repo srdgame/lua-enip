@@ -29,13 +29,13 @@ function formal:encode()
 	end
 	raw = table.concat(raw)
 
-	logger.dump(self.name..'.encode', string.pack('s1', raw))
+	logger.dump('encode', string.pack('s1', raw))
 
 	return string.pack('s1', raw)
 end
 
 function formal:decode(raw, index)
-	logger.dump(self.name..'.decode', raw, index)
+	logger.dump('decode', raw, index)
 
 	local len, index = string.unpack('<I1', raw, index)
 

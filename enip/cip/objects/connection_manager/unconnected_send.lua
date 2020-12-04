@@ -12,6 +12,7 @@ function req:initialize(connection_timing, request, route_path)
 end
 
 function req:to_hex()
+	assert(self._request, "Request is missing")
 	local data = {}
 	-- Header
 	data[#data + 1] = self._connection_timing:to_hex()

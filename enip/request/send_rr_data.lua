@@ -15,8 +15,10 @@ function req:initialize(session, data, timeout)
 end
 
 function req:encode()
+	assert(self._data, "Data is missing")
+
 	local hdr = string.pack('<I4I2', self._interface_handle, self._timeout)
-	return hdr..data:to_hex()
+	return hdr..self._data:to_hex()
 end
 
 function req:decode(raw, index)

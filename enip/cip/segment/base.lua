@@ -65,13 +65,13 @@ function seg:to_hex()
 
 	local s = string.pack('<I1', self:type_num())
 
-	logger.dump(self.name..'.to_hex', s)
+	logger.dump('to_hex', s)
 
 	return s..self:encode()
 end
 
 function seg:from_hex(raw, index)
-	logger.dump(self.name..'.from_hex', raw, index)
+	logger.dump('from_hex', raw, index)
 
 	self._type, self._fmt, index = seg.static.parse_segment_type(raw, index)
 
@@ -91,7 +91,7 @@ function seg:type_num()
 end
 
 function seg:value()
-	assert(nil, "Not implemented")
+	return nil
 end
 
 function seg:parser()

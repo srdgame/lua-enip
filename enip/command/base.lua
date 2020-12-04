@@ -82,6 +82,9 @@ end
 local hdr_fmt = 'CMD:%02X\tLEN:%d]\tSESSION:%04X\tSTATUS:%04X\tCTX:%s\tOPTS:%04X'
 
 function command:__tostring()
+	if not self._session then
+		return 'COMMAND not initialized'
+	end
 	return string.format(hdr_fmt, self._command, self._length, self._session:session(), 
 		self._status, basexx.to_hex(self._session:context()), self._options)
 end

@@ -1,16 +1,17 @@
 local cip_parser = require 'enip.cip.parser'
-local types = require 'enip.command.item.types'
 local base = require 'enip.command.item.base'
 
 local item = base:subclass('enip.command.item.unconnected')
 
 function item:initialize(cip)
-	base.initialize(self, types.UNCONNECTED)
-	self._cip = cip or ''
+	base.initialize(self, base.TYPES.UNCONNECTED)
+	self._cip = cip
+	assert(self._cip)
 end
 
 function item:encode()
-	return self._cip.to_hex and self._cip:to_hex() or tostring(self._cip)
+	assert(self._cip)
+	return self._cip:to_hex()
 end
 
 function item:decode(raw, index)

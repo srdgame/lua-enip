@@ -55,7 +55,7 @@ function port:encode()
 		end
 	end
 
-	logger.dump(self.name..'.encode', raw)
+	logger.dump('encode', raw)
 	
 	return raw
 end
@@ -63,7 +63,7 @@ end
 function port:decode(raw, index)
 	local fmt = self:format()
 
-	logger.dump(self.name..'.decode', raw, index)
+	logger.dump('decode', raw, index)
 
 	self._port = fmt & 0x0F
 	self._port_ext = nil

@@ -8,6 +8,9 @@ local cip_req_multi = require 'enip.cip.request.multi_srv_pack'
 local cip_write_tag = require 'enip.cip.request.write_tag'
 local cip_types = require 'enip.cip.types'
 local data_simple = require 'enip.cip.segment.data_simple'
+local object_path = require 'enip.cip.segment.object_path'
+local timing = require 'enip.cip.objects.connection_manager.connection_timing'
+local unconnected_send = require 'enip.cip.objects.connection_manager.unconnected_send'
 
 local client = base:subclass('enip.client.unconnected')
 
@@ -33,8 +36,8 @@ function client:read_tag(tag_path, tag_type, tag_count, response)
 	local read_req = cip_read_tag:new(tag_path, tag_count)
 
 	--- Send RR Data Request
-	local null = command_item.build(item_types.NULL) -- NULL Address item required by Unconnected Message
-	local unconnected = command_item.build(item_types.UNCONNECTED, read_req)
+	local null = command_item.build(comand_item.TYPES.NULL) -- NULL Address item required by Unconnected Message
+	local unconnected = command_item.build(comand_item.TYPES.UNCONNECTED, read_req)
 
 	local data = command_data:new({null, unconnected})
 
@@ -48,7 +51,7 @@ function client:read_tag(tag_path, tag_type, tag_count, response)
 		local command_data = reply:data()
 
 		--- Find the unconnected item
-		local item, err = command_data:find(item_types.UNCONNECTED)
+		local item, err = command_data:find(command_item.TYPES.UNCONNECTED)
 		if not item then
 			return response(nil, 'ERROR: Item not found')
 		end
@@ -75,14 +78,12 @@ function client:read_tags(tags, response)
 
 	local route_path = self:route_path()
 	local message_router = object_path.easy_create(cip_types.OBJECT.CONNECTION_MANAGER, 1)
-	local read_req = cip_req_multi:new(requests, message_router)
-
-	local timing = cip_obj_cm_connection_timing:new()
-	local send_obj = cip_obj_cm_unconnected_send(timing, read_req, route_path)
+	local read_req = cip_req_multi:new(message_router, requests)
+	local send_obj = unconnected_send:new(timing:new(), read_req, route_path)
 
 	--- Send RR Data Request
-	local null = item_parser.build(item_types.NULL)
-	local unconnected = item_parser.build(item_types.UNCONNECTED, read_req)
+	local null = command_item.build(command_item.TYPES.NULL)
+	local unconnected = command_item.build(command_item.TYPES.UNCONNECTED, send_obj)
 
 	local data = command_data:new({null, unconnected})
 

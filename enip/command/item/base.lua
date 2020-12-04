@@ -31,7 +31,7 @@ item.static.build = function(type_code, ...)
 	local p, err = p_finder(type_code)
 	assert(p, err)
 
-	return p:new(...)
+	return assert(p:new(...), "Create item failed!!")
 end
 
 function item:initialize(type_id)

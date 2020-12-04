@@ -45,7 +45,7 @@ function array:encode()
 
 	raw = table.concat(raw)
 
-	logger.dump(self.name..'.encode', string.pack('s1', raw))
+	logger.dump('encode', string.pack('s1', raw))
 
 	return string.pack('s1', raw)
 end
@@ -58,7 +58,7 @@ local function decode_dimension(tag, raw, index)
 end
 
 function array:decode(raw, index)
-	logger.dump(self.name..'.decode', raw, index)
+	logger.dump('decode', raw, index)
 
 	local org_index = index or 1
 	local len, index = string.unpack('<I1', raw, index)

@@ -35,7 +35,7 @@ end
 
 function logical:initialize(logical_type, value, pad)
 	local logical_type = logical_type or 0
-	local logica_fmt = guess_fmt(value)
+	local logical_fmt = guess_fmt(value)
 
 	local fmt = (logical_type << 2) + logical_fmt
 	--- Validation

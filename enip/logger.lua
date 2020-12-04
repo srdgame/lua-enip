@@ -1,10 +1,11 @@
 local class = require 'middleclass'
-local print = print
 
 local logger = {}
 
 -- Default is print
-logger.print = print
+logger.print = function(...)
+	print(...)
+end
 
 logger.dump = function(info, raw, index)
 	local r, basexx = pcall(require, 'basexx')

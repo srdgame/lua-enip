@@ -25,7 +25,7 @@ function command_data:to_hex()
 
 	data[1] = string.pack('<I2', count)
 	for _, v in ipairs(self._items) do
-		data[#data + 1] = v.to_hex and v:to_hex() or tostring(v)
+		data[#data + 1] = v:to_hex()
 	end
 
 	return table.concat(data)

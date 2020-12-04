@@ -24,6 +24,7 @@ object_path.static.easy_create = function(class, instance, attribute, member)
 	if member ~= nil then
 		o:append_logical(logical.SUB_TYPES.MEMBER_ID, member)
 	end
+	return o
 end
 
 ---
@@ -97,13 +98,13 @@ function object_path:to_hex()
 	end
 	raw = table.concat(raw)
 
-	logger.dump(self.name..'.to_hex', raw)
+	logger.dump('to_hex', raw)
 	return raw
 end
 
 
 function object_path:from_hex(raw, index)
-	logger.dump(self.name..'.from_hex', raw, index)
+	logger.dump('from_hex', raw, index)
 	--- Clear the segments
 	self._segments = {}
 

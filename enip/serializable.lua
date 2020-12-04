@@ -13,7 +13,7 @@ function M:from_hex(raw, index)
 	assert(nil, "Not implemented!")
 end
 
-function M.static.easy_create(name, attrs)
+M.static.easy_create = function(name, attrs)
 	local sub = class(name, m)
 	local sub_attrs = attrs or {}
 	function sub:initialize(...)
