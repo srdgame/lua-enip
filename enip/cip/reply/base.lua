@@ -15,7 +15,7 @@ function reply:encode()
 	assert(nil, "Not implemented")
 end
 
-function reply:decode()
+function reply:decode(raw, index)
 	assert(nil, "Not implemented")
 end
 

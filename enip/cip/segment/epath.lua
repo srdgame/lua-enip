@@ -8,8 +8,7 @@ local parser = require 'enip.cip.segment.parser'
 
 local epath = class('enip.cip.segment.epath', base)
 
-function epath:initialize(path, packed)
-	self:set_path(path)
+function epath:initialize(packed)
 	self._pad = packed and false or true
 	self._segments = {}
 end
@@ -18,21 +17,15 @@ function epath:pad()
 	return self._pad
 end
 
-function epath:append(seg)
-	table.insert(self._segments, seg)
+function epath:append(path)
+	if type(path) == 'string' then
+		path = self:path_from_string(path)
+	end
+	table.insert(self._segments, path)
 end
 
-function epath:append_logical(logical_type, logical_fmt, value)
-	local seg = logical:new(logical_type, logical_fmt, value, self._pad)
-	return self:append(seg)
-end
-
-function epath:set_path(path)
-	self._path = data:new(data.FORMATS.ANSI, path)
-end
-
-function epath:path()
-	return self._path
+function epath:path_from_string(path)
+	return data:new(data.FORMATS.ANSI, path)
 end
 
 function epath:segments()
@@ -40,14 +33,12 @@ function epath:segments()
 end
 
 function epath:to_hex()
-	assert(self._path)
+	assert(#self._segments > 0)
 
 	local raw = {}
 	for _, seg in ipairs(self._segments) do
 		raw[#raw + 1] = seg:to_hex()
 	end
-	-- DATA (PATH) Segment 
-	raw[#raw + 1] = self._path:to_hex()
 
 	raw = table.concat(raw)
 
@@ -59,16 +50,12 @@ function epath:from_hex(raw, index)
 	logger.dump(self.name..'.from_hex', raw, index)
 	--- Clear the segments
 	self._segments = {}
-	self._path = nil
 
 	while index < string.len(raw) do
 		local seg, index = parser(raw, index)
 		if seg:type() == seg_base.TYPES.DATA then
 			assert(seg:format() == data.FORMATS.ANSI, "Path must be ANSI extended symbol segment")
-			if self._path then
-				table.insert(self._segments, self._path)
-			end
-			self._path = seg
+			table.insert(self._segments, seg)
 		elseif seg:type() == seg_base.TYPES.LOGICAL or
 			seg:type() == seg_base.TYPES.SYMBOLIC then
 			table.insert(self._segments, seg)

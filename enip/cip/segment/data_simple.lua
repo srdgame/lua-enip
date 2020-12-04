@@ -19,7 +19,7 @@ local data_fmt_map = {
 		end,
 		decode = function(raw, index)
 			local val, index = string.unpack('<I1', raw, index)
-			return val == 1, index
+			return val ~= 0, index
 		end
 	},
 	SINT	= '<i1',
@@ -133,42 +133,44 @@ local function get_format_parser(fmt)
 	end
 end
 
-function buildin:initialize(data_fmt, val)
+function buildin:initialize(data_fmt)
 	base.initialize(self, base.TYPES.DATA_SIMPLE, data_fmt)
-	self._val = val
 end
 
 function buildin:value()
-	return self._val
+	return nil
 end
 
 function buildin:encode()
-	local pre = string.pack('<I1', 0)
-	local parser = get_format_parser(self:format())
-	assert(parser, 'Type is not supported!!!')
-	if type(parser) == 'string' then
-		return pre..string.pack(parser, self._val)
-	else
-		return pre..parser.encode(self._val)
-	end
 end
 
 function buildin:decode(raw, index)
-	self._data_type = type_from_segment_fmt(self:segment_format())
-
-	local pre = 0
-	pre, index = string.unpack('<I1', raw, index)
-	assert(pre == 0, 'following must be zero in buildin types')
-
-	local parser = get_format_parser(self:format())
-	assert(parser, 'Type is not supported!!!')
-	if type(parser) == 'string' then
-		self._val, index = string.unpack(parser, raw, index)
-	else
-		self._val, index = parser.decode(raw, index)
-	end
-
 	return index
+end
+
+function buildin:parser()
+	local obj = self
+	return {
+		encode = function(val)
+			local parser = get_format_parser(obj:format())
+			assert(parser, 'Type is not supported!!!')
+			if type(parser) == 'string' then
+				return string.pack(parser, val)
+			else
+				return parser.encode(val)
+			end
+		end,
+		decode = function(raw, index)
+			obj._data_type = type_from_segment_fmt(obj:segment_format())
+			local parser = get_format_parser(obj:format())
+			assert(parser, 'Type is not supported!!!')
+			if type(parser) == 'string' then
+				return string.unpack(parser, raw, index)
+			else
+				return = parser.decode(raw, index)
+			end
+		end
+	}
 end
 
 return buildin

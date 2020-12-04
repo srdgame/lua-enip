@@ -1,12 +1,12 @@
 local class = require 'middleclass'
 local types = require 'enip.cip.types'
-local object_path = require 'enip.cip.segment.object_path'
+local epath = require 'enip.cip.segment.epath'
 local base = require 'enip.cip.request.base'
 
-local mr = class('enip.cip.request.common.multi_service_packet', base)
+local mr = class('enip.cip.request.multi_srv_pack', base)
 
-function mr:initialize(object_path, requests)
-	base.initialize(self, types.SERVICES.MULTI_SRV_PACK, object_path)
+function mr:initialize(request_path, requests)
+	base.initialize(self, types.SERVICES.MULTI_SRV_PACK, request_path)
 	self._requests = requests
 end
 
@@ -15,7 +15,7 @@ function mr:requests()
 end
 
 function mr:encode()
-	assert(self._requests, 'Data is missing')
+	assert(self._requests, 'Requests is missing')
 
 	local count = #self._requests -- Request Ojbect count
 	local offsets = {}		-- Offset map

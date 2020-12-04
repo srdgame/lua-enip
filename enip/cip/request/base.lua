@@ -11,7 +11,7 @@ function req:initialize(service_code, request_path)
 	end
 
 	if type(request_path) == 'string' then
-		request_path = seg_epath:new(request_path)
+		request_path = epath:new(request_path)
 	end
 	self._path = request_path
 end
@@ -57,11 +57,12 @@ function req:from_hex(raw, index)
 	local path_len = 0
 	self._service, path_len, index = string.unpack('<I1I1', raw, index)
 
-	local start = index
 	local path = epath:new()
 
-	index = path:from_hex(raw, index)
-	assert(index == start + path_len * 2, "EPATH decode error")
+	local path_raw = string.sub(raw, index, index + path_len * 2)
+	index = index + path_len * 2
+	local path_index = path:from_hex(path_raw)
+	assert(path_index == index, "EPATH decode error")
 
 	self._path = path
 

@@ -1,36 +1,71 @@
 local class = require 'middleclass'
-local base = require 'enip.cip.request.base'
 local types = require 'enip.cip.types'
-local data_elem = require 'enip.cip.segment.data_elem'
+local segment = require 'enip.cip.segment.base'
+local data_simple = require 'enip.cip.segment.data_simple'
+local base = require 'enip.cip.request.base'
 
 local req = class('enip.cip.request.write_tag', base)
 
-function req:initialize(path, data_type, value)
+function req:initialize(path, data_type, data)
 	base.initialize(self, types.SERVICES.WRITE_TAG, path)
-	self._data_type = data_type
-	self._value = value
+	if type(data_type) == 'number' then
+		data_type = data_simple:new(data_type)
+	end
+	self._segment = data_type
+	self._data = data
 end
 
 function req:encode()
-	assert(self._data_type, 'Data type is missing')
-	assert(self._value, 'Value is missing')
-	
-	local write_obj = data_elem:new(self._data_type, self._value)
-	local write_obj_hex = write_obj:to_hex()
+	assert(self._segment, 'Data type is missing')
+	assert(self._data, 'Value is missing')
 
-	return string.pack('<I2I2', write_obj:type_num(), 1)..string.sub(write_obj_hex, 3) -- skip the type_number
+	local raw = {}
+	local seg_raw = self._segment:to_hex()
+	raw[#raw + 1] = seg_raw
+	if string.len(seg_raw) % 2 == 1 then
+		raw[#raw + 1] = '\0' -- PAD
+	end
+
+	if self._data then
+		local parser = self._segment.parser()
+		assert(parser, 'Segment needs to have parser if data exists')
+
+		raw[#raw + 1] = string.pack('<I1I1', 1, 0) -- Number of element to write (has to be 1???)
+
+		local data_raw = parser.encode(self._data)
+		raw[#raw + 1] = data_raw
+		if string.len(data_raw) % 2 == 1 then
+			raw[#raw + 1] = '\0' -- PAD
+		end
+	end
+
+	return table.concat(raw)
 end
 
 function req:decode(raw, index)
-	local index = index or 1
-	local obj = data_elem:new()
-	local data = string.sub(raw, index, index + 1) .. string.sub(raw, index + 3)
-	local offset = obj:from_hex(data)
+	local start = index or 1
+	self._segment, index = segment.parse(raw, index)
 
-	self._data_type = obj:data_type()
-	self._value = obj:value()
+	--- PAD
+	if (index - start) % 2 == 1 then
+		local pad, index = string.unpack('I1', raw, index)
+		assert(pad == 0, 'PAD has to be zero')
+	end
 
-	index = index + 2 + offset
+	if self._segment.parser then
+		local count, pad = string.unpack('<I1I1', raw, index)
+		assert(count == 1, pad == 0)
+
+		local parser = self._segment.parser()
+		self._data, index = parser.decode(raw, index)
+	end
+
+	--- PAD
+	if (index - start) % 2 == 1 then
+		local pad, index = string.unpack('I1', raw, index)
+		assert(pad == 0, 'PAD has to be zero')
+	end
+
 	return index
 end
 

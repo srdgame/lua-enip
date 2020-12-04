@@ -1,11 +1,10 @@
 local class = require 'middleclass'
 local logger = require 'enip.logger'
 local types = require 'enip.cip.types'
-local logical = require 'enip.cip.segment.logical'
 local parser = require 'enip.cip.reply.parser'
 local base = require 'enip.cip.reply.base'
 
-local mr = class('enip.cip.reply.common.multi_service_packet', base)
+local mr = class('enip.cip.reply.multi_srv_pack', base)
 
 function mr:initialize(replies, status, ext_status)
 	base.initialize(self, types.SERVICES.MULTI_SRV_PACK, status, ext_status)

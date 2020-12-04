@@ -2,12 +2,11 @@ local types = require 'enip.cip.types'
 local rp_error = require 'enip.cip.reply.error'
 
 local service_class_map = {
-	--[types.SERVICES.MULTI_SRV_PACK] = require 'enip.cip.reply.common.multi_service_packet',
-	[types.SERVICES.MULTI_SRV_PACK] = require 'enip.cip.reply.read_frg',
+	[types.SERVICES.MULTI_SRV_PACK] = require 'enip.cip.reply.multi_srv_pack',
 	[types.SERVICES.READ_TAG] = require 'enip.cip.reply.read_tag',
 	[types.SERVICES.WRITE_TAG] = require 'enip.cip.reply.write_tag',
 	[types.SERVICES.READ_FRG] = require 'enip.cip.reply.read_frg',
-	--[types.SERVICES.WRITE_FRG] = require 'enip.cip.reply.write_frg',
+	[types.SERVICES.WRITE_FRG] = require 'enip.cip.reply.write_frg',
 }
 
 return function(raw, index)

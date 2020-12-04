@@ -44,7 +44,9 @@ seg.static.parse = function(raw, index)
 	local seg_type, seg_fmt, index = parse_segment_type(raw, index)
 	local type_name = seg.static.type_name(seg_type)
 
-	local m = require 'enip.cip.segment.'..type_name
+	local r, m = pcall(require, 'enip.cip.segment.'..type_name)
+	assert(r, string.format('Segment type %s[%02X] not found!', type_name, seg_type))	
+
 	if not m.static.parse then
 		local o = m:new(seg_type, seg_fmt)
 		index = o:from_hex(raw, index - 1)
@@ -97,6 +99,10 @@ function seg:type_num()
 end
 
 function seg:value()
+	assert(nil, "Not implemented")
+end
+
+function seg:parser()
 	assert(nil, "Not implemented")
 end
 

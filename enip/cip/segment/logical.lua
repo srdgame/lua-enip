@@ -4,6 +4,7 @@ local special = require 'enip.cip.segment.logical.special'
 
 local logical = class('enip.cip.segment.logical', base)
 
+--- 3 BITS
 logical.static.SUB_TYPES =  {
 	CLASS_ID			= 0x0,
 	INSTANCE_ID			= 0x1,
@@ -15,6 +16,7 @@ logical.static.SUB_TYPES =  {
 	RESERVED			= 0x7
 }
 
+--- 2 BITS
 logical.static.FORMATS = {
 	USINT		= 0x0, -- 8-bit
 	UINT		= 0x1, -- 16-bit
