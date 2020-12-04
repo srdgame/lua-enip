@@ -1,10 +1,7 @@
-local class = require 'middleclass'
 local base = require 'enip.serializable'
-
 local session = require 'enip.utils.session'
-local types = require 'enip.command.types'
 
-local command = class('enip.command.base', base)
+local command = base:subclass('enip.command.base')
 
 command.static.COMMAND = {
 	NOP					= 0x00, --- TCP
@@ -57,7 +54,8 @@ end
 --]]
 
 function command:initialize(session, command, status)
-	self._command = command or types.CMD.NOP
+	base.initialize(self)
+	self._command = command or command.static.COMMAND.NOP
 	self._status = status or 0
 	self._options = 0 -- Must be zero
 	self._session = session

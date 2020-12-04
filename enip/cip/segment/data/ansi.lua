@@ -1,10 +1,9 @@
-local class = require 'middleclass'
-
 local base = require 'enip.serializable'
 
-local ansi = class('enip.cip.segment.data.ansi', base)
+local ansi = base:subclass('enip.cip.segment.data.ansi')
 
 function ansi:initialize(symbol)
+	base.initialize(self)
 	self._symbol = symbol
 end
 

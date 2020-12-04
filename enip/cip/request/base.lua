@@ -1,10 +1,10 @@
-local class = require 'middleclass'
-local serializable = require 'enip.serializable'
+local base = require 'enip.serializable'
 local epath = require 'enip.cip.segment.epath'
 
-local req = class('enip.cip.request.base', base)
+local req = base:subclass('enip.cip.request.base')
 
 function req:initialize(service_code, request_path)
+	base.initialize(self)
 	self._service = service_code or -1
 	if not request_path then
 		return

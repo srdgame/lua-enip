@@ -1,10 +1,9 @@
-local class = require 'middleclass'
+local base = require 'enip.serializable'
 
-local serializable = require 'enip.serializable'
-
-local data = class('enip.cpi.segment.data.simple', serializable)
+local data = base:subclass('enip.cpi.segment.data.simple')
 
 function data:initialize(data, parser)
+	base.initialize(self)
 	self._data = data
 	self._parser = parser
 end

@@ -1,11 +1,10 @@
-local class = require 'middleclass'
-local types = require 'enip.command.types'
-local command = require 'enip.command.base'
+local base = require 'enip.command.base'
+local command_data = require 'enip.command.data'
 
-local li = class('enip.reply.list_interfaces', command)
+local li = base:subclass('enip.reply.list_interfaces')
 
 function li:initialize(session, data)
-	command.initialize(self, session, types.CMD.LIST_INTERFACES)
+	base.initialize(self, session, base.COMMAND.LIST_INTERFACES)
 
 	self._data = data
 end

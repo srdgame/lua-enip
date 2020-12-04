@@ -1,8 +1,6 @@
-local class = require 'middleclass'
-
 local base = require 'enip.cip.segment.base'
 
-local buildin = class('enip.cip.segment.data_simple', base)
+local buildin = base:subclass('enip.cip.segment.data_simple')
 
 local date_and_time = base.easy_create('enip.cip.segment.data_simple.date_and_time', {
 	{ name = 'time_of_day', fmt = '<I4' },

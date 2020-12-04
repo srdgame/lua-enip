@@ -1,12 +1,11 @@
-local class = require 'middleclass'
 local cip_parser = require 'enip.cip.parser'
 local types = require 'enip.command.item.types'
-local item_base = require 'enip.command.item.base'
+local base = require 'enip.command.item.base'
 
-local item = class('enip.command.item.unconnected', item_base)
+local item = base:subclass('enip.command.item.unconnected')
 
 function item:initialize(cip)
-	item_base.initialize(self, types.UNCONNECTED)
+	base.initialize(self, types.UNCONNECTED)
 	self._cip = cip or ''
 end
 

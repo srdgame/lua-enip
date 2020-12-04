@@ -1,9 +1,7 @@
-local class = require 'middleclass'
-
 local types = require 'enip.cip.types'
 local base = require 'enip.cip.reply.base'
 
-local reply = class('enip.cip.reply.error', base)
+local reply = base:subclass('enip.cip.reply.error')
 
 function reply:initialize(service_code, status, error_code)
 	base.initialize(self, service_code, status, 1)

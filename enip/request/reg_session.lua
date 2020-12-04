@@ -1,12 +1,10 @@
-local class = require 'middleclass'
-local command = require 'enip.command.base'
-local types = require 'enip.command.types'
+local base = require 'enip.command.base'
 
 --- UDP Only? List Identity
-local req = class('enip.request.reg_session', command)
+local req = base:subclass('enip.request.reg_session')
 
 function req:initialize(session, protocol_version, options)
-	command.initialize(self, session, types.CMD.REG_SESSION)
+	base.initialize(self, session, base.COMMAND.REG_SESSION)
 
 	self._protocol_version = protocol_version or 1
 	self._options = options or 0

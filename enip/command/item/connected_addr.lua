@@ -1,7 +1,6 @@
-local class = require 'middleclass'
 local base = require 'enip.command.item.base'
 
-local item = class('enip.command.item.connected_addr', base)
+local item = base:subclass('enip.command.item.connected_addr')
 
 function item:initialize(conn_identity)
 	base.initialize(self, base.TYPES.CONNECTED_ADDR)

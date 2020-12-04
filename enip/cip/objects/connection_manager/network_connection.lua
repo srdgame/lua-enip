@@ -1,7 +1,6 @@
-local class = require 'middleclass'
 local base = require 'enip.serializable'
 
-local nc = class('enip.cip.objects.connection_mananager.network_connection', base)
+local nc = base:subclass('enip.cip.objects.connection_mananager.network_connection')
 
 nc.static.PRIORITY = {
 	LOW			= 0x00,
@@ -18,6 +17,7 @@ nc.static.CONNECTION_TYPE = {
 }
 
 function nc:initialize(redundant_owner, connection_type, priority, fix_or_variable, connection_size, w32)
+	base.initialize(self)
 	self._redundant_owner = redundant_owner
 	self._connection_type = connection_type
 	self._priority = priority

@@ -1,11 +1,10 @@
-local class = require 'middleclass'
 local logger = require 'enip.logger'
 local base = require 'enip.serializable'
 local seg_base = require 'enip.cip.segment.base'
 local logical = require 'enip.cip.segment.logical'
 local data = require 'enip.cip.segment.data'
 
-local epath = class('enip.cip.segment.epath', base)
+local epath = base:subclass('enip.cip.segment.epath')
 
 function epath:initialize(packed)
 	self._pad = packed and false or true

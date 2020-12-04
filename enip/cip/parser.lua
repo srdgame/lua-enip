@@ -1,6 +1,4 @@
 local types = require 'enip.cip.types'
---local request = require 'enip.cip.request'
---local reply = require 'enip.cip.reply'
 local reply_parser = require 'enip.cip.reply.parser'
 
 local services_req_map = {

@@ -1,11 +1,10 @@
-local class = require 'middleclass'
 local types = require 'enip.command.item.types'
-local item_base = require 'enip.command.item.base'
+local base = require 'enip.command.item.base'
 
-local item = class('enip.command.item.sockaddr', item_base)
+local item = base:subclass('enip.command.item.sockaddr')
 
 function item:intialize(from_target, info)
-	item_base:intialize(from_target and types.SOCK_ADDR_S or types.SOCK_ADDR_C)
+	base:intialize(from_target and types.SOCK_ADDR_S or types.SOCK_ADDR_C)
 	self._info = info or {}
 end
 

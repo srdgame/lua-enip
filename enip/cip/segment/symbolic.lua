@@ -1,9 +1,7 @@
-local class = require 'middleclass'
-
 local logger = require 'enip.logger'
 local base = require 'enip.cip.segment.base'
 
-local seg = class('enip.cip.segment.symbolic', base)
+local seg = base:subclass('enip.cip.segment.symbolic')
 
 seg.static.EXT_FORMATS = {
 	DOUBLE_BYTE_STRING = 0x01,
@@ -32,7 +30,7 @@ function seg:initialize(val, ext_format, numeric_type)
 			assert(type(val) == 'number', "Numeric value needed")
 		end
 	end
-	segment.initialize(self, segment.TYPES.SYMBOLIC, fmt)
+	base.initialize(self, base.TYPES.SYMBOLIC, fmt)
 	self._val = val
 	self._ext_format = ext_format
 	self._numeric_type = numeric_type

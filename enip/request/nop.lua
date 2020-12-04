@@ -1,27 +1,22 @@
-local class = require 'middleclass'
-local msg = require 'enip.message'
-local types = require 'enip.command.types'
+local base = require 'enip.command.base'
 
-local nop = class('enip.request.nop')
+local nop = base:subclass('enip.request.nop')
 
 function nop:initialize(session, data)
-	self._msg = msg:new(session, types.CMD.NOP, data or 'CIP_FROM_FREEEIOE')
+	base.initialize(base.COMMAND.NOP)
+	self._data = data or 'CIP_FROM_FREEEIOE'
 end
 
-function nop:__tostring()
-	return tostring(self._msg)
+function nop:encode()
+	return tostring(self._data)
 end
 
-function nop:to_hex()
-	return self._msg:to_hex()
-end
-
-function nop:from_hex(raw, index)
-	assert(false, 'from_hex is not supported')
+function nop:decode(raw, index)
+	return string.len(raw) + 1
 end
 
 function nop:data()
-	return self._msg:data()
+	return self._data
 end
 
 return nop

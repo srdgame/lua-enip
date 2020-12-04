@@ -1,9 +1,8 @@
-local class = require 'middleclass'
 local types = require 'enip.cip.types'
 local epath = require 'enip.cip.segment.epath'
 local base = require 'enip.cip.request.base'
 
-local mr = class('enip.cip.request.multi_srv_pack', base)
+local mr = base:subclass('enip.cip.request.multi_srv_pack')
 
 function mr:initialize(request_path, requests)
 	base.initialize(self, types.SERVICES.MULTI_SRV_PACK, request_path)

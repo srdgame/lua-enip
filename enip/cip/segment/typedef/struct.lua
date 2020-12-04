@@ -1,9 +1,8 @@
-local class = require 'middleclass'
 local logger = require 'enip.logger'
-local seg_base = require 'enip.cip.segment.base'
+local base = require 'enip.cip.segment.base'
 local base = require 'enip.cip.segment.data_derived'
 
-local formal = class('enip.cip.segment.typedef.formal', base)
+local formal = base:subclass('enip.cip.segment.typedef.formal')
 
 function formal:initialize(attrs)
 	base.initialize(self, base.FORMAT.STRUCT)
@@ -22,7 +21,7 @@ function formal:encode()
 	local raw = {}
 	for _, v in ipairs(self._attrs) do
 		if type(v) == 'number' then
-			raw[#raw + 1] = seg_base.static.encode_segment_type(seg_base.TYPES.DATA_SIMPLE, v)
+			raw[#raw + 1] = base.static.encode_segment_type(base.TYPES.DATA_SIMPLE, v)
 		else
 			assert(type(v) == 'table', 'Type attributes must be number or table')
 			raw[#raw + 1] = v:to_hex()
@@ -42,10 +41,10 @@ function formal:decode(raw, index)
 
 	local attrs = {}
 	while index < len do
-		local seg = seg_base.parse(raw, index)
-		if seg:type() == seg_base.TYPES.DATA_SIMPLE then
+		local seg = base.parse(raw, index)
+		if seg:type() == base.TYPES.DATA_SIMPLE then
 			attrs[#attrs + 1] = seg:format()
-		elseif typ == seg_base.TYPES.DATA_STRUCT then
+		elseif typ == base.TYPES.DATA_STRUCT then
 			attrs[#attrs + 1] = seg
 		else
 			assert(nil, "Invalid segment type!!!")

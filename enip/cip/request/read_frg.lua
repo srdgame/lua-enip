@@ -1,9 +1,7 @@
-local class = require 'middleclass'
 local types = require 'enip.cip.types'
-
 local base = require 'enip.cip.request.base'
 
-local req = class('enip.cip.request.read_frg', base)
+local req = base:subclass('enip.cip.request.read_frg')
 
 --- 
 -- Initialize constuctor

@@ -1,9 +1,8 @@
-local class = require 'middleclass'
 local logger = require 'enip.logger'
 local base = require 'enip.serializable'
 local pfinder = require 'enip.utils.pfinder'
 
-local seg = class('enip.cip.segment.base', base)
+local seg = base:subclass('enip.cip.segment.base')
 
 seg.static.TYPES = {
 	PORT			= 0,

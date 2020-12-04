@@ -1,15 +1,13 @@
-local class = require 'middleclass'
-local types = require 'enip.command.types'
-local command = require 'enip.command.base'
+local base = require 'enip.command.base'
 local command_data = require 'enip.command.data'
 
 --- UDP Only? List Identity
-local req = class('enip.request.send_rr_data', command)
+local req = base:subclass('enip.request.send_rr_data')
 
 --- For CIP over enip, the interface_handle must be 0
 -- data is the packet object
 function req:initialize(session, data, timeout) 
-	command.initialize(self, session, types.CMD.SEND_RR_DATA)
+	base.initialize(self, session, base.COMMAND.SEND_RR_DATA)
 
 	self._data = data
 	self._interface_handle = 0 --- CIP 

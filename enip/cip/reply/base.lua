@@ -1,10 +1,11 @@
-local class = require 'middleclass'
+local base = require 'enip.serializable'
 
 local types = require 'enip.cip.types'
 
-local reply = class('enip.cip.reply.base')
+local reply = base:subclass('enip.cip.reply.base')
 
 function reply:initialize(service_code, status, ext_status)
+	base.initialize(self)
 	self._service = (service_code or 0) | types.SERVICES.REPLY
 	self._status = status or 0
 	self._ext_status = ext_status or ''

@@ -1,10 +1,9 @@
-local class = require 'middleclass'
 local types = require 'enip.cip.types'
 local segment = require 'enip.cip.segment.base'
 local data_simple = require 'enip.cip.segment.data_simple'
 local base = require 'enip.cip.request.base'
 
-local req = class('enip.cip.request.write_tag', base)
+local req = base:subclass('enip.cip.request.write_tag')
 
 function req:initialize(path, data_type, data)
 	base.initialize(self, types.SERVICES.WRITE_TAG, path)

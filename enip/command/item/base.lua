@@ -1,8 +1,7 @@
-local class = require 'middleclass'
 local base = require 'enip.serializable'
 local pfinder = require 'enip.utils.pfinder'
 
-local item = class('enip.command.item.base', base)
+local item = base:subclass('enip.command.item.base')
 
 item.static.TYPES = {
 	NULL				= 0x0000,	-- NULL
@@ -36,6 +35,7 @@ item.static.build = function(type_code, ...)
 end
 
 function item:initialize(type_id)
+	base.initialize(self)
 	self._type_id = type_id or 0x0000 --- NULL
 	self._data_len = -1
 end

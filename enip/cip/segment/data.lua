@@ -1,10 +1,9 @@
-local class		= require 'middleclass'
 local logger	= require 'enip.logger'
 local base		= require 'enip.cip.segment.base'
 local ansi		= require 'enip.cip.segment.data.ansi'
 local simple	= require 'enip.cip.segment.data.simple'
 
-local seg = class('enip.cip.segment.data', base)
+local seg = base:subclass('enip.cip.segment.data')
 
 seg.static.FORMATS = {
 	SIMPLE		= 0x00, -- Simple Data Segment
@@ -12,7 +11,7 @@ seg.static.FORMATS = {
 }
 
 function seg:initialize(format, ...)
-	segment.initialize(self, segment.TYPES.DATA, data_format)
+	base.initialize(self, base.TYPES.DATA, data_format)
 	if format == seg.static.FORMATS.SIMPLE then
 		self._val = simple:new(...)
 	end

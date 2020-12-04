@@ -1,7 +1,6 @@
-local class		= require 'middleclass'
 local base		= require 'enip.cip.segment.base'
 
-local network = class('enip.cip.segment.network', base)
+local network = base:subclass('enip.cip.segment.network')
 
 network.static.FORMATS = {
 	RESERVED = 0x00, -- Reserved

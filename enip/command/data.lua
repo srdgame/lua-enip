@@ -1,9 +1,10 @@
-local class = require 'middleclass'
-local item_parser = require 'enip.command.item.parser'
+local base = require 'enip.serializable'
+local item_base = require 'enip.command.item.base'
 
-local command_data = class('enip.command.data')
+local command_data = base:subclass('enip.command.data')
 
 function command_data:initialize(items)
+	base.initialize(self)
 	self._items = items or {}
 end
 
@@ -31,7 +32,7 @@ function command_data:to_hex()
 end
 
 function command_data:parse_command_item(raw, index)
-	local item, index = item_parser.parse(raw, index)
+	local item, index = item_base.parse(raw, index)
 	return item, index
 end
 

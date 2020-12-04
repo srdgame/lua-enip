@@ -1,9 +1,9 @@
-local class = require 'middleclass'
-local serializable = require 'enip.serializable'
+local base = require 'enip.serializable'
 
-local extended = class('enip.cip.segment.network.extended', serializable)
+local extended = base:subclass('enip.cip.segment.network.extended')
 
 function extended:initialize(ext_type, data)
+	base.initialize(self)
 	self._ext_type = ext_type
 	self._data = data
 end

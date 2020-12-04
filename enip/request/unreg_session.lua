@@ -1,12 +1,10 @@
-local class = require 'middleclass'
-local types = require 'enip.command.types'
-local command = require 'enip.command.base'
+local base = require 'enip.command.base'
 
 --- UDP Only? List Identity
-local req = class('enip.request.unreg_session', command)
+local req = base:subclass('enip.request.unreg_session')
 
 function req:initialize(session)
-	command.initialize(self, session, types.CMD.UNREG_SESSION)
+	base.initialize(self, session, base.COMMAND.UNREG_SESSION)
 end
 
 return req

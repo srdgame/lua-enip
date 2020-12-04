@@ -1,11 +1,10 @@
-local class = require 'middleclass'
 local types = require 'enip.command.item.types'
-local item_base = require 'enip.command.item.base'
+local base = require 'enip.command.item.base'
 
-local item = class('enip.command.item.service', item_base)
+local item = base:subclass('enip.command.item.service')
 
 function item:initialize(service_name, version, capability_flags)
-	item_base.initialize(self, types.LIST_SERVICES)
+	base.initialize(self, types.LIST_SERVICES)
 	self._service_name = service_name or 'UNKNOWN'
 	self._version = version or 1
 	self._capability_flags = capability_flags or 0

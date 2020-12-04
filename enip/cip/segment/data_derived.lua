@@ -1,8 +1,7 @@
-local class = require 'middleclass'
 local pfinder = require 'enip.utils.pfinder'
 local base = require 'enip.cip.segment.base'
 
-local seg = class('enip.cip.segment.data_derived', base)
+local seg = base:subclass('enip.cip.segment.data_derived')
 
 seg.static.FORMATS = {
 	ABB_STRUCT	= 0x00,

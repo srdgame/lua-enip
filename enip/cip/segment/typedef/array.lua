@@ -1,9 +1,8 @@
-local class = require 'middleclass'
 local logger = require 'enip.logger'
 local base = require 'enip.cip.segment.data_derived'
 local simple = require 'enip.cip.segment.data_simple'
 
-local array = class('enip.cip.segment.typedef.array', base)
+local array = base:subclass('enip.cip.segment.typedef.array')
 
 function array:initialize(low, high, unit)
 	base.initialize(self, base.FORMAT.ARRAY)

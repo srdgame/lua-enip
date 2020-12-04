@@ -1,11 +1,10 @@
-local class = require 'middleclass'
 local types = require 'enip.command.item.types'
-local item_base = require 'enip.command.item.base'
+local base = require 'enip.command.item.base'
 
-local item = class('enip.command.item.sequenced_addr', item_base)
+local item = base:subclass('enip.command.item.sequenced_addr')
 
 function item:initialize(identifier, sequence)
-	item_base.initialize(self, types.CONNECTED_ADDR)
+	base.initialize(self, types.CONNECTED_ADDR)
 	self._identifier = tonumber(identifier) or 0
 	self._sequence = tonumber(sequence) or 0
 end

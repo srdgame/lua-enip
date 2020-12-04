@@ -1,7 +1,6 @@
-local class = require 'middleclass'
 local base = require 'enip.command.item.base'
 
-local item = class('enip.command.item.connected', base)
+local item = base:subclass('enip.command.item.connected')
 
 function item:initialize(identifier)
 	base.initialize(self, base.TYPES.CONNECTED)

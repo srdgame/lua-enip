@@ -1,19 +1,16 @@
-local class = require 'middleclass'
-local types = require 'enip.command.types'
-local command = require 'enip.command.base'
+local base = require 'enip.command.base'
 local command_data = require 'enip.command.data'
 
-local li = class('enip.reply.list_identity', command)
+local li = base:subclass('enip.reply.list_identity')
 
 function li:initialize(session, data)
-	command.initialize(self, session, types.CMD.LIST_IDENTITY)
+	base.initialize(self, session, base.COMMAND.LIST_IDENTITY)
 
 	self._data = data or ''
 end
 
 function li:encode()
-	lcoal data = self._data
-
+	local data = self._data
 	return data.to_hex() and data:to_hex() or tostring(data)
 end
 

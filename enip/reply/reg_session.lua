@@ -1,13 +1,11 @@
-local class = require 'middleclass'
-local types = require 'enip.command.types'
-local command = require 'enip.command.base'
+local base = require 'enip.command.base'
 
-local reply = class('enip.reply.reg_session', command)
+local reply = base:subclass('enip.reply.reg_session')
 
 --- If status is 0 means register session is ok
 -- or status should be 0x69 
 function reply:initialize(session, protocol_version, options, status)
-	command.initialize(self, session, types.CMD.REG_SESSION)
+	base.initialize(self, session, base.COMMAND.REG_SESSION)
 
 	self._protocol_version = protocol_version or 1
 	self._options = options or 0

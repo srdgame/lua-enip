@@ -1,10 +1,9 @@
-local class = require 'middleclass'
 local types = require 'enip.cip.types'
 local segment = require 'enip.cip.segment.base'
 local data_simple = require 'enip.cip.segment.data_simple'
 local base = require 'enip.cip.reply.base'
 
-local reply = class('enip.cip.reply.read_frg', base)
+local reply = base:subclass('enip.cip.reply.read_frg')
 
 function reply:initialize(segment, data, status, ext_status)
 	base.initialize(self, types.SERVICES.READ_FRG, status, ext_status)

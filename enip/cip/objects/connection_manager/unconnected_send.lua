@@ -1,9 +1,8 @@
-local class = require 'middleclass'
 local base = require 'enip.serializable'
 local object_path = require 'enip.cip.segment.object_path'
 local timing = require 'enip.cip.objects.connection_manager.connection_timing'
 
-local req = class('enip.cip.objects.connection_manager.unconnected_send', base)
+local req = base:subclass('enip.cip.objects.connection_manager.unconnected_send')
 
 function req:initialize(connection_timing, request, route_path)
 	base.initialize(self)

@@ -1,8 +1,7 @@
-local class = require 'middleclass'
 local base = require 'enip.cip.segment.base'
 local special = require 'enip.cip.segment.logical.special'
 
-local logical = class('enip.cip.segment.logical', base)
+local logical = base:subclass('enip.cip.segment.logical')
 
 --- 3 BITS
 logical.static.SUB_TYPES =  {

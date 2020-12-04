@@ -1,9 +1,7 @@
-local class = require 'middleclass'
-
 local logger = require 'enip.logger'
-local segment = require 'enip.cip.segment.base'
+local base = require 'enip.cip.segment.base'
 
-local port = class('enip.cip.segment.port', segment)
+local port = base:subclass('enip.cip.segment.port')
 
 function port:initialize(port, link)
 	local port, port_ext = self:get_port_value(port)
@@ -12,7 +10,7 @@ function port:initialize(port, link)
 	-- Generrate Port Segment Format
 	local fmt = ((link_ext_size > 0) and 0x10 or 0x00) + port & 0x0F
 
-	segment.initialize(self, segment.TYPES.PORT, fmt)
+	base.initialize(self, base.TYPES.PORT, fmt)
 	self._port = port
 	self._port_ext = port_ext
 	self._link = link

@@ -1,7 +1,6 @@
-local class = require 'middleclass'
 local base = require 'enip.serializable'
 
-local obj = class('enip.cip.objects.connection_mananager.connection_path', base)
+local obj = base:subclass('enip.cip.objects.connection_mananager.connection_path')
 
 ---
 -- V1Ch1: 3-5.5.1.10
@@ -11,6 +10,7 @@ local obj = class('enip.cip.objects.connection_mananager.connection_path', base)
 -- paths is segment.object_path or segment.epath
 --
 function obj:initialize(routing, info, paths)
+	base.initialize(self)
 	self._routing = routing
 	self._info = info
 	self._paths = paths

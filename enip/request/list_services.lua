@@ -1,11 +1,9 @@
-local class = require 'middleclass'
-local command = require 'enip.command.base'
-local types = require 'enip.command.types'
+local base = require 'enip.command.base'
 
-local req = class('enip.request.list_services', command)
+local req = base:subclass('enip.request.list_services')
 
 function req:initialize(session)
-	command.initialize(self, session, types.CMD.LIST_SERVICES)
+	base.initialize(self, session, base.COMMEND.LIST_SERVICES)
 end
 
 return req

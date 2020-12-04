@@ -3,7 +3,6 @@
 
 --- TODO: Encoded Path Shortcut Rules is not supported yet
 
-local class = require 'middleclass'
 local logger = require 'enip.logger'
 local base = require 'enip.serializable'
 local seg_base = require 'enip.cip.segment.base'
@@ -11,7 +10,7 @@ local logical = require 'enip.cip.segment.logical'
 local symbolic = require 'enip.cip.segment.symbolic'
 local data = require 'enip.cip.segment.data'
 
-local object_path = class('enip.cip.segment.object_path', base)
+local object_path = base:subclass('enip.cip.segment.object_path')
 
 object_path.static.easy_create = function(class, instance, attribute, member)
 	local o = object_path:new()
@@ -31,6 +30,7 @@ end
 -- pad: whether the logical segment in Pad or Packed format
 --		default is packed
 function object_path:initialize(pad)
+	base.initialize(self)
 	self._pad = pad
 	self._segments = {}
 end

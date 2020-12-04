@@ -1,9 +1,9 @@
-local class = require 'middleclass'
 local base = require 'enip.serializable'
 
-local obj = class('enip.cip.objects.connection_mananager.connection_timing', base)
+local obj = base:subclass('enip.cip.objects.connection_mananager.connection_timing')
 
 function obj:initialize(tick_time, timeout)
+	base.initialize(self)
 	self._priority = 0 -- Normal
 	self._tick_time = tick_time or 5
 	self._timeout = (timeout or 157) & 0xFF

@@ -1,7 +1,6 @@
-local class = require 'middleclass'
 local base = require 'enip.command.item.base'
 
-local item = class('enip.command.item.identity', base)
+local item = base:subclass('enip.command.item.identity')
 
 function item:initialize(info)
 	base.initialize(self, base.TYPES.LIST_IDENTITY)

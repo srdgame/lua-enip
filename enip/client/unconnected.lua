@@ -1,9 +1,7 @@
-local class = require 'middleclass'
 local session = require 'enip.utils.session'
-local client_base = require 'enip.client.base'
+local base = require 'enip.client.base'
 local command_data = require 'enip.command.data'
-local item_types = require 'enip.command.item.types'
-local item_parser = require 'enip.command.item.parser'
+local command_item = require 'enip.command.item.base'
 local cip_read_tag = require 'enip.cip.request.read_tag'
 local cip_read_frg = require 'enip.cip.request.read_frg'
 local cip_req_multi = require 'enip.cip.request.multi_srv_pack'
@@ -11,7 +9,7 @@ local cip_write_tag = require 'enip.cip.request.write_tag'
 local cip_types = require 'enip.cip.types'
 local data_simple = require 'enip.cip.segment.data_simple'
 
-local client = class('enip.client.unconnected', client_base)
+local client = base:subclass('enip.client.unconnected')
 
 local function convert_tag_type_to_fmt(tag_type)
 	local data_type = type(tag_type) == 'string' and data_elem.TYPES[tag_type] or tag_type
@@ -32,16 +30,11 @@ function client:read_tag(tag_path, tag_type, tag_count, response)
 	local session_obj = self:gen_session()
 	local data_type, data_type_fmt = convert_tag_type_to_fmt(tag_type)
 
-	--[[
-	local read_data = string.pack('<I2', tag_count)
-	local path = seg_path:new(tag_path)
-	local read_req = cip_request:new(cip_types.SERVICES.READ_TAG, path, read_data)
-	]]--
 	local read_req = cip_read_tag:new(tag_path, tag_count)
 
 	--- Send RR Data Request
-	local null = item_parser.build(item_types.NULL)
-	local unconnected = item_parser.build(item_types.UNCONNECTED, read_req)
+	local null = command_item.build(item_types.NULL) -- NULL Address item required by Unconnected Message
+	local unconnected = command_item.build(item_types.UNCONNECTED, read_req)
 
 	local data = command_data:new({null, unconnected})
 
@@ -83,6 +76,7 @@ function client:read_tags(tags, response)
 	local route_path = self:route_path()
 	local message_router = object_path.easy_create(cip_types.OBJECT.CONNECTION_MANAGER, 1)
 	local read_req = cip_req_multi:new(requests, message_router)
+
 	local timing = cip_obj_cm_connection_timing:new()
 	local send_obj = cip_obj_cm_unconnected_send(timing, read_req, route_path)
 

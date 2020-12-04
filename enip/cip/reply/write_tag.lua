@@ -1,8 +1,7 @@
-local class = require 'middleclass'
 local base = require 'enip.cip.reply.base'
 local types = require 'enip.cip.types'
 
-local reply = class('enip.cip.reply.write_tag', base)
+local reply = base:subclass('enip.cip.reply.write_tag')
 
 function reply:initialize(status, ext_status)
 	base.initialize(self, types.SERVICES.WRITE_TAG, status or 0, ext_status)

@@ -1,4 +1,3 @@
-local class = require 'middleclass'
 local serializable = require 'enip.serializable'
 
 return serializable.easy_create('enip.cip.segment.logical.special', {
