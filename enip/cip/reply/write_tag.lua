@@ -1,7 +1,6 @@
 local class = require 'middleclass'
 local base = require 'enip.cip.reply.base'
 local types = require 'enip.cip.types'
-local parser = require 'enip.cip.segment.parser'
 
 local reply = class('enip.cip.reply.write_tag', base)
 

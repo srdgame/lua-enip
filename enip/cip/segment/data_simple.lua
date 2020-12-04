@@ -167,7 +167,7 @@ function buildin:parser()
 			if type(parser) == 'string' then
 				return string.unpack(parser, raw, index)
 			else
-				return = parser.decode(raw, index)
+				return parser.decode(raw, index)
 			end
 		end
 	}

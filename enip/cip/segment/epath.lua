@@ -4,7 +4,6 @@ local base = require 'enip.serializable'
 local seg_base = require 'enip.cip.segment.base'
 local logical = require 'enip.cip.segment.logical'
 local data = require 'enip.cip.segment.data'
-local parser = require 'enip.cip.segment.parser'
 
 local epath = class('enip.cip.segment.epath', base)
 
@@ -52,7 +51,7 @@ function epath:from_hex(raw, index)
 	self._segments = {}
 
 	while index < string.len(raw) do
-		local seg, index = parser(raw, index)
+		local seg, index = seg_base.parse(raw, index)
 		if seg:type() == seg_base.TYPES.DATA then
 			assert(seg:format() == data.FORMATS.ANSI, "Path must be ANSI extended symbol segment")
 			table.insert(self._segments, seg)

@@ -7,7 +7,7 @@ local command_data = require 'enip.command.data'
 local req = class('enip.request.send_rr_data', command)
 
 --- For CIP over enip, the interface_handle must be 0
--- data for command specific data
+-- data is the packet object
 function req:initialize(session, data, timeout) 
 	command.initialize(self, session, types.CMD.SEND_RR_DATA)
 
@@ -17,11 +17,8 @@ function req:initialize(session, data, timeout)
 end
 
 function req:encode()
-	local data = self._data
-
-	local data_1 = string.pack('<I4I2', self._interface_handle, self._timeout)
-	local data_2 = data.to_hex and data:to_hex() or tostring(data)
-	return data_1..data_2
+	local hdr = string.pack('<I4I2', self._interface_handle, self._timeout)
+	return hdr..data:to_hex()
 end
 
 function req:decode(raw, index)

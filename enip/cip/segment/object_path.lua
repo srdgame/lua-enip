@@ -10,7 +10,6 @@ local seg_base = require 'enip.cip.segment.base'
 local logical = require 'enip.cip.segment.logical'
 local symbolic = require 'enip.cip.segment.symbolic'
 local data = require 'enip.cip.segment.data'
-local parser = require 'enip.cip.segment.parser'
 
 local object_path = class('enip.cip.segment.object_path', base)
 
@@ -110,7 +109,7 @@ function object_path:from_hex(raw, index)
 
 	local new_index = index
 	while index < string.len(raw) do
-		local seg, new_index = parser(raw, index)
+		local seg, new_index = seg_base.parse(raw, index)
 		if seg:type() == seg_base.TYPES.SYMBOLIC or
 			seg:type() == seg_base.TYPES.LOGICAL then
 			table.insert(self._segments, seg)

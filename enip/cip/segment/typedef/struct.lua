@@ -1,6 +1,6 @@
 local class = require 'middleclass'
 local logger = require 'enip.logger'
-local seg_base = require 'encip.cip.segment.base'
+local seg_base = require 'enip.cip.segment.base'
 local base = require 'enip.cip.segment.data_derived'
 
 local formal = class('enip.cip.segment.typedef.formal', base)

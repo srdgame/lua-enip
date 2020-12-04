@@ -7,7 +7,7 @@ local port = class('enip.cip.segment.port', segment)
 
 function port:initialize(port, link)
 	local port, port_ext = self:get_port_value(port)
-	local link, link_ext_size = self:get_seg_fmt(port, link)
+	local link, link_ext_size = self:get_link_value(port, link)
 
 	-- Generrate Port Segment Format
 	local fmt = ((link_ext_size > 0) and 0x10 or 0x00) + port & 0x0F

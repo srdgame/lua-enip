@@ -6,10 +6,10 @@ local item_types = require 'enip.command.item.types'
 local item_parser = require 'enip.command.item.parser'
 local cip_read_tag = require 'enip.cip.request.read_tag'
 local cip_read_frg = require 'enip.cip.request.read_frg'
+local cip_req_multi = require 'enip.cip.request.multi_srv_pack'
 local cip_write_tag = require 'enip.cip.request.write_tag'
 local cip_types = require 'enip.cip.types'
-local data_elem = require 'enip.cip.segment.data_elem'
---local seg_path = require 'enip.cip.segment.path'
+local data_simple = require 'enip.cip.segment.data_simple'
 
 local client = class('enip.client.unconnected', client_base)
 
@@ -81,7 +81,10 @@ function client:read_tags(tags, response)
 	end
 
 	local route_path = self:route_path()
-	local read_req = cip_read_frg:new(nil, nil, requests, route_path)
+	local message_router = object_path.easy_create(cip_types.OBJECT.CONNECTION_MANAGER, 1)
+	local read_req = cip_req_multi:new(requests, message_router)
+	local timing = cip_obj_cm_connection_timing:new()
+	local send_obj = cip_obj_cm_unconnected_send(timing, read_req, route_path)
 
 	--- Send RR Data Request
 	local null = item_parser.build(item_types.NULL)

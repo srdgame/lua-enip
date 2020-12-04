@@ -1,6 +1,6 @@
 local class = require 'middleclass'
 local serializable = require 'enip.serializable'
-local epath = require 'encip.cip.segment.epath'
+local epath = require 'enip.cip.segment.epath'
 
 local req = class('enip.cip.request.base', base)
 

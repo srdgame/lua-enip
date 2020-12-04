@@ -1,7 +1,6 @@
 local class = require 'middleclass'
 local logger = require 'enip.logger'
 local types = require 'enip.cip.types'
-local parser = require 'enip.cip.reply.parser'
 local base = require 'enip.cip.reply.base'
 
 local mr = class('enip.cip.reply.multi_srv_pack', base)
@@ -62,6 +61,7 @@ function mr:from_hex(raw, index)
 			index = start + offsets[i]
 		end
 
+		local parser = require 'enip.cip.reply.parser' -- avoid require loop
 		local data, index = parser(raw, index)
 		replies[#replies + 1] = data
 	end
