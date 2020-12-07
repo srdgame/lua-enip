@@ -1,9 +1,11 @@
 
 return function(types, base_pn)
-	return function(code)
+	return function(code, appendix)
 		for k, v in pairs(types) do
 			if v == code then
-				local r, p = pcall(require, base_pn..'.'..string.lower(k))
+				local p_name = base_pn..'.'..string.lower(k)
+				p_name = appendix and p_name..'.'..appendix or p_name
+				local r, p = pcall(require, p_name)
 				if not r then
 					return nil, p
 				end

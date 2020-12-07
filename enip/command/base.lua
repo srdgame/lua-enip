@@ -1,4 +1,5 @@
 local base = require 'enip.serializable'
+local logger = require 'enip.logger'
 local session = require 'enip.utils.session'
 
 local command = base:subclass('enip.command.base')
@@ -92,9 +93,10 @@ end
 function command:to_hex()
 	assert(self._session, 'Session missing')
 	local data_raw = self:encode()
+	logger.dump('command.base.to_hex', data_raw)
 	local data_len = string.len(data_raw)
 	return string.pack(header_fmt, self._command, data_len, self._session:session(), 
-		self._status, tostring(self._session:context()), self._options)
+		self._status, tostring(self._session:context()), self._options)..data_raw
 end
 
 function command:from_hex(raw, index)
@@ -104,7 +106,7 @@ function command:from_hex(raw, index)
 	self._session = session:new(session_, context)
 	local data_raw = string.sub(raw, index, index + data_len)
 
-	local d_len = self:decode(raw, index)
+	local d_len = self:decode(data_raw)
 	assert(d_len == data_len + 1, "Command data decode error!")
 	
 	return index + data_len

@@ -27,11 +27,8 @@ local SERVICES = {
 	SET_MEMBER			= 0x19,
 	INSERT_MEMBER		= 0x1A,
 	REMOVE_MEMBER		= 0x1B,
-	--- Logix services
-	READ_TAG			= 0x4C,
-	WRITE_TAG			= 0x4D,
-	READ_FRG			= 0x52,
-	WRITE_FRG			= 0x53,
+	GROUP_SYNC			= 0x1C,
+	MAX_COMMON_SERVICE  = 0x1C, --- Bigger than this are seserved for additional common services
 
 	REPLY				= 0x80,
 }

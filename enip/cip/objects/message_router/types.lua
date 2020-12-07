@@ -1,0 +1,8 @@
+local SERVICES = {
+	SYMBOLIC_TRANSLATION	= 0x4B,
+}
+
+
+return {
+	SERVICES = SERVICES
+}

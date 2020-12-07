@@ -1,23 +1,37 @@
+local pfinder = require 'enip.utils.pfinder'
 local types = require 'enip.cip.types'
+local epath = require 'enip.cip.segment.epath'
+local logical = require 'enip.cip.segment.logical'
 local rp_error = require 'enip.cip.reply.error'
 
-local service_class_map = {
-	[types.SERVICES.MULTI_SRV_PACK] = require 'enip.cip.reply.multi_srv_pack',
-	[types.SERVICES.READ_TAG] = require 'enip.cip.reply.read_tag',
-	[types.SERVICES.WRITE_TAG] = require 'enip.cip.reply.write_tag',
-	[types.SERVICES.READ_FRG] = require 'enip.cip.reply.read_frg',
-	--[types.SERVICES.WRITE_FRG] = require 'enip.cip.reply.write_frg',
-}
+local common_service_finder = pfinder(types.SERVCIES, 'enip.cip.request')
+local objects_finder = pfinder(types.OBJECT, 'enip.cip.objects')
+
+local function search_service_parser(service_code, object_path)
+	--- Try type object path
+	local seg = object_path:segment(1)
+	if not seg then
+		return err
+	end
+	if not seg:isInstanceOf(logical) then
+		return nil, "Object path is not logical"
+	end
+	if seg:sub_type() ~= logical.SUB_TYPES.CLASS_ID then
+		return nil, "Logical node is an CLASS_ID type"
+	end
+	--- Loading types from objects.class_id.types
+	local cparser, mpath = objects_finder(seg:value(), 'reply.parser')
+
+	assert(type(cparser) == 'function')
+
+	return cparser
+end
 
 return function(raw, index)
-	--[[
-	local basexx = require 'basexx'
-	print(basexx.to_hex(string.sub(raw, index)))
-	]]--
 
 	local obj = nil
 	local code, _, status, additional_status_size = string.unpack('<I1I1I1I1', raw, index)
-	if status ~= types.STATUS.OK and (code & 0x7F) ~= types.SERVICES.MULTI_SRV_PACK then
+	if status ~= types.STATUS.OK then
 		obj = rp_error:new()
 	else
 		local mod = service_class_map[code & 0x7F]

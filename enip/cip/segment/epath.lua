@@ -33,6 +33,10 @@ function epath:segments()
 	return self._segments
 end
 
+function epath:segment(index)
+	return self._segments[index]
+end
+
 function epath:to_hex()
 	assert(#self._segments > 0)
 

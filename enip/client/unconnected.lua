@@ -77,9 +77,10 @@ function client:read_tags(tags, response)
 	end
 
 	local route_path = self:route_path()
-	local message_router = object_path.easy_create(cip_types.OBJECT.CONNECTION_MANAGER, 1)
+	local message_router = object_path.easy_create(cip_types.OBJECT.MESSAGE_ROUTER, 1)
 	local read_req = cip_req_multi:new(message_router, requests)
-	local send_obj = unconnected_send:new(timing:new(), read_req, route_path)
+	--- Request connection_manager #1
+	local send_obj = unconnected_send:new(1, timing:new(), read_req, route_path)
 
 	--- Send RR Data Request
 	local null = command_item.build(command_item.TYPES.NULL)

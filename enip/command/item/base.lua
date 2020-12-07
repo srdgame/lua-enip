@@ -34,39 +34,33 @@ item.static.build = function(type_code, ...)
 	return assert(p:new(...), "Create item failed!!")
 end
 
-function item:initialize(type_id)
+function item:initialize(item_type)
 	base.initialize(self)
-	self._type_id = type_id or 0x0000 --- NULL
-	self._data_len = -1
+	self._type = item_type or item.static.TYPES.NULL
 end
 
 function item:to_hex()
 	local data = self.encode and self:encode() or ''
-	self._data_len = string.len(data)
-	return string.pack('<I2I2', self._type_id, self._data_len)..data
+	local data_len = string.len(data)
+	return string.pack('<I2I2', self._type, data_len)..data
 end
 
 function item:from_hex(raw, index)
 	assert(raw, 'stream raw data is missing')
 	local index = index or 1
-	self._type_id, self._data_len, index = string.unpack('<I2I2', raw, index)
-	if self._data_len > 0 then
+	local data_len = 0
+	self._type, data_len, index = string.unpack('<I2I2', raw, index)
+	if data_len > 0 then
 		assert(self.decode, "Decode function missing")
-		index = self:decode(raw, index)
+		local data_raw = string.sub(raw, index, index + data_len)
+		local data_index = self:decode(data_raw)
+		assert(data_index == string.len(data_raw) + 1, "Item data decode error")
 	end
-	return index
+	return index + data_len
 end
 
-function item:type_id()
-	return self._type_id
-end
-
-function item:data_len()
-	if self._data_len < 0 then
-		local data = self.decode and self:decode() or ''
-		self._data_len = string.len(data)
-	end
-	return self._data_len
+function item:type()
+	return self._type
 end
 
 return item
