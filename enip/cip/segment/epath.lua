@@ -56,6 +56,7 @@ function epath:from_hex(raw, index)
 	--- Clear the segments
 	self._segments = {}
 
+	local index = index or 1
 	while index < string.len(raw) do
 		local seg, new_index = seg_base.parse(raw, index)
 		if seg:type() == seg_base.TYPES.DATA then

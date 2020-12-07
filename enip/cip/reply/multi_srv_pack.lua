@@ -42,7 +42,7 @@ end
 function mr:decode(raw, index)
 	local parser = require 'enip.cip.reply.parser' -- avoid require loop
 
-	local start = index
+	local start = index or 1
 	local count, index = string.unpack('<I2', raw, index)
 
 	local offsets = {}
@@ -54,16 +54,26 @@ function mr:decode(raw, index)
 	for i = 1, count do
 		local offset = offsets[i] - (1 + count) * 2
 
+		print(i, index, start, offsets[i])
+
 		assert(offsets[i] >= index - start, "Offset error!!!")
-		if offsets[i] > index - start then
-			logger.log('INFO', "Correct offset. i:%d index:%d start:%d offset[i]:%d",
-				i, index, start, offsets[i])
-			index = start + offsets[i]
+		if offsets[i] >= index - start then
+			if (offsets[i] > index - start) then
+				logger.log('WARN', "Correct offset. i:%d index:%d start:%d offset[i]:%d",
+					i, index, start, offsets[i])
+				index = start + offsets[i]
+			end
+		else
+			logger.log('ERROR', "Incorrect offset found")
 		end
 
-		local data
-		data, index = parser(raw, index)
-		replies[#replies + 1] = data
+		local data, data_index = parser(raw, index)
+		if not data then
+			logger.log('ERROR', data_index)
+		else
+			replies[#replies + 1] = data
+			index = data_index
+		end
 	end
 	assert(offsets[count] <= index - start, "Offset error!!!")
 

@@ -28,7 +28,7 @@ local SERVICES = {
 	INSERT_MEMBER		= 0x1A,
 	REMOVE_MEMBER		= 0x1B,
 	GROUP_SYNC			= 0x1C,
-	MAX_COMMON_SERVICE  = 0x1C, --- Bigger than this are seserved for additional common services
+	MAX_COMMON_SERVICE  = 0x31, --- Bigger than this are seserved for additional common services
 
 	REPLY				= 0x80,
 }
