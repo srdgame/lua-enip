@@ -25,7 +25,7 @@ function data:from_hex(raw, index)
 	local data_len = 0
 	data_len, index = string.unpack('<I1', raw, index)
 
-	self._data = string.sub(raw, index, index + data_len)
+	self._data = string.sub(raw, index, index + data_len - 1)
 	if self._parser then
 		self._data = self._parser(self._data)
 	end

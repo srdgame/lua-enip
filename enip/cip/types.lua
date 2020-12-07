@@ -33,22 +33,6 @@ local SERVICES = {
 	REPLY				= 0x80,
 }
 
-local STATUS = {
-	OK					= 0x00,
-	ERR_NOT_SUPPORTED	= 0x01,
-	ERR_MEMEORY_LIMIT	= 0x02,
-	ERR_INVALID_MSG		= 0x03,
-	ERR_PATH			= 0x04,
-	ERR_INVALID_INST	= 0x05,
-	ERR_SERVICE_ERR		= 0x08,
-	ERR_CONFLICT_STATE	= 0x10,
-	ERR_OBJECT_STATE	= 0x0C,
-	ERR_READ_ONLY		= 0x0E,
-	ERR_SESSION_HANDLE	= 0x63,
-	ERR_INVLIAD_LEN		= 0x64,
-	ERR_PROTOCOL_VER	= 0x69,
-}
-
 local OBJECT_ID = {
 	IDENTITY				= 0x01,
 	MESSAGE_ROUTER			= 0x02,
@@ -114,6 +98,22 @@ local OBJECT_ID = {
 	COMPONET_LINK			= 0xF7,
 	COMPONET_REPEATER		= 0xF8
 }
+--[[
+local STATUS = {
+	OK					= 0x00,
+	ERR_NOT_SUPPORTED	= 0x01,
+	ERR_MEMEORY_LIMIT	= 0x02,
+	ERR_INVALID_MSG		= 0x03,
+	ERR_PATH			= 0x04,
+	ERR_INVALID_INST	= 0x05,
+	ERR_SERVICE_ERR		= 0x08,
+	ERR_CONFLICT_STATE	= 0x10,
+	ERR_OBJECT_STATE	= 0x0C,
+	ERR_READ_ONLY		= 0x0E,
+	ERR_SESSION_HANDLE	= 0x63,
+	ERR_INVLIAD_LEN		= 0x64,
+	ERR_PROTOCOL_VER	= 0x69,
+}
 
 local status_strings = {
 	[0x00] = 'Successs',
@@ -129,6 +129,42 @@ local status_strings = {
 	[0x64] = 'An originator used an invalid session handle when sending an encapsulation message to the target.',
 	[0x65] = 'The target received a message of invalid length.',
 	[0x69] = 'Unsupported encapsulation protocol revision.',
+}
+]]--
+
+local STATUS = {
+	OK						= 0x00,
+	CONNECTION_FAILED		= 0x01,
+	RESOURCE_NOT_FOND		= 0x02,
+	INVALID_PARAM			= 0x03,
+	PATH_SEGMENT_ERR		= 0x04,
+	PATH_DEST_UNKNOWN		= 0x05,
+	PARTIAL_TRANSFER		= 0x06,
+	CONNECTION_LOST			= 0x07,
+	SERVICE_NOT_AVAILABLE	= 0x08,
+	INVALID_ATTR_VALUE		= 0x09,
+	ATTR_LIST_ERR			= 0x0A,
+	ALREADY_IN_REQUST		= 0x0B,
+	OBJECT_STATE_CONFLICT	= 0x0C,
+	OBJECT_ALREADY_EXISTS	= 0x0D,
+	ATTR_NOT_SETTABLE		= 0x0E,
+	PRIVILEGE_VILOATION		= 0x0F,
+	DEVICE_STATE_CONFLICT	= 0x10,
+	REPLY_DATA_TOO_LARGE	= 0x11,
+	FRAG_OF_PRIMITIVE_VALUE	= 0x12,
+	NOT_ENOUGH_DATA			= 0x13,
+	ATTR_NOT_SUPPORTED		= 0x14,
+	TOO_MUCH_DATA			= 0x15,
+	OBJECT_NOT_EXIST		= 0x16,
+	SERVICE_FRG_SEQ_ERR		= 0x17,
+	NO_STORED_ATTR_DATA		= 0x18,
+	STORE_OP_FAILURE		= 0x19,
+	ROUTING_FAILURE_REQL	= 0x1A,
+	ROUTING_FAILURE_REPL	= 0x1B,
+	MISSING_ATTR_LIST_ENTRY	= 0x1C,
+	INVALID_ATTR_VAL_LIST	= 0x1D,
+	EMBEDDED_SERVICE_ERR	= 0x1E,
+	-- TODO: MORE ERROR
 }
 
 local general_status_strings = {
@@ -179,7 +215,7 @@ local general_status_strings = {
 }
 
 local function status_to_string(status)
-	return status_strings[status] or general_status_strings[status] or 'Unknown status code : '..status
+	return general_status_strings[status] or 'Unknown status code : '..status
 end
 
 return {

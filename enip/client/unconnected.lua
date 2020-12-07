@@ -77,10 +77,12 @@ function client:read_tags(tags, response)
 		requests[#requests + 1] = read_tag:new(v.path, v.count or 1)
 	end
 
-	local route_path = self:route_path()
+	--- The requests performed on Message Router #1
 	local message_router = object_path.easy_create(cip_types.OBJECT.MESSAGE_ROUTER, 1)
 	local read_req = cip_req_multi:new(message_router, requests)
+
 	--- Request connection_manager #1
+	local route_path = self:route_path()
 	local send_obj = unconnected_send:new(1, timing:new(), read_req, route_path)
 
 	--- Send RR Data Request
@@ -99,31 +101,30 @@ function client:read_tags(tags, response)
 		local command_data = reply:data()
 
 		--- Find the unconnected item
-		local item, err = command_data:find(item_types.UNCONNECTED)
+		local item, err = command_data:find(command_item.TYPES.UNCONNECTED)
 		if not item then
 			return response(nil, 'ERROR: Item not found')
 		end
 
-		--- Get the item CIP reply
-		local cip_reply = item:cip()
+		--- Get the item CIP reply data
+		local cip_reply = item:data()
 		if not cip_reply then
 			return response(nil, 'ERROR: CIP reply not found')
 		end
 
-		--- Get the CIP reply status
-		if cip_reply:status() ~= cip_types.STATUS.OK then
-			-- The status should be skipped as all sub reply has it's own status
-			--return response(nil, cip_reply:error_info())
+		if cip_reply:service() ~= cip_types.SERVICES.MULTI_SRV_PACK then
+			return response(nil, 'ERROR: CIP reply service code error')
 		end
 
 		--- Get the CIP data
-		local cip_data = cip_reply:data()
-		if not cip_data then
-			return response(nil, 'ERROR: CIP reply has no data')
+		local replies = cip_reply:replies()
+		if replies and #replies > 0 then
+			--- callback
+			return response(replies)
 		end
 
-		--- callback
-		return response(cip_data:replies())
+		--- All errors through error_info
+		return response(nil, cip_reply:error_info())
 	end)
 end
 
@@ -138,21 +139,11 @@ function client:write_tag(tag_path, tag_type, tag_value, response)
 	local session_obj = self:gen_session()
 
 	local data_type, data_type_fmt = convert_tag_type_to_fmt(tag_type)
-	--[[
-
-	local write_obj = data_elem:new(data_type, tag_value)
-	local write_obj_hex = write_obj:to_hex()
-
-	local write_data = string.pack('<I2I2', write_obj:type_num(), 1)..string.sub(write_obj_hex, 3) -- skip the type_number
-
-	local path = seg_path:new(tag_path)
-	local read_req = cip_request:new(cip_types.SERVICES.WRITE_TAG, path, write_data)
-	]]--
 	local write_req = cip_write_tag:new(tag_path, tag_type, tag_value)
 
 	--- Send RR Data Request
-	local null = item_parser.build(item_types.NULL)
-	local unconnected = item_parser.build(item_types.UNCONNECTED, write_req)
+	local null = item_parser.build(command_item.TYPES.NULL)
+	local unconnected = item_parser.build(command_item.TYPES.UNCONNECTED, write_req)
 
 	local data = command_data:new({null, unconnected})
 
@@ -164,15 +155,21 @@ function client:write_tag(tag_path, tag_type, tag_value, response)
 
 		--- ENIP command data
 		local command_data = reply:data()
-
-		--- Find the unconnected item
-		local item, err = command_data:find(item_types.UNCONNECTED)
-		if not item then
-			return response(nil, 'ERROR: Item not found')
+		local items = command_data:items()
+		if not items or #items < 2 then
+			return response(nil, "Error command data items count")
+		end
+		local null_item = items[1]
+		if null_item:type() ~= command_item.TYPES.NULL then
+			return response(nil, "Unconnected send needs to have NULL Address Item as the first item")
+		end
+		local unconnectd_data = items[2]
+		if unconnectd_data:type() ~= command_item.TYPES.UNCONNECTED then
+			return response(nil, 'ERROR: The second item should be UNCONNECTED')
 		end
 
 		--- Get the item CIP reply
-		local cip_reply = item:cip()
+		local cip_reply = item:data()
 		if not cip_reply then
 			return response(nil, 'ERROR: CIP reply not found')
 		end

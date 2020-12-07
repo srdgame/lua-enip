@@ -5,7 +5,7 @@ local port = base:subclass('enip.cip.segment.port')
 
 function port:initialize(port, link)
 	local port, port_ext = self:get_port_value(port)
-	local link, link_ext_size = self:get_link_value(port, link)
+	local link, link_ext_size = self:get_link_value(link)
 
 	-- Generrate Port Segment Format
 	local fmt = ((link_ext_size > 0) and 0x10 or 0x00) + port & 0x0F
@@ -55,7 +55,7 @@ function port:encode()
 		end
 	end
 
-	logger.dump('encode', raw)
+	logger.dump('enip.cip.segment.port.encode', raw)
 	
 	return raw
 end

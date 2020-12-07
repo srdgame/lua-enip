@@ -41,7 +41,7 @@ function formal:decode(raw, index)
 
 	local attrs = {}
 	while index < len do
-		local seg = base.parse(raw, index)
+		local seg, new_index = base.parse(raw, index)
 		if seg:type() == base.TYPES.DATA_SIMPLE then
 			attrs[#attrs + 1] = seg:format()
 		elseif typ == base.TYPES.DATA_STRUCT then
@@ -49,6 +49,7 @@ function formal:decode(raw, index)
 		else
 			assert(nil, "Invalid segment type!!!")
 		end
+		index = new_index
 	end
 
 	self._attrs = attrs

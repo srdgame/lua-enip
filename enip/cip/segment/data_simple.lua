@@ -47,11 +47,9 @@ local data_fmt_map = {
 	STRING	= {
 		encode = function(val)
 			return string.pack('<s2', val)
-			--return val
 		end,
 		decode = function(raw, index)
 			return string.unpack('<s2', raw, index)
-			--return string.sub(raw, index or 1), string.len(raw) - (index or 1) + 2
 		end
 	},
 	BYTE	= '<I1',
@@ -81,7 +79,7 @@ local data_fmt_map = {
 		decode = function(raw, index)
 			local epath = require 'enip.cip.segment.epath'
 			local o = epath:new(val)
-			local index = o:from_hex(raw, index)
+			index = o:from_hex(raw, index)
 			return o, index
 		end
 	},

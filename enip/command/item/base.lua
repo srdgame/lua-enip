@@ -52,9 +52,11 @@ function item:from_hex(raw, index)
 	self._type, data_len, index = string.unpack('<I2I2', raw, index)
 	if data_len > 0 then
 		assert(self.decode, "Decode function missing")
-		local data_raw = string.sub(raw, index, index + data_len)
+		local data_raw = string.sub(raw, index, index + data_len - 1)
 		local data_index = self:decode(data_raw)
-		assert(data_index == string.len(data_raw) + 1, "Item data decode error")
+		--print(string.format('%02X', self._type), data_index, string.len(data_raw))
+		-- assert(data_index == string.len(data_raw) + 1, "Item data decode error")
+		assert(data_index <= string.len(data_raw) + 1, "Item data decode error")
 	end
 	return index + data_len
 end

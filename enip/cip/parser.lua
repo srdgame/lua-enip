@@ -6,8 +6,7 @@ local request_parser = require 'enip.cip.request.parser'
 return function(raw, index)
 	assert(raw, 'raw data is missing')
 
-	local service_code = 0
-	service_code = string.unpack('<I1', raw, index)
+	local service_code = string.unpack('<I1', raw, index)
 	if service_code & types.SERVICES.REPLY then
 		return reply_parser(raw, index)
 	else

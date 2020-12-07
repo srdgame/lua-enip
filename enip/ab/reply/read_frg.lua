@@ -6,18 +6,18 @@ local base = require 'enip.cip.reply.base'
 
 local reply = base:subclass('enip.ab.reply.read_frg')
 
-function reply:initialize(segment, data, status, ext_status)
+function reply:initialize(data_type, data, status, ext_status)
 	base.initialize(self, types.SERVICES.READ_FRG, status, ext_status)
 	if type(data_type) == 'number' then
 		data_type = data_simple:new(data_type)
 	end
-	self._segment = data_type
+	self._data_type = data_type
 	self._data = data
 end
 
 local function encode_data(parser, data)
 	local raw = {}
-	for _, v in ipairs(self._data) do
+	for _, v in ipairs(data) do
 		raw[#raw + 1] = parser.encode(v)
 	end
 
@@ -25,18 +25,18 @@ local function encode_data(parser, data)
 end
 
 function reply:encode()
-	assert(self._segment, 'Segment is missing')
+	assert(self._data_type, 'Segment is missing')
 
 	local raw = {}
-	local seg_raw = self._segment:to_hex()
+	local seg_raw = self._data_type:to_hex()
 	raw[#raw + 1] = seg_raw
 	if string.len(seg_raw) % 2 == 1 then
 		raw[#raw + 1] = '\0' -- PAD
 	end
 
 	if self._data then
-		local parser = self._segment.parser()
-		assert(parser, 'Segment needs to have parser if data exists')
+		local parser = self._data_type.parser()
+		assert(parser, 'Data type needs to have parser if data exists')
 
 		local data_raw = encode_data(parser, self._data)
 		raw[#raw + 1] = data_raw
@@ -60,30 +60,32 @@ end
 function reply:decode(raw, index)
 	assert(self._status == cip_types.STATUS.OK)
 	local start = index or 1
-	self._segment, index = segment.parse(raw, index)
+	local pad
+	self._data_type, index = segment.parse(raw, index)
 
 	--- PAD
 	if (index - start) % 2 == 1 then
-		local pad, index = string.unpack('I1', raw, index)
+		pad, index = string.unpack('I1', raw, index)
 		assert(pad == 0, 'PAD has to be zero')
 	end
 
-	if self._segment.parser then
-		local parser = self._segment.parser()
+	if self._data_type.parser then
 		self._data, index = decode_data(raw, index)
+	else
+		assert(nil, "Data parser not found")
 	end
 
 	--- PAD
 	if (index - start) % 2 == 1 then
-		local pad, index = string.unpack('I1', raw, index)
+		pad, index = string.unpack('I1', raw, index)
 		assert(pad == 0, 'PAD has to be zero')
 	end
 
 	return index
 end
 
-function reply:segment()
-	return self._segment
+function reply:data_type()
+	return self._data_type
 end
 
 function reply:data()

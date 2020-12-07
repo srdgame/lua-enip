@@ -3,7 +3,7 @@ local base = require 'enip.cip.request.base'
 
 local req = base:subclass('enip.ab.request.read_frg')
 
---- 
+---
 -- Initialize constuctor
 -- path: EPATH
 function req:initialize(path, count, offset)

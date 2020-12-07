@@ -1,5 +1,5 @@
 local base = require 'enip.cip.reply.base'
-local cip_tyeps = require 'enip.cip.types'
+local cip_types = require 'enip.cip.types'
 local types = require 'enip.cip.objects.message_router.types'
 local object_path = require 'enip.cip.segment.object_path'
 
@@ -20,7 +20,7 @@ end
 
 function resp:decode(raw, index)
 	local path = object_path:new()
-	local index = path:from_hex(raw, index)
+	index = path:from_hex(raw, index)
 	self._path = path
 	return index
 end

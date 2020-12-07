@@ -83,7 +83,8 @@ function seg:decode(raw, index)
 		self._numeric_type = nil
 		self._val, index = string.unpack('c'..fmt, raw, index)
 	else
-		local fmt, index = string.unpack('I1', raw, index)
+		local fmt
+		fmt, index = string.unpack('I1', raw, index)
 		self._ext_format = (fmt >> 5) & 0x07
 		if self._ext_format == seg.static.EXT_FORMATS.NUMERIC then
 			self._numeric_type = fmt & 0x1F

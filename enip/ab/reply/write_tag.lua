@@ -8,7 +8,7 @@ function reply:initialize(status, ext_status)
 end
 
 function reply:encode()
-	return ''
+	return self._data or ''
 end
 
 function reply:decode(raw, index)

@@ -54,10 +54,10 @@ function command_data:items()
 	return self._items
 end
 
-function command_data:find(type_id)
+function command_data:find(item_type)
 	local item = nil
 	for _, v in pairs(self._items) do
-		if v:type_id() == type_id then
+		if v:type() == item_type then
 			if item == nil then
 				item = v
 			end

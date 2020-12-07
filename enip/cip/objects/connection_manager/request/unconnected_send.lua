@@ -1,7 +1,8 @@
-local base = require 'enip.cip.objects.request.base'
+local parser = require 'enip.cip.request.parser'
 local cip_types = require 'enip.cip.types'
-local types = require 'enip.cip.objects.connection_manager.types'
 local object_path = require 'enip.cip.segment.object_path'
+local base = require 'enip.cip.objects.request.base'
+local types = require 'enip.cip.objects.connection_manager.types'
 local timing = require 'enip.cip.objects.connection_manager.connection_timing'
 
 local req = base:subclass('enip.cip.objects.connection_manager.unconnected_send')
@@ -43,15 +44,23 @@ function req:decode(raw, index)
 	index = self._connection_timing:from(raw, index)
 
 	local req_raw_len, index = string.unpack('<I2', raw, index)
+	local data_raw = string.sub(raw, index, index + req_raw_len - 1)
+	local request, req_index = parser(data_raw)
+	assert(req_index == req_raw_len + 1, "Data decode error!")
+
+	self._request = request
+	index = index + req_raw_len
 	if req_raw_len % 2 == 1 then
-		index = index + 1
+		index = index + 1 --- Skip PAD
 	end
-	self._request, index = parser(raw, index)
 
 	local path_raw_size, _, index = string.unpack('I1I1', raw, index)
+	local path_raw = string.sub(raw, index, index + path_raw_size * 2 - 1)
 	self._route_path = object_path:new()
+	local path_index = self._route_path:from_hex(path_raw)
+	assert(path_index == path_raw_size * 2 + 1, "Route path decode error!")
 
-	return self._route_route:from_hex(raw, index)
+	return index + path_raw_size * 2
 end
 
 function req:connection_timing()

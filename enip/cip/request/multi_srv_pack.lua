@@ -62,7 +62,8 @@ function mr:decode(raw, index)
 			index = start + offsets[i]
 		end
 
-		local req, index = parser(raw, index)
+		local req
+		req, index = parser(raw, index)
 		requests[#requests + 1] = req
 	end
 	assert(offsets[count] >= index - start, 'Offset error!')

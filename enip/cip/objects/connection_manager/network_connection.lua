@@ -22,7 +22,7 @@ function nc:initialize(redundant_owner, connection_type, priority, fix_or_variab
 	self._connection_type = connection_type
 	self._priority = priority
 	self._fix_or_vairable = fix_or_variable
-	self._connection_size connection_size
+	self._connection_size = connection_size
 	self._w32 = w32
 end
 

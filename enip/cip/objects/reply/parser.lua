@@ -28,7 +28,7 @@ local function search_service_parser(service_code, object_path)
 	if not ofinders[object_id] then
 		for k, v in pairs(types.OBJECT) do
 			if v == object_id then
-				ofinders[object_id] = pfinder(otypes.SERVICES, 'enip.cip.objects.'..string.lower(k)..'.request')
+				ofinders[object_id] = pfinder(otypes.SERVICES, 'enip.cip.objects.'..string.lower(k)..'.reply')
 			end
 		end
 		return nil, "Cannot find object class for id:"..object_id
@@ -45,6 +45,7 @@ local function search_service_parser(service_code, object_path)
 end
 
 return function(raw, index)
+	-- TODO: there is no path in response data, so we have to use request object
 	local code, path_len, path_index = string.unpack('<I1I1', raw, index)
 
 	code = code & 0x7F

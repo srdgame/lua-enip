@@ -1,5 +1,4 @@
 local SERVICES = {
-	-- 
 	--- Logix Tag Type Services
 	READ_TAG			= 0x4C,
 	WRITE_TAG			= 0x4D,

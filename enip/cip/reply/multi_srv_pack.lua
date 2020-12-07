@@ -22,7 +22,7 @@ function mr:encode()
 	local reply_data = {}
 	for _, v in ipairs(self._requests) do
 		local data = v:to_hex()
-		reply_data[#servcie_data] = data
+		reply_data[#reply_data + 1] = data
 		offsets[#offsets + 1] = string.len(data)
 	end
 
@@ -39,14 +39,15 @@ function mr:encode()
 	return table.concat(data)..table.concat(reply_data)
 end
 
-function mr:from_hex(raw, index)
+function mr:decode(raw, index)
+	local parser = require 'enip.cip.reply.parser' -- avoid require loop
+
 	local start = index
-	local count = 0
-	count, index = string.unpack('<I2', raw, index)
+	local count, index = string.unpack('<I2', raw, index)
 
 	local offsets = {}
 	for i = 1, count do
-		offsets[#offsets + 1], index = string.unpack('<I2', raw, index)
+		offsets[i], index = string.unpack('<I2', raw, index)
 	end
 
 	local replies = {}
@@ -56,17 +57,18 @@ function mr:from_hex(raw, index)
 		assert(offsets[i] >= index - start, "Offset error!!!")
 		if offsets[i] > index - start then
 			logger.log('INFO', "Correct offset. i:%d index:%d start:%d offset[i]:%d",
-				i, index, start, offset[i])
+				i, index, start, offsets[i])
 			index = start + offsets[i]
 		end
 
-		local parser = require 'enip.cip.reply.parser' -- avoid require loop
-		local data, index = parser(raw, index)
+		local data
+		data, index = parser(raw, index)
 		replies[#replies + 1] = data
 	end
-	assert(offsets[count] >= index - start, "Offset error!!!")
+	assert(offsets[count] <= index - start, "Offset error!!!")
 
 	self._replies = replies
+	return index
 end
 
 return mr

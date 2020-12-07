@@ -43,16 +43,17 @@ end
 
 function req:decode(raw, index)
 	local start = index or 1
+	local count, pad
 	self._segment, index = segment.parse(raw, index)
 
 	--- PAD
 	if (index - start) % 2 == 1 then
-		local pad, index = string.unpack('I1', raw, index)
+		pad, index = string.unpack('I1', raw, index)
 		assert(pad == 0, 'PAD has to be zero')
 	end
 
 	if self._segment.parser then
-		local count, pad = string.unpack('<I1I1', raw, index)
+		count, pad, index = string.unpack('<I1I1', raw, index)
 		assert(count == 1, pad == 0)
 
 		local parser = self._segment.parser()
@@ -61,7 +62,7 @@ function req:decode(raw, index)
 
 	--- PAD
 	if (index - start) % 2 == 1 then
-		local pad, index = string.unpack('I1', raw, index)
+		pad, index = string.unpack('I1', raw, index)
 		assert(pad == 0, 'PAD has to be zero')
 	end
 

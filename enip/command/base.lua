@@ -104,10 +104,11 @@ function command:from_hex(raw, index)
 	self._command, data_len, session_, self._status, context, self._options, index
 		= string.unpack(header_fmt, raw, index)
 	self._session = session:new(session_, context)
-	local data_raw = string.sub(raw, index, index + data_len)
+	assert(data_len > 0, "Data length error")
+	local data_raw = string.sub(raw, index, index + data_len - 1)
 
-	local d_len = self:decode(data_raw)
-	assert(d_len == data_len + 1, "Command data decode error!")
+	local d_index = self:decode(data_raw)
+	assert(d_index == data_len + 1, "Command data decode error!")
 	
 	return index + data_len
 end

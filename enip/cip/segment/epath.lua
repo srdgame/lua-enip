@@ -57,7 +57,7 @@ function epath:from_hex(raw, index)
 	self._segments = {}
 
 	while index < string.len(raw) do
-		local seg, index = seg_base.parse(raw, index)
+		local seg, new_index = seg_base.parse(raw, index)
 		if seg:type() == seg_base.TYPES.DATA then
 			assert(seg:format() == data.FORMATS.ANSI, "Path must be ANSI extended symbol segment")
 			table.insert(self._segments, seg)

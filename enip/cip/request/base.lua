@@ -64,7 +64,7 @@ function req:from_hex(raw, index)
 
 	local path = epath:new()
 
-	local path_raw = string.sub(raw, index, index + path_len * 2)
+	local path_raw = string.sub(raw, index, index + path_len * 2 - 1)
 	index = index + path_len * 2
 	local path_index = path:from_hex(path_raw)
 	assert(path_index == index, "EPATH decode error")

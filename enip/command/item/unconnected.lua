@@ -16,6 +16,7 @@ end
 function item:decode(raw, index)
 	assert(raw, 'stream raw data is missing')
 	self._data, index = parser(raw, index)
+	assert(self._data, index)
 	return index
 end
 
