@@ -1,3 +1,5 @@
+--- Message Router Reply format
+--
 local base = require 'enip.serializable'
 
 local types = require 'enip.cip.types'

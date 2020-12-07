@@ -91,6 +91,10 @@ function object_path:segments()
 	return self._segments
 end
 
+function object_path:segment(index)
+	return self._segments[index]
+end
+
 function object_path:to_hex()
 	local raw = {}
 	for _, seg in ipairs(self._segments) do

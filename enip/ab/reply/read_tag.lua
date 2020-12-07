@@ -1,9 +1,10 @@
-local types = require 'enip.cip.types'
+local cip_types = require 'enip.cip.types'
+local types = require 'enip.ab.types'
 local base = require 'enip.cip.reply.base'
 local segment = require 'enip.cip.segment.base'
 local data_simple = require 'enip.cip.segment.data_simple'
 
-local reply = base:subclass('enip.cip.reply.read_tag')
+local reply = base:subclass('enip.ab.reply.read_tag')
 
 function reply:initialize(data_type, data, status, ext_status)
 	base.initialize(self, types.SERVICES.READ_TAG, status, ext_status)
@@ -39,7 +40,7 @@ function reply:encode()
 end
 
 function reply:decode(raw, index)
-	assert(self._status == types.STATUS.OK)
+	assert(self._status == cip_types.STATUS.OK)
 	local start = index or 1
 	self._segment, index = segment.parse(raw, index)
 

@@ -6,3 +6,7 @@ local SERVICES = {
 	READ_FRG			= 0x52,
 	WRITE_FRG			= 0x53,
 }
+
+return {
+	SERVICES = SERVICES
+}

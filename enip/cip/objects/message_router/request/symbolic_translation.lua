@@ -1,4 +1,4 @@
-local base = require 'enip.cip.request.base'
+local base = require 'enip.cip.objects.request.base'
 local cip_tyeps = require 'enip.cip.types'
 local types = require 'enip.cip.objects.message_router.types'
 local object_path = require 'enip.cip.segment.object_path'
@@ -7,8 +7,7 @@ local req = base:subclass('enip.cip.objects.connection_manager.unconnected_send'
 
 function req:initialize(instance, path)
 	local instance = instance or 0
-	local request_path = object_path.easy_create(cip_types.OBJECT.MESSAGE_ROUTER, instance)
-	base.initialize(self, types.SYMBOLIC_TRANSLATION, request_path)
+	base.initialize(self, types.SERVICE.SYMBOLIC_TRANSLATION, cip_types.OBJECT.MESSAGE_ROUTER, instance)
 	self._path = path
 end
 

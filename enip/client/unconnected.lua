@@ -2,15 +2,16 @@ local session = require 'enip.utils.session'
 local base = require 'enip.client.base'
 local command_data = require 'enip.command.data'
 local command_item = require 'enip.command.item.base'
-local cip_read_tag = require 'enip.cip.request.read_tag'
-local cip_read_frg = require 'enip.cip.request.read_frg'
+local read_tag = require 'enip.ab.request.read_tag'
+local read_frg = require 'enip.ab.request.read_frg'
 local cip_req_multi = require 'enip.cip.request.multi_srv_pack'
-local cip_write_tag = require 'enip.cip.request.write_tag'
+local write_tag = require 'enip.ab.request.write_tag'
 local cip_types = require 'enip.cip.types'
+local ab_types = require 'enip.ab.types'
 local data_simple = require 'enip.cip.segment.data_simple'
 local object_path = require 'enip.cip.segment.object_path'
 local timing = require 'enip.cip.objects.connection_manager.connection_timing'
-local unconnected_send = require 'enip.cip.objects.connection_manager.unconnected_send'
+local unconnected_send = require 'enip.cip.objects.connection_manager.request.unconnected_send'
 
 local client = base:subclass('enip.client.unconnected')
 
@@ -33,7 +34,7 @@ function client:read_tag(tag_path, tag_type, tag_count, response)
 	local session_obj = self:gen_session()
 	local data_type, data_type_fmt = convert_tag_type_to_fmt(tag_type)
 
-	local read_req = cip_read_tag:new(tag_path, tag_count)
+	local read_req = read_tag:new(tag_path, tag_count)
 
 	--- Send RR Data Request
 	local null = command_item.build(comand_item.TYPES.NULL) -- NULL Address item required by Unconnected Message
@@ -73,7 +74,7 @@ function client:read_tags(tags, response)
 
 	local requests = {}
 	for _, v in ipairs(tags) do
-		requests[#requests + 1] = cip_read_tag:new(v.path, v.count or 1)
+		requests[#requests + 1] = read_tag:new(v.path, v.count or 1)
 	end
 
 	local route_path = self:route_path()

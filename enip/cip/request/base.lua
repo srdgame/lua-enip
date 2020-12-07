@@ -1,3 +1,5 @@
+--- Message Router Request format
+--
 local base = require 'enip.serializable'
 local epath = require 'enip.cip.segment.epath'
 
@@ -5,7 +7,7 @@ local req = base:subclass('enip.cip.request.base')
 
 function req:initialize(service_code, request_path)
 	base.initialize(self)
-	self._service = service_code or -1
+	self._service = service_code
 	if not request_path then
 		return
 	end
@@ -42,6 +44,7 @@ function req:decode(raw, index)
 end
 
 function req:to_hex()
+	assert(self._service, "Service code is missing")
 	assert(self._path, "Path is missing")
 
 	local path_raw = self._path:to_hex()

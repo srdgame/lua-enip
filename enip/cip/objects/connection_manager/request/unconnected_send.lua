@@ -1,14 +1,14 @@
-local base = require 'enip.cip.request.base'
-local cip_tyeps = require 'enip.cip.types'
-local cm_types = require 'enip.cip.objects.connection_manager.types'
+local base = require 'enip.cip.objects.request.base'
+local cip_types = require 'enip.cip.types'
+local types = require 'enip.cip.objects.connection_manager.types'
 local object_path = require 'enip.cip.segment.object_path'
 local timing = require 'enip.cip.objects.connection_manager.connection_timing'
 
 local req = base:subclass('enip.cip.objects.connection_manager.unconnected_send')
 
 function req:initialize(instance, connection_timing, request, route_path)
-	local request_path = object_path.easy_create(cip_types.OBJECT.CONNECTION_MANAGER, instance)
-	base.initialize(self, cm_types.UNCONNECTED_SEND, request_path)
+	local instance = instance or 0
+	base.initialize(self, types.SERVICES.UNCONNECTED_SEND, cip_types.OBJECT.CONNECTION_MANAGER, instance)
 	self._connection_timing = connection_timing
 	self._request = request
 	self._route_path = route_path
