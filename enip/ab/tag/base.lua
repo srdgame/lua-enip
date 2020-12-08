@@ -1,4 +1,4 @@
-local class = 'middleclass'
+local class = require 'middleclass'
 
 local tag = class('enip.ab.tag')
 

@@ -1,58 +1,53 @@
 local types = require 'enip.cip.types'
 local pfinder = require 'enip.utils.pfinder'
-local logical = require 'enip.cip.segment.logical'
-local epath = require 'enip.cip.segment.epath'
+local parser = require 'enip.utils.parser'
+local chain = require 'enip.utils.parser.chain'
+local lazy = require 'enip.utils.parser.lazy'
 
-local finder = pfinder(types.OBJECT, 'enip.cip.objects')
-local ofinders = {}
+local object_finder = pfinder(types.OBJECT, 'enip.cip.objects', 'reply')
 
-local function search_service_parser(service_code, object_id)
-	local otypes, err = finder(object_id, 'types')
-	if not otypes then
-		return nil, err
-	end
+local op = chain:subclass('enip.cip.objects.parser')
 
-	if not ofinders[object_id] then
-		for k, v in pairs(types.OBJECT) do
-			if v == object_id then
-				ofinders[object_id] = pfinder(otypes.SERVICES, 'enip.cip.objects.'..string.lower(k)..'.reply')
-			end
-		end
-		return nil, "Cannot find object class for id:"..object_id
-	end
-
-	local ofinder = ofinders[object_id]
-
-	local mod, err = ofinder(service_code)
-	if not mod then
-		return nil, err
-	end
-
-	return mod
+function op:initialize(code, raw, index, len)
+	print('lazy parser', code, string.len(raw), index)
+	chain.initialize(self, true) --- conflict checking true
+	self._code = code
+	self._lazy = lazy:new(code, raw, index, len)
+	self:add_lazy(code, self._lazy, function(data, err)
+		self._data = data
+		return true
+	end)
 end
 
-return function(object_id, raw, index)
-	code = code & 0x7F
-	assert(code > types.SERVICES.MAX_COMMON_SERVICE, "Invalid service code")
-
-	if type(object_id) == 'string' then
-		for k, v in pairs(types.OBJECT) do
-			if string.lower(k) == string.lower(object_id) then
-				object_id = v
-				break
-			end
-		end
-		assert(nil, "Object type error")
+---
+-- Parse the data with provided parser:
+--	:number -- Object Class ID
+--	:object -- Parser object
+function op:append(oparser)
+	if type(oparser) == 'number' then
+		local otypes, obase = object_finder:find(oparser, 'types')
+		assert(otypes, obase)
+		oparser = parser:new(otypes.SERVICES, obase..'.reply')
 	end
 
-	local mod, err = search_service_parser(code, object_id)
-	if not mod then
-		return nil, string.format('Service code[%02X] is not supported error:%s',  code, err)
-	end
+	return chain.append(self, oparser)
+end
 
-	local obj = mod:new()
-	index = obj:from_hex(raw, index)
+function op:is_done()
+	return self._data ~= nil
+end
 
-	return obj, index
+function op:data()
+	return self._data
+end
+
+return function(code, raw, index, len)
+	assert(code ~= nil, "Service code is missing")
+	local code = code & 0x7F
+	assert(code > types.SERVICES.MAX_COMMON_SERVICE, string.format("Invalid service code:0x%02X", code))
+
+	local parser = op:new(code, raw, index, len)
+
+	return parser, index + (len or 0)
 end
 

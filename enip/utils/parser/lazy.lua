@@ -3,8 +3,11 @@ local class = require 'middleclass'
 local lazy = class('enip.utils.parser.lazy')
 
 function lazy:initialize(code, raw, index, len)
+	assert(code ~= nil, 'Code missing')
+	assert(raw ~= nil, 'Raw data missing')
 	self._code = code
-	self._raw = string.sub(raw, index, index + len - 1)
+	local index = index or 1
+	self._raw = string.sub(raw, index, len and (index + len - 1) or nil)
 	self._data = nil
 end
 
@@ -17,7 +20,9 @@ function lazy:__call(parser, reparse)
 	if not obj then
 		return false
 	end
-	assert(index = string.len(self._raw) + 1, "Decode error!")
+
+	assert(index == string.len(self._raw) + 1, "Decode error!")
+
 	self._data = obj
 	return self._data
 end

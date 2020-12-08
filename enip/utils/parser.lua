@@ -45,13 +45,13 @@ function parser:find(code, appendix)
 		return nil, "No package found:"..code
 	end
 
-	local p_name = base_pn..'.'..key
+	local p_name = self._base..'.'..key
 	p_name = appendix and p_name..'.'..appendix or p_name
 	local r, p = pcall(require, p_name)
 	if not r then
 		return nil, p
 	end
-	return p
+	return p, p_name
 end
 
 return parser

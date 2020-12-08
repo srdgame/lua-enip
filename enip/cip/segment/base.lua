@@ -16,7 +16,8 @@ seg.static.TYPES = {
 }
 
 local function parse_segment_type(raw, index)
-	local tf, index = string.unpack('<I1', raw, index)
+	assert(raw, 'raw is nil')
+	local segment, index = string.unpack('<I1', raw, index)
 	local seg_type = ((segment & 0xE0) >> 5 ) & 0x07
 	local seg_fmt = segment & 0x1F
 
@@ -32,13 +33,16 @@ seg.static.parse_segment_type = parse_segment_type
 seg.static.encode_segment_type = encode_segment_type
 
 local finder = pfinder(seg.static.TYPES, 'enip.cip.segment')
+
 seg.static.parse = function(raw, index)
+	assert(raw, 'raw is nil')
+	assert(string.len(raw) > 1, 'raw is too short')
 	local seg_type, seg_fmt, index = parse_segment_type(raw, index)
 
 	local m, err = finder(seg_type)
 	assert(m, err)
 
-	if not m.static.parse then
+	if m.static.parse == seg.static.parse then
 		local o = m:new(seg_type, seg_fmt)
 		index = o:from_hex(raw, index - 1)
 		return o, index

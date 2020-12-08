@@ -54,7 +54,7 @@ function mr:decode(raw, index)
 	for i = 1, count do
 		local offset = offsets[i] - (1 + count) * 2
 
-		print(i, index, start, offsets[i])
+		--print(i, index, start, offsets[i])
 
 		assert(offsets[i] >= index - start, "Offset error!!!")
 		if offsets[i] >= index - start then
@@ -67,7 +67,13 @@ function mr:decode(raw, index)
 			logger.log('ERROR', "Incorrect offset found")
 		end
 
-		local data, data_index = parser(raw, index)
+		local data_len
+		if i < count then
+			data_len = offsets[i + 1] - offsets[i]
+		end
+
+		--logger.log('DEBUG', "Multi Service Pack: %02X %d", string.unpack('<I1', raw, index))
+		local data, data_index = parser(raw, index, data_len)
 		if not data then
 			logger.log('ERROR', data_index)
 		else

@@ -83,22 +83,4 @@ function client:send_unit_data(session, data, response)
 	return self:request(req, response)
 end
 
-function client:get_reply_value(cip_reply, data_type)
-	--- Get the CIP reply status
-	if cip_reply:status() ~= cip_types.STATUS.OK then
-		return nil, cip_reply:error_info()
-	end
-
-	--- Get the CIP data
-	local cip_data = cip_reply:data()
-	if not cip_data then
-		return nil, 'ERROR: CIP reply has no data'
-	end
-
-	-- TODO: check about the data_type???
-
-	--- callback
-	return cip_data:value()
-end
-
 return client

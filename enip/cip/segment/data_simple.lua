@@ -1,3 +1,4 @@
+local logger = require 'enip.logger'
 local base = require 'enip.cip.segment.base'
 
 local buildin = base:subclass('enip.cip.segment.data_simple')
@@ -122,7 +123,7 @@ buildin.static.FORMATS = {
 }
 
 local function get_format_parser(fmt)
-	for k, v in pairs(build.static.FORMATS) do
+	for k, v in pairs(buildin.static.FORMATS) do
 		if v == tonumber(fmt) then
 			return data_fmt_map[k]
 		end
@@ -157,10 +158,10 @@ function buildin:parser()
 			end
 		end,
 		decode = function(raw, index)
-			obj._data_type = type_from_segment_fmt(obj:segment_format())
 			local parser = get_format_parser(obj:format())
 			assert(parser, 'Type is not supported!!!')
 			if type(parser) == 'string' then
+				--logger.dump('data_simple.parser.decode', string.sub(raw, index))
 				return string.unpack(parser, raw, index)
 			else
 				return parser.decode(raw, index)

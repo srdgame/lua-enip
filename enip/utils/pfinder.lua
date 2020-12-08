@@ -1,6 +1,9 @@
+---
+-- Package finder utility
+--
 
 return function(types, base_pn)
-	assert(tyeps ~= nil and type(types) == 'table')
+	assert(types ~= nil and type(types) == 'table')
 	assert(base_pn ~= nil and type(base_pn) == 'string')
 	local codes = {}
 	for k,v in pairs(types) do
@@ -19,6 +22,6 @@ return function(types, base_pn)
 		if not r then
 			return nil, p
 		end
-		return p
+		return p, p_name
 	end
 end

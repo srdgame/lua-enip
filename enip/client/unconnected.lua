@@ -24,28 +24,40 @@ function client:unconnected_request(request, response)
 	local session_obj = self:gen_session()
 
 	--- Send RR Data Request
-	local null = command_item.build(comand_item.TYPES.NULL) -- NULL Address item required by Unconnected Message
-	local unconnected = command_item.build(comand_item.TYPES.UNCONNECTED, request)
+	local null = command_item.build(command_item.TYPES.NULL) -- NULL Address item required by Unconnected Message
+	local unconnected = command_item.build(command_item.TYPES.UNCONNECTED, request)
 
 	local data = command_data:new({null, unconnected})
 
 	return self:send_rr_data(session_obj, data, function(reply, err)
-		-- ENIP reply
+		-- ENIP reply status checking
 		if reply:status() ~= 0 then
 			return response(nil, "ERROR Status")
 		end
 
 		--- ENIP command data
-		local command_data = reply:data()
+		local reply_data = reply:data()
 
-		--- Find the unconnected item
-		local item, err = command_data:find(command_item.TYPES.UNCONNECTED)
-		if not item then
-			return response(nil, 'ERROR: Item not found')
+		--- Command Items
+		local items = reply_data:items()
+		if not items or #items < 2 then
+			return response(nil, "Error command data items count")
+		end
+
+		--- The first item must be NULL Address Item
+		local null_item = items[1]
+		if null_item:type() ~= command_item.TYPES.NULL then
+			return response(nil, "Unconnected send needs to have NULL Address Item as the first item")
+		end
+
+		--- The second item must be Unconnected Data Item
+		local un_data = items[2]
+		if un_data:type() ~= command_item.TYPES.UNCONNECTED then
+			return response(nil, 'ERROR: The second item should be UNCONNECTED')
 		end
 
 		--- Get the item CIP reply
-		local cip_reply = item:cip()
+		local cip_reply = un_data:data()
 		if not cip_reply then
 			return response(nil, 'ERROR: CIP reply not found')
 		end

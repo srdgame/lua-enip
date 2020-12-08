@@ -9,6 +9,7 @@ function chain:initialize(conflict_check)
 	self._lazy_list = {}
 end
 
+--- The service code of lazy object needed
 function chain:add_lazy(code, lazy, callback)
 	assert(code ~= nil, "Code missing")
 	assert(lazy ~= nil, "Parser.lazy object missing")
@@ -49,10 +50,10 @@ function chain:build_hash(parser, overwrite)
 			local list = lazy_list[k]
 			if list then
 				for i, v in ipairs(list) do
-					local data = v.lazy(parser, true) -- reparse again
-					if v.callback then
+					local data, err = v.lazy(parser, true) -- reparse again
+					if data and v.callback then
 						if v.callback(data) then
-							table.remove(i) -- remove the lazy
+							table.remove(list, i) -- remove the lazy
 						end
 					end
 				end

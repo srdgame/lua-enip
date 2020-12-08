@@ -1,3 +1,4 @@
+local logger = require 'enip.logger'
 local cip_types = require 'enip.cip.types'
 local types = require 'enip.ab.types'
 local base = require 'enip.cip.reply.base'
@@ -17,49 +18,48 @@ end
 
 function reply:encode()
 	assert(self._data_type, 'Segment is missing')
+	assert(self._data, 'Data is missing')
 
 	local raw = {}
-	local seg_raw = self._data_type:to_hex()
-	raw[#raw + 1] = seg_raw
-	if string.len(seg_raw) % 2 == 1 then
+	local parser = self._data_type.parser()
+	assert(parser, 'Segment needs to have parser if data exists')
+	raw[#raw + 1] = self._data_type:to_hex()
+	if (string.len(raw[#raw]) % 2) == 1 then
 		raw[#raw + 1] = '\0' -- PAD
 	end
 
-	if self._data then
-		local parser = self._data_type.parser()
-		assert(parser, 'Segment needs to have parser if data exists')
-
-		local data_raw = parser.encode(self._data)
-		raw[#raw + 1] = data_raw
-		if string.len(data_raw) % 2 == 1 then
-			raw[#raw + 1] = '\0' -- PAD
-		end
+	local data_raw = parser.encode(self._data)
+	raw[#raw + 1] = data_raw
+	if string.len(data_raw) % 2 == 1 then
+		raw[#raw + 1] = '\0' -- PAD
 	end
 
 	return table.concat(raw)
 end
 
 function reply:decode(raw, index)
+	logger.dump('ab.reply.read_tab.decode', raw)
 	assert(self._status == cip_types.STATUS.OK)
-	local start = index or 1
+
 	local pad
+	local start = index or 1
 	self._data_type, index = segment.parse(raw, index)
+	assert(self._data_type, index)
+	if (index - start) % 2 == 1 then
+		pad, index = string.unpack('<I1', raw, index)
+		assert(pad == 0, 'PAD must be zero')
+	end
+
+	assert(self._data_type.parser)
+	start = index
+	local parser = self._data_type:parser()
+	self._data, index = parser.decode(raw, index)
+	print(self._data)
 
 	--- PAD
 	if (index - start) % 2 == 1 then
 		pad, index = string.unpack('I1', raw, index)
-		assert(pad == 0, 'PAD has to be zero')
-	end
-
-	if self._data_type.parser then
-		local parser = self._data_type.parser()
-		self._data, index = parser.decode(raw, index)
-	end
-
-	--- PAD
-	if (index - start) % 2 == 1 then
-		pad, index = string.unpack('I1', raw, index)
-		assert(pad == 0, 'PAD has to be zero')
+		assert(pad == 0, 'PAD must be zero')
 	end
 
 	return index
