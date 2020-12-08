@@ -1,17 +1,24 @@
 
 return function(types, base_pn)
+	assert(tyeps ~= nil and type(types) == 'table')
+	assert(base_pn ~= nil and type(base_pn) == 'string')
+	local codes = {}
+	for k,v in pairs(types) do
+		codes[v] = string.lower(k)
+	end
+
 	return function(code, appendix)
-		for k, v in pairs(types) do
-			if v == code then
-				local p_name = base_pn..'.'..string.lower(k)
-				p_name = appendix and p_name..'.'..appendix or p_name
-				local r, p = pcall(require, p_name)
-				if not r then
-					return nil, p
-				end
-				return p
-			end
+		local key = codes[code]
+		if not key then
+			return nil, "No package found:"..code
 		end
-		return nil, "No package found:"..code
+
+		local p_name = base_pn..'.'..key
+		p_name = appendix and p_name..'.'..appendix or p_name
+		local r, p = pcall(require, p_name)
+		if not r then
+			return nil, p
+		end
+		return p
 	end
 end
