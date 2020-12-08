@@ -8,7 +8,7 @@ local enip_route_path = require 'enip.utils.route_path'
 
 local client = class('enip.client.base')
 
-local default_route_path = '1/0'
+local default_route_path = '1,0' -- port 1 link 0
 
 function client:initialize(conn_path, route_path)
 	self._conn_path = enip_conn_path(conn_path)
