@@ -7,6 +7,10 @@ function ansi:initialize(symbol)
 	self._symbol = symbol
 end
 
+function ansi:__tostring()
+	return self._symbol
+end
+
 function ansi:to_hex()
 	local data = string.pack('s1', self._symbol)
 	if string.len(self._symbol) % 2 == 1 then

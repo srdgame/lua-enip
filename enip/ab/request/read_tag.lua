@@ -4,6 +4,7 @@ local types = require 'enip.ab.types'
 local req = base:subclass('enip.ab.request.read_tag')
 
 function req:initialize(path, count)
+	print('read_tag', path, count)
 	base.initialize(self, types.SERVICES.READ_TAG, path)
 	self._count = count
 end

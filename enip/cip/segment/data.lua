@@ -29,6 +29,7 @@ function seg:encode()
 end
 
 function seg:decode(raw, index)
+	local fmt = self:format()
 	if fmt == seg.static.FORMATS.ANSI then
 		--- ANSI Extended Symbol
 		local p = ansi:new()

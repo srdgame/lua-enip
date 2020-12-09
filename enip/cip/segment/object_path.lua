@@ -14,15 +14,15 @@ local object_path = base:subclass('enip.cip.segment.object_path')
 
 object_path.static.easy_create = function(class, instance, attribute, member)
 	local o = object_path:new()
-	o:append_logical(logical.SUB_TYPES.CLASS_ID, class)
+	o:append_logical(logical.TYPES.CLASS_ID, class)
 	if instance ~= nil then
-		o:append_logical(logical.SUB_TYPES.INSTANCE_ID, instance)
+		o:append_logical(logical.TYPES.INSTANCE_ID, instance)
 	end
 	if attribute ~= nil then
-		o:append_logical(logical.SUB_TYPES.ATTRIBUTE_ID, attribute)
+		o:append_logical(logical.TYPES.ATTRIBUTE_ID, attribute)
 	end
 	if member ~= nil then
-		o:append_logical(logical.SUB_TYPES.MEMBER_ID, member)
+		o:append_logical(logical.TYPES.MEMBER_ID, member)
 	end
 	return o
 end
@@ -44,7 +44,7 @@ function object_path:segments()
 	return self._segments
 end
 
-local ltypes = logical.SUB_TYPES
+local ltypes = logical.TYPES
 
 local logical_type_level = {
 	[ltypes.CLASS_ID] = {19},
@@ -63,7 +63,7 @@ function object_path:append(seg)
 	if seg:type() == seg_base.TYPES.SYMBOLIC then
 		assert(#self._segments == 0, "Symbolic ID must be the first segment")
 	else
-		local level = logical_type_level[seg:sub_type()]
+		local level = logical_type_level[seg:logical_type()]
 		local counts = #self._segments
 		local ok = false
 		for _, v in ipairs(level) do

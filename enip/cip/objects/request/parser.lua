@@ -15,7 +15,7 @@ local function search_service_parser(service_code, object_path)
 	if not seg:isInstanceOf(logical) then
 		return nil, "Object path is not logical"
 	end
-	if seg:sub_type() ~= logical.SUB_TYPES.CLASS_ID then
+	if seg:logical_type() ~= logical.TYPES.CLASS_ID then
 		return nil, "Logical node is an CLASS_ID type"
 	end
 

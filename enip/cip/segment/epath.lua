@@ -14,6 +14,14 @@ function epath:initialize(path, packed)
 	end
 end
 
+function epath:__tostring()
+	local t = {}
+	for _, seg in pairs(self._segments) do
+		t[#t + 1] = tostring(seg)
+	end
+	return table.concat(t, '||')
+end
+
 function epath:pad()
 	return self._pad
 end

@@ -4,7 +4,7 @@ local special = require 'enip.cip.segment.logical.special'
 local logical = base:subclass('enip.cip.segment.logical')
 
 --- 3 BITS
-logical.static.SUB_TYPES =  {
+logical.static.TYPES =  {
 	CLASS_ID			= 0x0,
 	INSTANCE_ID			= 0x1,
 	MEMBER_ID			= 0x2,
@@ -40,14 +40,14 @@ function logical:initialize(logical_type, value, pad)
 	local fmt = (logical_type << 2) + logical_fmt
 	--- Validation
 	if logical_fmt == logical.static.FORMATS.UDINT then
-		assert(logical_type == logical.static.SUB_TYPES.INSTANCE_ID
-			or logical_type == logical.static.SUB_TYPES_CONNECTION_POINT)
+		assert(logical_type == logical.static.TYPES.INSTANCE_ID
+			or logical_type == logical.static.TYPES_CONNECTION_POINT)
 	end
-	if logical_type == logical.static.SUB_TYPES.SERVICE_ID then
+	if logical_type == logical.static.TYPES.SERVICE_ID then
 		-- Only 8-Bit Service ID Segment defined in specs
 		assert(logical_fmt == logical.static.FORMATS.USINT)
 	end
-	if logical_type == logical.static.SUB_TYPES.SPECIAL then
+	if logical_type == logical.static.TYPES.SPECIAL then
 		-- Only Electronic Key Segment defined in specs
 		assert(logical_fmt == logical.static.FORMATS.USINT)
 	end
@@ -57,7 +57,7 @@ function logical:initialize(logical_type, value, pad)
 	self._pad = pad
 end
 
-function logical:sub_type()
+function logical:logical_type()
 	local fmt = self:format()
 	return fmt >> 2
 end
@@ -87,7 +87,7 @@ function logical:encode()
 	local raw = nil
 	local fmt = self:value_format()
 	if fmt == logical.static.FORMATS.USINT then
-		if self:sub_type() == logical.static.SUB_TYPES.SPECIAL then
+		if self:logical_type() == logical.static.TYPES.SPECIAL then
 			raw = self._value:to_hex()
 		else
 			raw = string.pack('<I1', self._value)
@@ -111,7 +111,7 @@ function logical:decode(raw, index)
 	local index = index or 1
 	local fmt = self:value_format()
 	if fmt == logical.static.FORMATS.USINT then
-		if self:sub_type() == logical.static.SUB_TYPES.SPECIAL then
+		if self:logical_type() == logical.static.TYPES.SPECIAL then
 			self._value = special:new()
 			index = self._value:from_hex(raw, index)
 		else

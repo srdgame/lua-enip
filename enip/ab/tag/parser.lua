@@ -2,7 +2,7 @@
 --
 local lpeg = require 'lpeg'
 local locale = lpeg.locale()
-local TEST = arg[0] == 'parser.lua' and arg[-1] == 'lua'
+local TEST = arg and arg[0] == 'parser.lua' and arg[-1] == 'lua'
 
 local logical
 local data
@@ -11,8 +11,8 @@ local tag
 if not TEST then
 	logical = require 'enip.cip.segment.logical'
 	data = require 'enip.cip.segment.data'
-	epath = require 'enip.cip.epath'
-	tag = require 'enip.ab.tab.parsed'
+	epath = require 'enip.cip.segment.epath'
+	ab_tag = require 'enip.ab.tag'
 end
 
 local to_member = function(num)
@@ -21,7 +21,7 @@ local to_member = function(num)
 		return num
 	end
 
-	return logical:new(logical.SUB_TYPES.MEMBER_ID, tonubmer(num))
+	return logical:new(logical.TYPES.MEMBER_ID, tonumber(num))
 end
 
 local data_loaded, data = pcall(require, 'enip.cip.segment.data')
@@ -35,7 +35,7 @@ end
 
 --local name = ((lpeg.R("az", "AZ")^1 * lpeg.R("az", "AZ", "09")^0)^1)
 --local member = lpeg.R("09")^1 / to_member
-local name = ((locale.alpha^1 * locale.alnum^0)^1)
+local name = (((locale.alpha + '_')^1 * (locale.alnum + '_')^0)^1)
 local member = locale.digit^1 / to_member
 local path = name / to_path
 
@@ -72,7 +72,7 @@ local parser = function(elem_name, type)
 		path:append(seg)
 	end
 
-	return tag:new(path, type, count)
+	return ab_tag:new(path, type, count)
 end
 
 if TEST then
@@ -91,6 +91,9 @@ if TEST then
 	test('MyTag[1]{128}')
 	test('MyTag[1].Point1')
 	test('MyTag[1].Point1{128}')
+	test('MyTag[1].Point1_122{128}')
+	test('MyTag[1].Point1_1B22{128}')
+	test('MyTag[1].Point1_B1B22{128}')
 	test('MyTag.Struct.Point1')
 	test('MyTag.StructArray[1].Point1')
 	test('MyTag[1,2,3]')

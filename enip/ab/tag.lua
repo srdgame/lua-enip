@@ -1,4 +1,6 @@
 local class = require 'middleclass'
+local seg_base = require 'enip.cip.segment.base'
+local logical = require 'enip.cip.segment.logical'
 
 local tag = class('enip.ab.tag')
 
@@ -7,6 +9,7 @@ function tag:initialize(path, type, count)
 	self._type = type
 	self._count = count or 1
 	self._join = nil
+	self._upper = nil
 end
 
 function tag:path()
@@ -18,6 +21,7 @@ function tag:type()
 end
 
 function tag:count(base)
+	print('COUNT BEGIN', self._count, base, self._join)
 	if not self._join then
 		if not base then
 			return self._count
@@ -25,6 +29,7 @@ function tag:count(base)
 			local segs = self._path:segments()
 			local last = segs[#segs]
 			--- calc the array offset and count
+			print('COUNT LAST', last:value(), base, self._count)
 			return last:value() - base + self._count
 		end
 	end
@@ -34,34 +39,6 @@ function tag:count(base)
 	local last = segs[#segs]
 
 	return self._join:count(base or last:value())
-end
-
-function tag:join(other)
-	assert(self._join == nil, 'Joined already')
-	-- TODO: check for joinable
-	local segs = self._path:segments()
-	local tag_segs = other._path:segments()
-	for i, v in ipairs(segs) do
-		local o = tag_segs[i]
-		if v:type() ~= o:type() or v:format() ~= o:format() then
-			--- If type or format are not same break
-			break
-		else
-			if v:value ~= o:value() then 
-				--- Only match the last value
-				if i == #segs then
-					if v:type() == v.TYPES.LOGICAL and v:sub_type() == v.SUB_TYPES.MEMBER_ID then
-						assert(o:value() + other:._count >=  v:value() + self._count)
-						self._join = tag
-					end
-				end
-				break
-			else
-				-- continue
-			end
-		end
-	end
-	return self._join
 end
 
 local function value_lt(a, b)
@@ -93,7 +70,7 @@ local function value_eq(a, b)
 end
 
 local function compare_lt(a, b)
-	if a:type() = b:type() then
+	if a:type() == b:type() then
 		if a:format() == b:format() then
 			return value_lt(a:value(), b:value())
 		end
@@ -103,9 +80,53 @@ local function compare_lt(a, b)
 end
 
 local function compare_eq(a, b)
-	return a:type() = b:type()
+	return a:type() == b:type()
 		and a:format() == b:format()
 		and value_eq(a:value(), b:value())
+end
+
+
+function tag:join(other)
+	assert(self._join == nil, 'Joined already')
+	-- TODO: check for joinable
+	local segs = self._path:segments()
+	local tag_segs = other._path:segments()
+	for i, v in ipairs(segs) do
+		local o = tag_segs[i]
+		if v:type() ~= o:type() or v:format() ~= o:format() then
+			--- If type or format are not same break
+			--print('type or format different')
+			break
+		else
+			if not value_eq(v:value(), o:value()) then
+				--print('value diff', v:value(), o:value())
+				--- Only match the last value
+				if i == #segs then
+					if v:type() == seg_base.TYPES.LOGICAL and v:logical_type() == logical.TYPES.MEMBER_ID then
+						assert(o:value() + other._count >=  v:value() + self._count)
+						self._join = other
+						other._upper = self
+						--print('JOINED', self, other)
+					else
+						--print('not logical.memeber_id', v:type(), v.logical_type and v:logical_type() or 'NNNN')
+					end
+				end
+				break
+			else
+				--print('seg same', i, v)
+				-- continue
+			end
+		end
+	end
+	return self._join
+end
+
+function tag:join()
+	return self._join
+end
+
+function tag:upper()
+	return self._upper
 end
 
 function tag:__lt(other)
