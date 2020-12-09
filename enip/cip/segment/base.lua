@@ -59,7 +59,7 @@ end
 
 function seg:__tostring()
 	local val_str = tostring(self:value())
-	return string.format('[CIP SEGMENT:%s]T:%d F:%d V:%s',
+	return string.format('[%s]T:%d F:%d V:%s',
 		self.class, self._type, self._fmt, val_str)
 end
 

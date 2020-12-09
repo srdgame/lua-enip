@@ -27,8 +27,8 @@ function req:path()
 end
 
 function req:__tostring()
-	return string.format('Service: %02X\tPath: %s',
-		self._service, tostring(self._path or "NIL"))
+	return string.format('[%s]0x%02X PATH: %s',
+		self.class, self._service, tostring(self._path or "NIL"))
 end
 
 function req:data()

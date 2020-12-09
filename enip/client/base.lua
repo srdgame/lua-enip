@@ -2,6 +2,7 @@ local class = require 'middleclass'
 local cip_types = require 'enip.cip.types'
 local cip_port = require 'enip.cip.segment.port'
 
+local command = require 'enip.command.base'
 local session = require 'enip.utils.session'
 local enip_conn_path = require 'enip.utils.conn_path'
 local enip_route_path = require 'enip.utils.route_path'
@@ -38,9 +39,12 @@ end
 
 function client:register_session()
 	local rs = require 'enip.request.reg_session'
-	local req = rs:new(self._session)
+	local req = rs:new(session:new())
 	return self:request(req, function(resp, err)
 		if resp then
+			if resp:status() ~= command.STATUS.SUCCESS then
+				return nil, resp:error_info()
+			end
 			self._session = resp:session()
 			return true
 		else
@@ -52,6 +56,11 @@ end
 --- Send the unregister session message and cleanup connection
 function client:close()
 	assert(false, "Not implmented!")
+end
+
+function client:invalid_session()
+	--- The server replies invalid session enip command status
+	self:register_session()
 end
 
 function client:unregister_session()

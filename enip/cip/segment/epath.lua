@@ -19,7 +19,7 @@ function epath:__tostring()
 	for _, seg in pairs(self._segments) do
 		t[#t + 1] = tostring(seg)
 	end
-	return table.concat(t, '||')
+	return table.concat(t, '|')
 end
 
 function epath:pad()

@@ -36,7 +36,7 @@ function path:initialize(conn_path)
 end
 
 function path:__tostring()
-	return string.format('%s:%s:%d', self._proto, self._addr, self._port)
+	return string.format('[%s]%s:%s:%d', self.class, self._proto, self._addr, self._port)
 end
 
 function path:proto()

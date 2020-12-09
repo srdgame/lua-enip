@@ -14,7 +14,7 @@ function path:initialize(route_path)
 end
 
 function path:__tostring()
-	return string.format('%d:%d', self._port, self._link)
+	return string.format('[%s]%d:%d', self.class, self._port, self._link)
 end
 
 function path:port()

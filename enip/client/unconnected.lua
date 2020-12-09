@@ -1,6 +1,7 @@
 local session = require 'enip.utils.session'
 local base = require 'enip.client.base'
 local cip_types = require 'enip.cip.types'
+local command = require 'enip.command.base'
 local command_data = require 'enip.command.data'
 local command_item = require 'enip.command.item.base'
 local cip_req_multi = require 'enip.cip.request.multi_srv_pack'
@@ -31,8 +32,11 @@ function client:unconnected_request(request, response)
 
 	return self:send_rr_data(session_obj, data, function(reply, err)
 		-- ENIP reply status checking
-		if reply:status() ~= 0 then
-			return response(nil, "ERROR Status")
+		if reply:status() ~= command.STATUS.SUCCESS then
+			if reply:status() == command.STATUS.INVALID_SESSION then
+				self:invalid_session()
+			end
+			return response(nil, reply:error_info())
 		end
 
 		--- ENIP command data
