@@ -17,19 +17,30 @@ function tag:type()
 	return self._type
 end
 
-function tag:count()
+function tag:count(base)
 	if not self._join then
-		return self._count
+		if not base then
+			return self._count
+		else
+			local segs = self._path:segments()
+			local last = segs[#segs]
+			--- calc the array offset and count
+			return last:value() - base + self._count
+		end
 	end
 
-	return self._count + self._join:count()
+	--- The last is the array offset
+	local segs = self._path:segments()
+	local last = segs[#segs]
+
+	return self._join:count(base or last:value())
 end
 
-function tag:join(tag)
+function tag:join(other)
 	assert(self._join == nil, 'Joined already')
 	-- TODO: check for joinable
 	local segs = self._path:segments()
-	local tag_segs = tag._path:segments()
+	local tag_segs = other._path:segments()
 	for i, v in ipairs(segs) do
 		local o = tag_segs[i]
 		if v:type() ~= o:type() or v:format() ~= o:format() then
@@ -40,6 +51,7 @@ function tag:join(tag)
 				--- Only match the last value
 				if i == #segs then
 					if v:type() == v.TYPES.LOGICAL and v:sub_type() == v.SUB_TYPES.MEMBER_ID then
+						assert(o:value() + other:._count >=  v:value() + self._count)
 						self._join = tag
 					end
 				end
