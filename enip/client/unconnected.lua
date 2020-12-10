@@ -33,6 +33,14 @@ function client:unconnected_request(request, response)
 	return self:send_rr_data(session_obj, data, function(reply, err)
 		-- ENIP reply status checking
 		if reply:status() ~= command.STATUS.SUCCESS then
+
+			print(reply:error_info())
+
+			local skynet = require 'skynet'
+			while true do
+				skynet.sleep(1000)
+			end
+
 			if reply:status() == command.STATUS.INVALID_SESSION then
 				self:invalid_session()
 			end

@@ -1,95 +1,77 @@
+local logger = require 'enip.logger'
 local cip_types = require 'enip.cip.types'
-local types = require 'enip.ab.types'
-local segment = require 'enip.cip.segment.base'
-local data_simple = require 'enip.cip.segment.data_simple'
 local base = require 'enip.cip.reply.base'
+local types = require 'enip.ab.types'
+local atomic = require 'enip.ab.data.atomic'
 
 local reply = base:subclass('enip.ab.reply.read_frg')
 
-function reply:initialize(data_type, data, status, ext_status)
+function reply:initialize(tag_type, values, status, ext_status)
 	base.initialize(self, types.SERVICES.READ_FRG, status, ext_status)
-	if type(data_type) == 'number' then
-		data_type = data_simple:new(data_type)
+	if type(tag_type) == 'number' then
+		tag_type = atomic:new(tag_type)
 	end
-	self._data_type = data_type
-	self._data = data
-end
-
-local function encode_data(parser, data)
-	local raw = {}
-	for _, v in ipairs(data) do
-		raw[#raw + 1] = parser.encode(v)
+	self._tag_type = tag_type
+	if type(values) ~= 'table' then
+		self._values = {values}
+	else
+		self._values = values
 	end
-
-	return table.concat(raw)
 end
 
 function reply:encode()
-	assert(self._data_type, 'Segment is missing')
+	assert(self._tag_type, 'Segment is missing')
+	assert(#self._values, 'Data is missing')
 
 	local raw = {}
-	local seg_raw = self._data_type:to_hex()
-	raw[#raw + 1] = seg_raw
-	if string.len(seg_raw) % 2 == 1 then
-		raw[#raw + 1] = '\0' -- PAD
-	end
+	--- Encode the Data Type first
+	raw[#raw + 1] = self._tag_type:to_hex()
 
-	if self._data then
-		local parser = self._data_type.parser()
-		assert(parser, 'Data type needs to have parser if data exists')
+	local parser = self._tag_type.parser()
+	assert(parser, 'Tag type parser missing')
 
-		local data_raw = encode_data(parser, self._data)
+	for _, v in ipairs(self._values) do
+		local data_raw = parser.encode(v)
 		raw[#raw + 1] = data_raw
-
-		if string.len(data_raw) % 2 == 1 then
-			raw[#raw + 1] = '\0' -- PAD
-		end
 	end
 
 	return table.concat(raw)
 end
 
-local function decode_data(parser, raw, index)
-	local data = {}
-	while index <= string.len(raw) do
-		data[#data + 1], index = parser.decode(raw, index)
-	end
-	return data, index
-end
-
 function reply:decode(raw, index)
+	logger.dump('ab.reply.read_tab.decode', string.sub(raw, index))
 	assert(self._status == cip_types.STATUS.OK)
-	local start = index or 1
-	local pad
-	self._data_type, index = segment.parse(raw, index)
 
-	--- PAD
-	if (index - start) % 2 == 1 then
-		pad, index = string.unpack('I1', raw, index)
-		assert(pad == 0, 'PAD has to be zero')
-	end
+	index = self._tag_type:from(raw, index)
 
-	if self._data_type.parser then
-		self._data, index = decode_data(raw, index)
-	else
-		assert(nil, "Data parser not found")
-	end
+	local start = index
+	local parser = self._tag_type:parser()
+	assert(parser, 'Tag type parser missing')
 
-	--- PAD
-	if (index - start) % 2 == 1 then
-		pad, index = string.unpack('I1', raw, index)
-		assert(pad == 0, 'PAD has to be zero')
+	self._values = {}
+	while index <= string.len(raw) do
+		local data, data_index = parser.decode(raw, index)
+		if data ~= nil then
+			table.insert(self._values, data)
+			index = data_index
+		else
+			-- TODO: ERROR
+		end
 	end
 
 	return index
 end
 
-function reply:data_type()
-	return self._data_type
+function reply:tag_type()
+	return self._tag_type
 end
 
-function reply:data()
-	return self._data
+function reply:value(index)
+	return self._values(index)
+end
+
+function reply:values()
+	return self._values
 end
 
 return reply

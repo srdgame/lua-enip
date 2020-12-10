@@ -10,6 +10,7 @@ function tag:initialize(path, type, count)
 	self._count = count or 1
 	self._join = nil
 	self._upper = nil
+	self._offset = nil --- Value offset
 end
 
 function tag:path()
@@ -91,6 +92,11 @@ function tag:join(other)
 	-- TODO: check for joinable
 	local segs = self._path:segments()
 	local tag_segs = other._path:segments()
+	-- If path segement count not same.
+	if #segs ~= #tag_segs then
+		return
+	end
+
 	for i, v in ipairs(segs) do
 		local o = tag_segs[i]
 		if v:type() ~= o:type() or v:format() ~= o:format() then
@@ -105,6 +111,7 @@ function tag:join(other)
 					if v:type() == seg_base.TYPES.LOGICAL and v:logical_type() == logical.TYPES.MEMBER_ID then
 						assert(o:value() + other._count >=  v:value() + self._count)
 						self._join = other
+						self._offset = o:value() - v:value() + other:offset()
 						other._upper = self
 						--print('JOINED', self, other)
 					else
@@ -127,6 +134,10 @@ end
 
 function tag:upper()
 	return self._upper
+end
+
+function tag:offset()
+	return self._offset or 1
 end
 
 function tag:__lt(other)
