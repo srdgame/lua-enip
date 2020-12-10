@@ -10,7 +10,7 @@ function tag:initialize(path, type, count)
 	self._count = count or 1
 	self._join = nil
 	self._upper = nil
-	self._offset = nil --- Value offset
+	self._offset = 1 --- Value offset
 end
 
 function tag:path()
@@ -137,7 +137,7 @@ function tag:upper()
 end
 
 function tag:offset()
-	return self._offset or 1
+	return self._offset
 end
 
 function tag:__lt(other)
