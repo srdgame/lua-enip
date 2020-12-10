@@ -1,8 +1,16 @@
 ---
 # Ethernet IP/CIP
 
-Refer to libplctag & cpppo. libplctag using connected messages, which cpppo uses unconnected message.
+This is not and completed protocol stack implemention, please use it at your own risk.
 
-We using unconnected message as cpppo, which using difference session context for different requests, and thus make all packets shorter.
+Current Features:
+
+* Basic cip segments (except derived data segment)
+* Unconnected client message
+* AB PLC customized service & message
+* Multi Service Packet request/reply message
 
 
+Usage:
+	* omron plc data reading (FreeIOE Application)
+	* ab plc data reading (FreeIOE Application)
