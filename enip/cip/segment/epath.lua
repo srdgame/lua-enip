@@ -55,12 +55,12 @@ function epath:to_hex()
 
 	raw = table.concat(raw)
 
-	logger.dump('to_hex', raw)
+	--logger.dump('to_hex', raw)
 	return raw
 end
 
 function epath:from_hex(raw, index)
-	logger.dump('from_hex', raw, index)
+	--logger.dump('from_hex', raw, index)
 	--- Clear the segments
 	self._segments = {}
 

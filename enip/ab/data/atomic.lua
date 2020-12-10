@@ -1,9 +1,9 @@
-local base = 'enip.serializable'
-local data_simle = require 'enip.cip.segment.data_simple'
+local base = require 'enip.serializable'
+local data_simple = require 'enip.cip.segment.data_simple'
 
 local atomic = base:subclass('enip.ab.data.atomic')
 
-function atomic:intialize(fmt)
+function atomic:initialize(fmt)
 	self._data_type = data_simple:new(fmt)
 	self._bool_offset = 0
 end

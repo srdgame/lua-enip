@@ -22,7 +22,7 @@ function tag:type()
 end
 
 function tag:count(base)
-	print('COUNT BEGIN', self._count, base, self._join)
+	--print('COUNT BEGIN', self._count, base, self._join)
 	if not self._join then
 		if not base then
 			return self._count
@@ -30,7 +30,7 @@ function tag:count(base)
 			local segs = self._path:segments()
 			local last = segs[#segs]
 			--- calc the array offset and count
-			print('COUNT LAST', last:value(), base, self._count)
+			--print('COUNT LAST', last:value(), base, self._count)
 			return last:value() - base + self._count
 		end
 	end

@@ -69,13 +69,13 @@ function seg:to_hex()
 
 	local s = string.pack('<I1', self:type_num())
 
-	logger.dump('to_hex', s)
+	--logger.dump('enip.cip.segment.to_hex', s)
 
 	return s..self:encode()
 end
 
 function seg:from_hex(raw, index)
-	logger.dump('from_hex', raw, index)
+	--logger.dump('enip.cip.segment.from_hex', raw, index)
 
 	self._type, self._fmt, index = seg.static.parse_segment_type(raw, index)
 

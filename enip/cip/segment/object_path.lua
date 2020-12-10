@@ -102,13 +102,13 @@ function object_path:to_hex()
 	end
 	raw = table.concat(raw)
 
-	logger.dump('to_hex', raw)
+	--logger.dump('to_hex', raw)
 	return raw
 end
 
 
 function object_path:from_hex(raw, index)
-	logger.dump('from_hex', raw, index)
+	--logger.dump('from_hex', raw, index)
 	--- Clear the segments
 	self._segments = {}
 

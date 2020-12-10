@@ -49,6 +49,7 @@ function parser:find(code, appendix)
 	p_name = appendix and p_name..'.'..appendix or p_name
 	local r, p = pcall(require, p_name)
 	if not r then
+		print('Parser code error:', p)
 		return nil, p
 	end
 	return p, p_name

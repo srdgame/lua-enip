@@ -11,11 +11,11 @@ function reply:initialize(tag_type, values, status, ext_status)
 	if type(tag_type) == 'number' then
 		tag_type = atomic:new(tag_type)
 	end
-	self._tag_type = tag_type
+	self._tag_type = tag_type or atomic:new()
 	if type(values) ~= 'table' then
 		self._values = {values}
 	else
-		self._values = values
+		self._values = values or {}
 	end
 end
 
@@ -27,7 +27,7 @@ function reply:encode()
 	--- Encode the Data Type first
 	raw[#raw + 1] = self._tag_type:to_hex()
 
-	local parser = self._tag_type.parser()
+	local parser = self._tag_type:parser()
 	assert(parser, 'Tag type parser missing')
 
 	for _, v in ipairs(self._values) do
@@ -39,10 +39,10 @@ function reply:encode()
 end
 
 function reply:decode(raw, index)
-	logger.dump('ab.reply.read_tab.decode', string.sub(raw, index))
+	logger.dump('ab.reply.read_tag.decode', string.sub(raw, index))
 	assert(self._status == cip_types.STATUS.OK)
 
-	index = self._tag_type:from(raw, index)
+	index = self._tag_type:from_hex(raw, index)
 
 	local start = index
 	local parser = self._tag_type:parser()
@@ -55,6 +55,7 @@ function reply:decode(raw, index)
 			table.insert(self._values, data)
 			index = data_index
 		else
+			print(data_index)
 			-- TODO: ERROR
 		end
 	end
@@ -67,7 +68,7 @@ function reply:tag_type()
 end
 
 function reply:value(index)
-	return self._values(index)
+	return self._values[index]
 end
 
 function reply:values()

@@ -55,7 +55,7 @@ function port:encode()
 		end
 	end
 
-	logger.dump('enip.cip.segment.port.encode', raw)
+	--logger.dump('enip.cip.segment.port.encode', raw)
 	
 	return raw
 end
@@ -63,7 +63,7 @@ end
 function port:decode(raw, index)
 	local fmt = self:format()
 
-	logger.dump('decode', raw, index)
+	--logger.dump('enip.cip.segment.port.decode', raw, index)
 
 	self._port = fmt & 0x0F
 	self._port_ext = nil

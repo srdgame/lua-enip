@@ -114,13 +114,14 @@ end
 function command:to_hex()
 	assert(self._session, 'Session missing')
 	local data_raw = self:encode()
-	logger.dump('command.base.to_hex', data_raw)
+	logger.dump('enip.command.base.to_hex', data_raw)
 	local data_len = string.len(data_raw)
 	return string.pack(header_fmt, self._command, data_len, self._session:session(), 
 		self._status, tostring(self._session:context()), self._options)..data_raw
 end
 
 function command:from_hex(raw, index)
+	logger.dump('enip.command.base.from_hex', raw, index)
 	local session_, context, data_len
 	self._command, data_len, session_, self._status, context, self._options, index
 		= string.unpack(header_fmt, raw, index)

@@ -71,7 +71,7 @@ function seg:encode()
 		raw = self._val
 	end
 
-	logger.dump('encode', raw)
+	--logger.dump('encode', raw)
 
 	return raw
 end
@@ -104,7 +104,7 @@ function seg:decode(raw, index)
 		end
 	end
 
-	logger.dump('decode', raw, index)
+	--logger.dump('decode', raw, index)
 
 	return index
 end
